@@ -1,0 +1,167 @@
+/* ============ PRIVACY PREFERENCE CENTER ============
+   The modal the footer's "Cookie Preferences" link raises. Every number here is
+   measured off the live OneTrust dialog at 1280px: a 730x610 panel with a 61px
+   header, a 437px body (224px category rail + 477px copy column) and a 112px
+   footer. The rail's active marker is a 10px red left border, the switch is a
+   45x25 pill, and the copy runs 13.008px / #333. */
+.ppc-overlay {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0, 0, 0, .55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  animation: ppc-fade .18s ease;
+}
+@keyframes ppc-fade { from { opacity: 0; } to { opacity: 1; } }
+.ppc-dialog {
+  width: 730px; max-width: 100%;
+  /* The reference is a fixed 730x610 panel; the body scrolls, the dialog does not
+     grow with the copy. */
+  height: 610px; max-height: 100%;
+  background: #fff; border-radius: 2px; color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0), 0 8px 40px rgba(0, 0, 0, .45);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+
+/* ---- header: logo | title | close ----
+   The reference header is a fixed 61px band (10px padding either side of a 40px
+   logo), and its close button is 44px — so the button is the tallest child and
+   has to be inset to keep the band at 61 rather than 64. */
+.ppc-header {
+  display: flex; align-items: center; padding: 10px;
+  height: 61px; flex: 0 0 61px;
+}
+.ppc-logo { width: 180px; height: 40px; display: flex; align-items: center; justify-content: center; flex: 0 0 180px; }
+.ppc-logo img { width: 95px; height: 40px; object-fit: contain; }
+.ppc-title { flex: 1; min-width: 0; padding-left: 10px; }
+.ppc-title h2 { font-size: 21.92px; line-height: 26.3px; font-weight: 600; color: #333; }
+.ppc-close {
+  width: 44px; height: 44px; flex: 0 0 44px; margin-right: 2px;
+  background: none; border: 0; color: #555; border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ppc-close:hover { background: #f2f2f2; }
+
+/* ---- body: category rail + copy ---- */
+.ppc-body {
+  display: flex; flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ppc-body::-webkit-scrollbar { display: none; }
+.ppc-rail { width: 224px; flex: 0 0 224px; list-style: none; }
+.ppc-rail-item {
+  display: block; width: 100%; text-align: left;
+  padding: 12px 5px 12px 12px;
+  background: #f4f4f4; border: 0;
+  border-left: 10px solid transparent;
+  border-bottom: 1px solid #d7d7d7;
+  font-size: 14px; font-weight: 600; line-height: 19.6px; color: #333;
+}
+.ppc-rail-item:hover { background: #ebebeb; }
+.ppc-rail-item.on {
+  background: #fff; font-weight: 700;
+  border-left-color: #e50914; border-bottom-color: #e50914;
+}
+.ppc-rail-item:focus-visible { outline: 2px solid #3860be; outline-offset: -2px; }
+
+/* The copy column starts 21.89px after the 224px rail and runs to 477px, which
+   leaves a 7px gutter against the dialog edge in the reference. */
+.ppc-copy { flex: 1; min-width: 0; margin-left: 21.89px; padding-right: 7px; }
+.ppc-copy:focus-visible { outline: 2px solid #3860be; outline-offset: -2px; }
+.ppc-desc { margin-top: 20px; padding: 0 0 10px; }
+.ppc-desc-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.ppc-desc h4 {
+  font-size: 14px; line-height: 18.2px; font-weight: 700; color: #333;
+  padding: 0 10px; margin: 0 0 10px;
+}
+.ppc-desc p { font-size: 13.008px; line-height: 1.5; color: #333; padding: 0 10px; margin: 0 0 13.008px; }
+.ppc-desc p a { font-weight: 700; color: #333; }
+.ppc-desc p a:hover { text-decoration: underline; }
+
+/* The 45x25 pill: green when on, grey when off, 18px white knob. */
+.ppc-switch {
+  position: relative; width: 45px; height: 25px; flex: 0 0 45px;
+  margin: 0 2px 0 0; padding: 0;
+  background: #767676; border: 1px solid #ddd; border-radius: 20px;
+}
+.ppc-switch[aria-checked='true'] { background: #468254; border-color: #fff; }
+.ppc-switch-nob {
+  position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 20px; background: #fff;
+  transition: left .4s ease-in;
+}
+.ppc-switch[aria-checked='true'] .ppc-switch-nob { left: 23px; }
+.ppc-switch:focus-visible { outline: 2px solid #3860be; outline-offset: 2px; }
+
+.ppc-details {
+  display: block; background: none; border: 0; padding: 0; margin: 8px 0 5px 10px;
+  font-size: 13.008px; color: #3860be;
+}
+.ppc-details:hover { text-decoration: underline; }
+
+/* ---- "Cookies Details" sub-view ---- */
+.ppc-list { flex: 1; min-width: 0; padding: 10px; }
+.ppc-list-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.ppc-back { background: none; border: 0; padding: 0; font-size: 14.4px; color: #555; }
+.ppc-back:hover { text-decoration: underline; }
+.ppc-list-title { font-size: 16px; font-weight: 700; color: #333; }
+.ppc-hosts { list-style: none; }
+.ppc-host-box {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; min-height: 54px; text-align: left;
+  background: #f4f4f4; border: 0; border-radius: 2px; padding: 12px 20px; margin-bottom: 12px;
+}
+.ppc-host-box:hover { background: #ebebeb; }
+.ppc-host-name { font-size: 13.008px; font-weight: 700; color: #333; }
+.ppc-host-expand { font-size: 12px; color: #3860be; }
+.ppc-cookies { list-style: none; margin: -6px 0 12px; }
+.ppc-cookie {
+  display: grid; grid-template-columns: 1.4fr 1fr .8fr 2fr; gap: 12px;
+  padding: 10px 20px; font-size: 12px; color: #555;
+  border-bottom: 1px solid #ececec;
+}
+.ppc-cookie b { color: #333; }
+
+/* ---- footer: Save settings + Powered by OneTrust ---- */
+.ppc-footer { border-top: 1px solid #d8d8d8; flex: 0 0 auto; }
+.ppc-actions { min-height: 81px; }
+/* The reference button is 155x41: 10px padding either side of a 19px line box,
+   plus its 1px border. Pinning the height keeps that box exact instead of
+   letting the inherited line-height push it to 44. */
+.ppc-save {
+  margin: 20px 15px; padding: 10px 30px;
+  height: 41px; line-height: 19px;
+  font-size: 14.4px; font-weight: 600;
+  color: #fff; background: #e50914; border: 1px solid #e50914; border-radius: 2px;
+}
+.ppc-save:hover { background: #f6121d; border-color: #f6121d; }
+.ppc-ot {
+  height: 30px; background: #f4f4f4;
+  display: flex; align-items: center; justify-content: flex-end;
+}
+.ppc-ot a {
+  display: inline-flex; align-items: center;
+  margin: 2px 10px 0 0; font-size: 13px; font-weight: 700; color: #333;
+}
+.ppc-ot a:hover .ppc-ot-mark { opacity: .8; }
+.ppc-ot-mark { width: 136px; height: auto; display: block; }
+
+/* The reference is a fixed 730px dialog; on a phone it takes the full width and
+   the rail stacks above the copy so nothing is cut off. */
+@media (max-width: 760px) {
+  .ppc-overlay { padding: 0; }
+  .ppc-dialog { width: 100%; max-height: 100%; height: 100%; border-radius: 0; }
+  .ppc-header { flex-wrap: wrap; }
+  .ppc-logo { flex: 0 0 100%; width: 100%; justify-content: flex-start; }
+  .ppc-title { order: 3; flex: 1 0 100%; padding: 4px 0 0; }
+  .ppc-title h2 { font-size: 18px; }
+  .ppc-body { flex-direction: column; }
+  .ppc-rail { width: 100%; flex: 0 0 auto; }
+  .ppc-rail-item { padding: 10px 12px; }
+  .ppc-copy { margin-left: 0; }
+  .ppc-desc h4, .ppc-desc p { padding: 0 12px; }
+  .ppc-details { margin-left: 12px; }
+  .ppc-cookie { grid-template-columns: 1fr; gap: 2px; }
+}

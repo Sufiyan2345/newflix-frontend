@@ -1,0 +1,512 @@
+/* ============ NAVBAR (design reference: pill nav + icon cluster) ============ */
+.navbar { position: fixed; isolation: isolate; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; gap: 14px; padding: 0 clamp(20px, 2.6vw, 44px); height: 72px; background: transparent; }
+.navbar::before { content: ''; position: absolute; z-index: -1; inset: 0 0 -40px; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,.46) 0%, rgba(0,0,0,.24) 42%, rgba(0,0,0,.07) 78%, transparent 100%); opacity: .52; transition: opacity .35s ease; }
+.navbar.solid::before {
+  opacity: .78;
+  background: linear-gradient(to bottom, rgba(12, 12, 12, .58) 0%, rgba(12, 12, 12, .32) 48%, rgba(12, 12, 12, .08) 82%, transparent 100%);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.browse-skeleton { min-height: 100vh; padding: 80px 0 64px; overflow: hidden; background: #141414; }
+.browse-skeleton-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.browse-skeleton-block {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #262626;
+}
+.browse-skeleton-block::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  transform: translateX(-100%);
+  background: linear-gradient(100deg, transparent 15%, rgba(255,255,255,.055) 38%, rgba(255,255,255,.11) 50%, rgba(255,255,255,.055) 62%, transparent 85%);
+  animation: browse-skeleton-shimmer 1.55s ease-in-out infinite;
+}
+@keyframes browse-skeleton-shimmer { to { transform: translateX(100%); } }
+.browse-skeleton-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(390px, 48vw, 690px);
+  margin: 0 24px 24px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #202020 0%, #242424 38%, #1d1d1d 100%);
+}
+.browse-skeleton-hero::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  transform: translateX(-100%);
+  background: linear-gradient(105deg, transparent 15%, rgba(255,255,255,.035) 42%, rgba(255,255,255,.075) 50%, rgba(255,255,255,.035) 58%, transparent 85%);
+  animation: browse-skeleton-shimmer 1.8s ease-in-out infinite;
+}
+.browse-skeleton-copy { position: relative; z-index: 1; width: min(520px, 55%); padding: 0 0 54px 3.5%; }
+.browse-skeleton-brand { width: 126px; height: 17px; margin-bottom: 20px; }
+.browse-skeleton-title { width: min(360px, 88%); height: clamp(42px, 5vw, 68px); margin-bottom: 16px; border-radius: 7px; }
+.browse-skeleton-meta { width: 190px; height: 13px; margin-bottom: 19px; }
+.browse-skeleton-description { width: 100%; height: 12px; margin-bottom: 9px; }
+.browse-skeleton-description.short { width: 68%; }
+.browse-skeleton-buttons { display: flex; gap: 10px; margin-top: 20px; }
+.browse-skeleton-buttons .browse-skeleton-block { width: 132px; height: 46px; border-radius: 8px; }
+.browse-skeleton-buttons .browse-skeleton-block + .browse-skeleton-block { width: 148px; }
+.browse-skeleton-rows { position: relative; z-index: 2; }
+.browse-skeleton-row { position: relative; z-index: 2; margin: 0 0 27px; padding-left: 3.5%; }
+.browse-skeleton-row-title { width: 205px; height: 18px; margin-bottom: 13px; }
+.browse-skeleton-cards { display: flex; gap: 12px; overflow: hidden; padding: 0 24px 4px 0; }
+.browse-skeleton-card { flex: 0 0 clamp(180px, 19vw, 285px); min-width: 0; }
+.browse-skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 22px 14px; }
+.browse-skeleton-grid .browse-skeleton-card { width: 100%; }
+.browse-skeleton-art { width: 100%; aspect-ratio: 16 / 9; border-radius: 9px; }
+.browse-skeleton-caption { width: 58%; height: 10px; margin: 9px 2px 0; }
+@media (max-width: 768px) {
+  .browse-skeleton { padding-top: 64px; }
+  .browse-skeleton-hero { min-height: 54svh; margin: 0 12px 20px; border-radius: 10px; }
+  .browse-skeleton-copy { width: 80%; padding: 0 16px 30px; }
+  .browse-skeleton-brand { width: 92px; height: 13px; margin-bottom: 14px; }
+  .browse-skeleton-title { height: 36px; }
+  .browse-skeleton-meta { width: 145px; height: 11px; }
+  .browse-skeleton-description { height: 9px; }
+  .browse-skeleton-buttons .browse-skeleton-block { width: 100px; height: 38px; }
+  .browse-skeleton-buttons .browse-skeleton-block + .browse-skeleton-block { width: 112px; }
+  .browse-skeleton-row { padding-left: 16px; margin-bottom: 22px; }
+  .browse-skeleton-row-title { width: 165px; height: 15px; margin-bottom: 10px; }
+  .browse-skeleton-cards { gap: 8px; }
+  .browse-skeleton-card { flex-basis: clamp(145px, 43vw, 210px); }
+  .browse-skeleton-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .browse-skeleton-block::after, .browse-skeleton-hero::after { animation: none; }
+}
+.brand { display: flex; align-items: center; justify-content: center; flex-shrink: 0; height: 100%; }
+.brand-logo { display: block; height: 36px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+.mobile-menu-toggle { display: none; }
+.mobile-menu-toggle:hover { background: #fff; border-color: #fff; color: #141414; }
+.mobile-menu-toggle:active { transform: scale(.96); }
+.mobile-extra-link { display: none; }
+.mobile-nav-icon { display: none; }
+
+.nav-links { position: relative; display: flex; flex: 0 0 auto; gap: 7px; align-items: center; margin-left: 6px; }
+.nav-pill { position: relative; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 500; color: #e5e5e5; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; transition: color .18s ease, transform .12s ease; white-space: nowrap; opacity: .9; }
+.nav-pill:hover { color: #fff; opacity: 1; }
+.nav-pill.active { color: #fff; font-weight: 700; opacity: 1; }
+.nav-indicator { position: absolute; top: 0; left: 0; z-index: 1; width: 0; height: 3px; border-radius: 2px; background: var(--sf-red); opacity: 0; pointer-events: none; transform: translate3d(0, 0, 0); transition: transform .42s cubic-bezier(.22,.8,.25,1), width .42s cubic-bezier(.22,.8,.25,1), opacity .12s ease; will-change: transform, width; }
+.nav-links.mobile-open .nav-indicator { display: none; }
+.nav-pill:active { transform: scale(.97); }
+.nav-pill:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+   .nav-indicator { transition: none; }
+}
+
+.nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.kids-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: rgba(255,255,255,.86); font-size: 13px; font-weight: 700; letter-spacing: .02em; cursor: pointer; transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .12s ease; }
+.kids-link:hover, .kids-link.active { color: #fff; background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.28); }
+.kids-link:active { transform: scale(.97); }
+.kids-link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+/* Stays lit while the kid catalogue is open, matching the .nav-pill.active rule. */
+.nav-icon-btn { flex: 0 0 38px; width: 38px; height: 38px; background: transparent; border: 1px solid transparent; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0; position: relative; opacity: .95; cursor: pointer; transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .12s ease; }
+.nav-icon-btn svg { width: 24px; height: 24px; }
+.nav-icon-btn:hover, .nav-icon-btn[aria-expanded="true"] { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.28); color: #fff; opacity: 1; }
+.nav-icon-btn:active { transform: scale(.94); }
+.nav-icon-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.nav-pop { position: relative; display: flex; }
+.nav-search { display: flex; align-items: center; }
+.search-box { display: flex; align-items: center; width: 0; overflow: hidden; background: rgba(0,0,0,.85); border: 1px solid transparent; transition: width .25s ease, padding .25s ease; }
+.search-box.open { width: 250px; border-color: rgba(255,255,255,.75); padding: 7px 12px; margin-left: 10px; }
+.search-box input { background: none; border: none; outline: none; color: #fff; font-size: 14px; width: 100%; }
+
+.bell-badge { position: absolute; top: -6px; right: -7px; background: var(--sf-red); color: #fff; font-size: 10px; font-weight: 700; border-radius: 50%; min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+
+.notif-panel { position: absolute; right: 0; top: 42px; width: 320px; max-height: 400px; overflow-y: auto; background: rgba(12,12,12,.97); border: 1px solid rgba(255,255,255,.15); border-radius: 6px; padding: 6px; z-index: 110; box-shadow: 0 14px 40px rgba(0,0,0,.8); }
+.panel-head { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #9a9a9a; padding: 10px 12px 6px; }
+.notif-item { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 13px; color: #ddd; line-height: 1.4; }
+.notif-item:last-child { border-bottom: none; }
+.notif-item b { color: #fff; display: block; margin-bottom: 2px; }
+.notif-item.mark-read { text-align: center; color: #54b9c5; cursor: pointer; }
+.apps-panel { width: 330px; }
+.apps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px 6px 8px; }
+.apps-link { display: block; font-size: 13px; color: #ddd; padding: 8px 10px; border-radius: 4px; }
+.apps-link:hover { background: rgba(255,255,255,.12); color: #fff; }
+
+.profile-menu { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; cursor: pointer; position: relative; gap: 6px; }
+.profile-menu:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 7px; }
+.profile-menu:hover .profile-avatar, .profile-menu[aria-expanded="true"] .profile-avatar { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,.3); }
+.profile-avatar { width: 42px; height: 42px; border-radius: 7px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff; flex-shrink: 0; border: 1px solid rgba(255,255,255,.3); box-shadow: 0 0 0 1px rgba(0,0,0,.18); }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.profile-avatar.sm { width: 28px; height: 28px; font-size: 12px; }
+.profile-caret { display: flex; color: #fff; opacity: .9; }
+.profile-menu[aria-expanded="true"] .profile-caret { transform: rotate(180deg); }
+.profile-dropdown { position: absolute; right: 0; top: 46px; background: rgba(12,12,12,.97); border: 1px solid rgba(255,255,255,.15); border-radius: 6px; min-width: 240px; overflow: hidden; padding: 6px 0; box-shadow: 0 14px 40px rgba(0,0,0,.8); }
+.profile-dropdown .pd-item { display: flex; width: 100%; align-items: center; gap: 10px; padding: 10px 16px; border: 0; background: transparent; color: #e5e5e5; font-family: inherit; font-size: 14px; text-align: left; cursor: pointer; transition: background-color .16s ease, color .16s ease; }
+.profile-dropdown .pd-item > svg { flex: 0 0 17px; color: #b3b3b3; }
+.profile-dropdown .pd-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+.profile-dropdown .pd-item:hover > svg { color: #fff; }
+.profile-dropdown .pd-profile-choice { min-height: 48px; }
+.profile-dropdown .pd-item:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+.profile-dropdown hr { border: none; border-top: 1px solid rgba(255,255,255,.15); margin: 6px 0; }
+
+/* Desktop social rail inspired by the compact friends/activity sidebar. */
+.social-sidebar { position: fixed; top: 72px; right: 0; bottom: 0; z-index: 250; width: min(320px, 92vw); padding: 16px 14px 28px; overflow-y: auto; background: rgba(13,13,13,.98); border-left: 1px solid rgba(255,255,255,.05); color: #eee; box-shadow: -12px 0 30px rgba(0,0,0,.28); animation: social-slide-in .18s ease-out; }
+@keyframes social-slide-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+.social-tools { display: flex; align-items: center; justify-content: space-around; height: 42px; border-bottom: 1px solid #333; color: #fff; font-size: 25px; }
+.social-tools span { line-height: 1; }
+.social-avatar-mini { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: #777; font-size: 12px; font-weight: 700; }
+.social-section { padding-top: 8px; }
+.social-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.social-section h2 { font-size: 16px; font-weight: 500; margin: 0 0 14px; white-space: nowrap; }
+.social-section-head button { border: 0; background: transparent; color: #aaa; font-size: 12px; white-space: nowrap; }
+.friend-list { display: flex; flex-direction: column; gap: 13px; }
+.friend-row { width: 100%; display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.friend-row:hover strong, .friend-row:focus-visible strong { color: #fff; }
+.friend-avatar { position: relative; width: 34px; height: 34px; flex: 0 0 34px; display: flex; align-items: center; justify-content: center; overflow: hidden; color: #fff; font-weight: 700; font-size: 14px; }
+.friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.friend-avatar i { position: absolute; right: 0; bottom: 0; width: 7px; height: 7px; border-radius: 50%; background: #27d367; border: 1px solid #111; }
+.friend-row > div:last-child, .activity-row > div { min-width: 0; flex: 1; }
+.friend-row strong, .friend-row small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.friend-row strong { font-size: 12px; font-weight: 500; }
+.friend-row small { color: #aaa; font-size: 11px; margin-top: 2px; }
+.activity-section { margin-top: 24px; }
+.social-activity-heading { display: block; padding: 0; border: 0; background: transparent; color: #eee; font: inherit; font-size: 16px; cursor: pointer; }
+.social-activity-heading:hover, .social-activity-heading:focus-visible { color: #fff; }
+.activity-list { display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 250px); overflow-y: auto; padding-right: 4px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent; }
+.activity-row { width: 100%; display: grid; grid-template-columns: 42px minmax(0, 1fr); align-items: start; gap: 10px; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.activity-row:hover span, .activity-row:focus-visible span { color: #fff; }
+.activity-row img { width: 42px; height: 52px; object-fit: cover; background: #282828; border-radius: 3px; }
+.activity-row span { display: -webkit-box; color: #aaa; font-size: 12px; line-height: 1.4; overflow: hidden; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.activity-row b { color: #ddd; font-weight: 500; }
+.activity-row small { display: block; color: #888; font-size: 10px; text-align: left; margin-top: 5px; }
+.social-empty { color: #777; font-size: 11px; line-height: 1.4; }
+
+/* ============ HERO BANNER (design reference screenshot 1) ============
+   Proportions measured off the reference: the billboard is a touch wider than
+   16:9 (52vw, capped at 760px), the copy column starts on the same 4% gutter
+   the rails use and its baseline sits ~30% up from the bottom edge — exactly
+   where the first card row is pulled up to meet it (see .hero-follow in
+   cards.css). Nothing is painted over the artwork except a soft left wedge, so
+   the banner reads as one bright, sharp, full-bleed image. */
+/* The billboard is wrapped in .hero-shell so the progress line can escape
+   .hero's isolated stacking context. .hero-follow (the card rail) is a SIBLING
+   of this wrapper at z-index 12, so it paints over .hero (z-index auto) no
+   matter how high the bar is raised inside .hero — the line was ending up buried
+   under the card art. The shell keeps z-index auto, so the opaque artwork still
+   sits UNDER the cards; only the 3px line is lifted above them. The shell's
+   bottom edge IS the hero's bottom edge, so the line still lands on the very
+   bottom of the artwork. */
+.hero-shell { position: relative; border-radius: 14px; overflow: hidden; }
+.hero-shell::after {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  border: 1px solid rgba(235, 239, 246, .18);
+  border-radius: inherit;
+  content: '';
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.84), rgba(255,255,255,0)) left top / 34px 1px no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.84), rgba(255,255,255,0)) left top / 1px 34px no-repeat,
+    linear-gradient(270deg, rgba(255,255,255,.72), rgba(255,255,255,0)) right top / 34px 1px no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,0)) right top / 1px 34px no-repeat,
+    linear-gradient(90deg, rgba(255,255,255,.68), rgba(255,255,255,0)) left bottom / 34px 1px no-repeat,
+    linear-gradient(0deg, rgba(255,255,255,.68), rgba(255,255,255,0)) left bottom / 1px 34px no-repeat,
+    linear-gradient(270deg, rgba(255,255,255,.82), rgba(255,255,255,0)) right bottom / 34px 1px no-repeat,
+    linear-gradient(0deg, rgba(255,255,255,.82), rgba(255,255,255,0)) right bottom / 1px 34px no-repeat;
+  box-shadow: inset 0 0 18px rgba(235, 239, 246, .035);
+  animation: hero-corner-glow 4.8s ease-in-out infinite;
+}
+@keyframes hero-corner-glow {
+  0%, 100% { opacity: .48; }
+  50% { opacity: .94; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-shell::after { animation: none; opacity: .68; }
+}
+.hero { position: relative; height: clamp(560px, 55vw, 840px); width: 100%; overflow: hidden; background: #000; isolation: isolate; }
+.hero-slides { position: absolute; inset: 0; }
+/* Every featured slide stays mounted and stacked; only the active one is visible.
+   Crossfading an already-decoded layer (instead of swapping one background) is
+   what keeps the rotation free of the remount flash. The slow drift below runs
+   on EVERY layer but only the active one is allowed to RUN it: when a slide
+   hands over, the outgoing layer FREEZES mid-drift instead of snapping back to
+   scale(1) — a zoom that is removed together with .active pops visibly during
+   the fade-out (that snap was the glitch). When the slide returns it just
+   resumes where it froze. `translate3d` keeps every layer on its own compositor
+   layer so the fade and the drift never fight each other for a repaint. */
+.hero-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s cubic-bezier(.4, 0, .2, 1); will-change: opacity; backface-visibility: hidden; }
+.hero-slide.active { opacity: 1; }
+/* The artwork. `object-fit: cover` over a NATIVE-resolution file (the URL is
+   upgraded to 4K in utils/imageUrl.js) is what keeps the banner sharp: no CSS
+   filter / saturate() pass, which would force the browser to re-raster a scaled
+   bitmap every frame of the drift and visibly soften it. */
+.hero-img {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 18%;
+  backface-visibility: hidden; user-select: none;
+  animation: heroDrift 26s ease-in-out infinite alternate; animation-play-state: paused;
+  will-change: transform;
+}
+/* Only the on-screen slide drifts — the frozen ones cost no GPU time. */
+.hero-slide.active .hero-img { animation-play-state: running; }
+@keyframes heroDrift {
+  /* Keep the movement subtle so a full-resolution backdrop is not visibly enlarged. */
+  from { transform: scale(1.005) translate3d(.2%, 0, 0); }
+  to { transform: scale(1.025) translate3d(-.2%, 0, 0); }
+}
+/* Hovering the billboard freezes it (the page also stops the 8s clock) so the
+   title can be read without the artwork sliding on underneath. This rule must
+   stay AFTER the .active rule so a hovered ACTIVE slide pauses too. */
+.hero.paused .hero-img { animation-play-state: paused; }
+/* The shade is the whole difference between "Netflix" and "grey wall": a soft
+   left wedge under the copy, a light top wash for the navbar and a SHORT bottom
+   blend. The old full-width bottom gradient plus a 130px black band is what made
+   the card row under the banner look darkened — the cards now paint ABOVE the
+   billboard (see .hero-follow), so nothing here can touch them. */
+.hero-shade {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background:
+   linear-gradient(90deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.3) 20%, rgba(0,0,0,.1) 38%, rgba(0,0,0,0) 56%),
+   linear-gradient(to bottom, rgba(0,0,0,.38) 0%, rgba(0,0,0,.08) 8%, rgba(0,0,0,0) 18%),
+   linear-gradient(to top, rgba(20,20,20,.3) 0%, rgba(20,20,20,.08) 5%, rgba(20,20,20,0) 12%);
+}
+.hero-content { position: absolute; left: var(--sf-gutter, 48px); bottom: 37%; max-width: min(620px, 46%); z-index: 5; animation: heroIn .9s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: none; }
+}
+/* Clear, proportional Netflix N + category lockup above the title artwork. */
+.hero-brandtag { display: flex; align-items: center; gap: 11px; margin-bottom: 20px; }
+.hero-content.has-title-art .hero-brandtag {
+  margin-bottom: clamp(28px, calc(20px + 0.35vw), 32px);
+  transform: translateY(clamp(8px, 1.2vw, 20px));
+}
+.hero-brandtag-n { display: block; height: clamp(28px, 2.4vw, 38px); width: auto; pointer-events: none; user-select: none; filter: drop-shadow(0 2px 5px rgba(0,0,0,.6)); }
+.hero-brandtag span {
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-size: clamp(14px, 1vw, 17px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 3px;
+  margin-right: -3px;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 2px 5px rgba(0,0,0,.7);
+}
+.hero-title { margin: 0 0 14px; font-weight: 400; }
+/* Long titles shrink (Netflix-style) instead of growing upward over the navbar;
+   capped at 3 lines so the content block always stays inside the billboard. */
+.hero-title-text {
+  margin: 0 0 18px; max-width: 620px; color: #fff;
+  font-family: Georgia, 'Times New Roman', serif; font-weight: 900; line-height: .9;
+  letter-spacing: -2px; text-transform: uppercase; text-shadow: 0 3px 12px rgba(0,0,0,.75);
+  font-size: clamp(30px, 3.1vw, 50px);
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  overflow-wrap: break-word;
+}
+.hero-title-text.has-clip { font-size: clamp(26px, 2.5vw, 42px); }
+/* Title art. The reference lockup ("THE SANOMAN") is ~60px tall on a 1200px
+   screen: it dominates the block without crowding the buttons. */
+.hero-logo {
+  display: block;
+  max-height: clamp(96px, 10vw, 160px);
+  max-width: min(100%, 620px);
+  width: auto; height: auto; object-fit: contain;
+  margin: 0 0 20px;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,.7));
+  user-select: none; pointer-events: none;
+}
+.hero-description {
+   max-width: min(540px, 100%);
+   margin: 0 0 18px;
+   color: #f1f1f1;
+   font-size: 15px;
+   line-height: 1.4;
+   text-shadow: 0 2px 8px rgba(0,0,0,.9);
+   display: -webkit-box;
+   -webkit-box-orient: vertical;
+   -webkit-line-clamp: 3;
+   overflow: hidden;
+}
+/* Netflix N sticker and rank line directly beneath the featured title artwork. */
+.hero-top10 { display: flex; align-items: center; gap: 8px; margin: -5px 0 12px; }
+.hero-top10-badge {
+  width: 22px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .55);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .48);
+}
+.hero-top10-badge img { display: block; width: 10px; height: 19px; object-fit: contain; }
+.hero-top10-text { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+.hero-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0; font-size: 14px; font-weight: 600; color: #e0e0e0; letter-spacing: .3px; margin: -8px 0 10px; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.hero-meta span + span::before { content: '•'; display: inline-block; margin: 0 8px; color: rgba(255,255,255,.74); }
+/* The reference billboard shows a rank chip only for titles present in the
+   corresponding Top 10 rail; titles outside that list keep the clean lockup. */
+.hero-actions { display: flex; gap: 12px; }
+.hero-actions svg { flex-shrink: 0; }
+.hero-actions .btn-white,
+.hero-actions .btn-gray { min-width: 148px; min-height: 48px; padding: 12px 24px; border-radius: 10px; }
+.hero-actions .btn-gray { min-width: 164px; }
+.hero-reactions { display: flex; align-items: center; gap: 8px; }
+.hero-reaction-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .62);
+  border-radius: 50%;
+  background: rgba(24, 24, 24, .58);
+  color: #fff;
+  cursor: pointer;
+  transition: transform .2s cubic-bezier(.2, .8, .2, 1), color .2s ease,
+    background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.hero-reaction-btn:hover { transform: scale(1.08); background: rgba(55, 55, 55, .9); border-color: #fff; }
+.hero-reaction-btn:active { transform: scale(.94); }
+.hero-reaction-btn.active { color: #fff; background: rgba(229, 9, 20, .88); border-color: rgba(255, 255, 255, .9); box-shadow: 0 0 16px rgba(229, 9, 20, .28); }
+.hero-reaction-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.hero-reaction-btn.active svg { animation: hero-reaction-pop .28s cubic-bezier(.2, .8, .2, 1); }
+@keyframes hero-reaction-pop { 50% { transform: scale(1.18); } }
+/* Maturity chip: flush against the right edge, its own baseline on the button
+   row (the copy block sits on `bottom: 30%`, and so does the chip's bottom edge
+   — in the reference both are vertically centred on the same line). */
+.hero-foot { position: absolute; right: 0; bottom: 37%; height: 36px; z-index: 6; display: flex; align-items: center; }
+/* Right padding is deliberately small: the box is flush to the viewport edge, so a
+   wide trailing pad read as a half-rendered chip that ran off the screen. */
+.hero-rating { background: rgba(51,51,51,.62); border-left: 3px solid #dcdcdc; color: #fff; font-size: 15.5px; font-weight: 600; letter-spacing: .3px; line-height: 1; padding: 10px 18px 10px 13px; }
+.hero-badges { position: absolute; right: 2.2%; bottom: 4.5%; z-index: 6; display: flex; flex-direction: row; align-items: center; justify-content: flex-end; gap: clamp(14px, 1.5vw, 24px); max-width: 58%; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 0; border-radius: 0; background: transparent; color: #fff; font-size: clamp(13px, .98vw, 16px); font-weight: 700; line-height: 1.15; white-space: nowrap; text-shadow: 0 1px 4px rgba(0,0,0,.95); }
+.hero-badge img { display: block; flex: 0 0 auto; width: clamp(22px, 1.7vw, 28px); height: clamp(22px, 1.7vw, 28px); object-fit: contain; }
+.hero-award img { width: clamp(25px, 1.9vw, 31px); height: clamp(25px, 1.9vw, 31px); }
+.hero-award img { filter: brightness(1.45) contrast(1.08) saturate(1.25) drop-shadow(0 0 4px rgba(255, 190, 55, .4)); }
+
+/* Boxed member-page billboard from the supplied reference. The fixed navbar
+   stays untouched; the hero starts below it and keeps the next rail separate. */
+@media (min-width: 769px) {
+  .hero-shell { margin: 72px 24px 0; }
+  .hero {
+    width: 100%;
+    height: clamp(340px, 44.5vw, 840px);
+    border-radius: 14px;
+  }
+  .hero-content {
+    left: 2.5%;
+    bottom: 5%;
+    max-width: min(760px, 56%);
+  }
+  .hero-brandtag { gap: 12px; margin-bottom: 16px; }
+  .hero-brandtag-n { height: clamp(36px, 3vw, 48px); }
+  .hero-brandtag span { font-size: clamp(17px, 1.35vw, 22px); letter-spacing: 3.5px; }
+  .hero-content.has-title-art .hero-brandtag {
+    margin-bottom: 19px;
+    transform: none;
+  }
+  .hero-logo {
+    max-height: clamp(126px, 13vw, 210px);
+    max-width: min(100%, 780px);
+    margin-bottom: 18px;
+  }
+  .hero-title-text {
+    max-width: 760px;
+    font-size: clamp(48px, 5vw, 78px);
+    margin-bottom: 22px;
+  }
+  .hero-meta {
+    font-size: clamp(16px, 1.2vw, 19px);
+    margin-bottom: 15px;
+  }
+  .hero-description {
+    max-width: 54ch;
+    margin-bottom: 20px;
+    font-size: clamp(16px, 1.2vw, 19px);
+    line-height: 1.38;
+  }
+  .hero-actions .btn-white,
+  .hero-actions .btn-gray {
+    min-height: 52px;
+    padding: 12px 26px;
+    border-radius: 10px;
+    font-size: 16px;
+  }
+  .hero-actions .btn-white { min-width: 158px; }
+  .hero-actions .btn-gray { min-width: 176px; }
+  .hero-foot { right: 0; bottom: 5%; }
+  .hero-follow { margin-top: 18px; transform: none; }
+}
+
+.home-primary-rows {
+  position: relative;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-top: 26px;
+}
+@media (max-width: 768px) {
+  .hero-shell { border-radius: 12px; }
+  .home-primary-rows { gap: 24px; margin-top: 22px; }
+  .hero-badges { right: 8px; bottom: 5%; max-width: 88%; gap: 7px; }
+  .hero-badge { min-height: 24px; gap: 5px; padding: 2px 3px; font-size: clamp(10px, 3vw, 13px); }
+  .hero-badge img { width: 18px; height: 18px; }
+  .hero-award img { width: 20px; height: 20px; }
+}
+
+/* Landscape game tiles in the member Games BETA rail. */
+.games-row { position: relative; z-index: 10; padding: 0 0 4px; background: var(--sf-black, #000); }
+.games-row-header { display: flex; align-items: center; padding: 0 var(--sf-gutter, 48px); margin-bottom: 10px; }
+.games-row-title { display: flex; align-items: center; gap: 8px; color: #f5f5f5; font-size: 19px; font-weight: 700; }
+.games-row-title span { border: 1px solid #e50914; border-radius: 3px; color: #f5f5f5; font-size: 9px; font-weight: 800; letter-spacing: 2px; line-height: 1; padding: 3px 5px; }
+.games-row-track { display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth; scrollbar-width: none; padding: 0 var(--sf-gutter, 48px) 12px; }
+.games-row-track::-webkit-scrollbar { display: none; }
+.game-card { flex: 0 0 clamp(190px, 20vw, 320px); overflow: hidden; border-radius: 10px; color: #fff; text-decoration: none; outline-offset: 3px; transition: transform .22s ease, box-shadow .22s ease; }
+.game-card:hover { z-index: 2; transform: scale(1.035); box-shadow: 0 8px 24px rgba(0,0,0,.45); }
+.game-card:focus-visible { outline: 2px solid #fff; }
+.game-card-art { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; border-radius: inherit; background: #181818; }
+.game-card-art > img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .45s cubic-bezier(.2,.8,.2,1); }
+.game-card:hover .game-card-art > img { transform: scale(1.055); }
+.game-card-shade { position: absolute; inset: 25% 0 0; background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.12) 30%, rgba(0,0,0,.78) 100%); }
+.game-card-mark { position: absolute; left: 14px; right: 36px; bottom: 12px; color: #fff; font-size: clamp(13px, 1.15vw, 17px); font-weight: 800; letter-spacing: -.2px; line-height: 1.05; text-shadow: 0 2px 8px rgba(0,0,0,.85); }
+.game-card-open { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid rgba(255,255,255,.72); border-radius: 50%; background: rgba(0,0,0,.42); color: #fff; font-size: 16px; opacity: 0; transform: translateY(3px); transition: opacity .18s ease, transform .18s ease; }
+.game-card:hover .game-card-open, .game-card:focus-visible .game-card-open { opacity: 1; transform: none; }
+.games-row-arrow { position: absolute; z-index: 3; top: 28px; bottom: 8px; display: flex; width: 44px; align-items: center; justify-content: center; border: 0; background: rgba(0,0,0,.52); color: #fff; opacity: 0; transition: opacity .18s ease, background-color .18s ease; }
+.games-row:hover .games-row-arrow:not(:disabled), .games-row-arrow:focus-visible { opacity: 1; }
+.games-row-arrow:hover:not(:disabled) { background: rgba(0,0,0,.8); }
+.games-row-arrow:disabled { opacity: 0; pointer-events: none; }
+.games-row-arrow svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.games-row-arrow.left { left: 0; border-radius: 0 5px 5px 0; }
+.games-row-arrow.right { right: 0; border-radius: 5px 0 0 5px; }
+@media (hover: none) {
+  .games-row-arrow:not(:disabled) { opacity: 1; }
+}
+/* Netflix's billboard progress: a 3px red line pinned to the very bottom edge of
+   the artwork, split per slide, so the viewer can see how long is left before the
+   next banner — and each segment is still a click target. The duration is fed in
+   from <HeroBanner> as --hero-interval, which the same hook that owns the rotation
+   clock also exports. */
+/* Keep progress beneath the overlapping rails so it never paints across cards. */
+.hero-progress { position: absolute; left: 0; right: 0; bottom: 0; z-index: 0; display: flex; gap: 2px; height: 3px; }
+.hero-seg { position: relative; flex: 1 1 0; height: 100%; padding: 0; border: none; background: rgba(255,255,255,.28); cursor: pointer; overflow: hidden; transition: background .25s ease; }
+.hero-seg:hover { background: rgba(255,255,255,.5); }
+.hero-seg.active::after { content: ''; position: absolute; inset: 0; background: var(--sf-red); transform-origin: left center; animation: heroFill var(--hero-interval, 8000ms) linear both; }
+.hero.paused .hero-seg.active::after { animation-play-state: paused; }
+@keyframes heroFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+/* No 130px black band here any more — it painted OVER the card row that rides up
+   under the billboard. The short bottom blend lives on .hero-shade instead, and
+   the cards are stacked above the whole banner (.hero-follow). */
+/* Accessibility: the billboard still swaps slides, it just does it without the
+   fade/zoom/rise motion for viewers who asked their OS to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide { transition-duration: .01ms; }
+  .hero-img { animation: none; }
+  .hero-content { animation: none; }
+  .hero-seg.active::after { animation: none; transform: scaleX(1); }
+}

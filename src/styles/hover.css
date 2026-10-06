@@ -1,0 +1,159 @@
+/* ============ HOVER PREVIEW CARD ============ */
+/* Matches the reference: the ARTWORK fills the whole card, which is a 16:9 CINEMATIC
+   box centred on the hovered tile — the same shape as the tile itself, only a little
+   larger, so it pops without covering the rails above and below. The red Netflix play
+   button sits on the LEFT, the ring buttons stack down the RIGHT edge, and the
+   title / match / rating / runtime / tag lines sit over the lower band behind a
+   scrim so they stay readable on any still. A chevron hangs below the card.
+   Row.jsx passes --hover-card-w/-h from the hovered tile's popped rect, so the box
+   always matches the tile it describes. */
+.hover-wrap { position: fixed; z-index: 400; width: var(--hover-card-w, 340px); }
+/* The card is only slightly TALLER than the popped tile — that small vertical
+   overflow is what makes the hover read as a pop. Row.jsx has already derived the
+   height from the 16:9 aspect and clamped it to the viewport. */
+.hover-card {
+  position: relative; width: 100%;
+  /* Row.jsx sets BOTH --hover-card-w and --hover-card-h from the hovered tile's own
+     rect, so the box already matches the tile's shape (16:9 on a wide rail, 2:3 on
+     Top 10). No aspect-ratio here — it would fight that and re-introduce the
+     landscape-on-a-portrait-tile mismatch. */
+  height: var(--hover-card-h, auto);
+  background: #181818; border-radius: 4px; overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.55);
+  animation: hoverIn .2s ease-out; cursor: pointer;
+}
+@keyframes hoverIn { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+
+/* Chevron under the card. A real <button> — it opens the title, the same as the info
+   ring button — so the reset list matters: no inherited border/background, and
+   line-height 0 stops the inline svg from adding a few stray pixels of hit area. */
+.hover-chevron {
+  display: block; margin: 3px auto 0; padding: 2px; line-height: 0;
+  border: 0; background: none; color: #fff; opacity: .8; cursor: pointer;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,.6));
+  transition: opacity .15s ease, transform .15s ease;
+}
+.hover-chevron:hover { opacity: 1; transform: translateY(1px); }
+.hover-chevron:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 4px; }
+
+/* --- artwork / teaser stage ---
+   The still fills the ENTIRE card (the reference card is a 16:9 frame of artwork with
+   the text overlaid near the bottom), so this is absolutely positioned and the image
+   is `object-fit: cover` — a 16:9 backdrop drops in uncropped, and a portrait poster
+   is centre-cropped instead of being stretched. Row.jsx sets --hover-card-w/-h. */
+.hover-media { position: absolute; inset: 0; background: #000; overflow: hidden; }
+.hover-card .hover-video,
+.hover-card .hover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+/* Bottom scrim so the overlaid text is legible on any still. It only covers the lower
+   band of the card (a percentage, not a fixed px height) so it scales with whatever
+   --hover-card-h Row.jsx worked out. */
+.hover-scrim { position: absolute; inset: auto 0 0 0; height: 62%; z-index: 2; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.6) 48%, rgba(0,0,0,.9) 100%); }
+.tmdb-hover-logo-slot {
+  position: absolute;
+  z-index: 2;
+  left: 6%;
+  right: 25%;
+  bottom: 25%;
+  height: 25%;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.tmdb-hover-title-fallback {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(13px, 1.5vw, 21px);
+  font-weight: 800;
+  line-height: 1.08;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0,0,0,.95), 0 0 16px rgba(0,0,0,.8);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Netflix RED play button on the LEFT of the artwork — the reference's signature
+   control. Filled #e50914 disc with a white triangle, vertically centred. */
+.hover-play {
+  position: absolute; top: 50%; left: 4.5%; transform: translateY(-50%); z-index: 3;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: #e50914; color: #fff; border: 0; padding: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.5);
+  transition: transform .15s ease, background .15s ease;
+}
+.hover-play svg { width: 18px; height: 18px; margin-left: 2.5px; } /* optical centring of the triangle */
+.hover-play:hover { transform: translateY(-50%) scale(1.09); background: #f6121d; }
+.hover-play:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* Thumb-up, Info and Plus ring buttons stacked down the RIGHT edge, as in the
+   reference. Translucent dark fill + white ring so they read over any still. */
+/* Thumb-up, Info and Plus ring buttons stacked down the RIGHT edge.
+   Anchored to the BOTTOM of the card, not the middle: the reference runs the stack down
+   the right side so the three rings sit level with the title block, reading as a column
+   beside the text rather than floating in the middle of the picture. Translucent dark
+   fill + white ring so they read over any still. */
+.hover-side { position: absolute; right: 12px; bottom: 10px; z-index: 3; display: flex; flex-direction: column; gap: 8px; }
+.hover-circle-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20,20,20,.55); color: #fff; border: 1.5px solid rgba(255,255,255,.75);
+  backdrop-filter: blur(2px);
+  transition: background .15s ease, border-color .15s ease, color .15s ease;
+}
+.hover-circle-btn svg { width: 17px; height: 17px; }
+.hover-circle-btn:hover { background: rgba(60,60,60,.85); border-color: #fff; }
+.hover-circle-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.hover-circle-btn.on { background: #fff; color: #000; border-color: #fff; }
+.hover-circle-btn:disabled { opacity: .5; cursor: default; }
+
+/* Transient reason a control did not stick ("Sign in to use My List", a rejected write).
+   Sits at the TOP of the card, clear of the ring column and the text block, and is
+   pointer-transparent so it can never intercept the click that produced it. */
+.hover-hint {
+  position: absolute; top: 8px; left: 8px; z-index: 4;
+  max-width: calc(100% - 16px);
+  padding: 5px 9px; border-radius: 4px;
+  background: rgba(0,0,0,.85); color: #fff;
+  font-size: 11px; line-height: 1.35; font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  pointer-events: none;
+  animation: hoverIn .18s ease-out;
+}
+
+/* --- text block, overlaid on the lower band of the artwork --- */
+/* Right padding reserves the ring column (34px button + 12px inset) so a long title
+   ellipses before it slides under the buttons instead of colliding with them. */
+.hover-body { position: absolute; inset: auto 0 0 0; z-index: 3; padding: 14px 48px 10px 11px; pointer-events: none; }
+.hover-meta { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #e6e6e6; margin-bottom: 3px; flex-wrap: wrap; text-shadow: 0 1px 4px rgba(0,0,0,.75); }
+.hover-meta .match { color: #46d369; font-weight: 700; }
+.hover-meta .age { border: 1px solid rgba(255,255,255,.5); padding: 0 4px; border-radius: 2px; font-size: 10.5px; line-height: 1.45; }
+.hover-time { display: inline-flex; align-items: center; gap: 3px; }
+.hover-time svg { width: 11px; height: 11px; flex: 0 0 auto; opacity: .85; }
+.hover-genres { display: flex; flex-wrap: wrap; font-size: 11px; color: #d0d0d0; text-shadow: 0 1px 4px rgba(0,0,0,.75); }
+.hover-genres span:not(:last-child)::after { content: '\00B7'; margin: 0 5px; color: #8a8a8a; }
+
+/* --- portrait variant (Top 10 rail) ---
+   A 2:3 popup is only ~140px wide, so the wide-rail type and 32px play button do not
+   fit: the title clipped mid-word and the meta wrapped over three lines. These are the
+   same values scaled to the narrower box, matching the Top 10 tile's own density. */
+.hover-card.is-portrait .hover-body { padding: 10px 33px 8px 8px; }
+.hover-card.is-portrait .tmdb-hover-logo-slot { right: 25%; bottom: 32%; height: 20%; }
+.hover-card.is-portrait .tmdb-hover-title-fallback { font-size: 12px; }
+.hover-card.is-portrait .hover-meta { font-size: 10px; gap: 5px; margin-bottom: 2px; }
+.hover-card.is-portrait .hover-meta .age { font-size: 9px; padding: 0 3px; }
+.hover-card.is-portrait .hover-time svg { width: 9px; height: 9px; }
+.hover-card.is-portrait .hover-genres { font-size: 9.5px; }
+/* The genre line is the first thing to go on a short card: the title and the
+   match/rating row are the load-bearing metadata. */
+.hover-card.is-portrait .hover-genres span:nth-child(n+3) { display: none; }
+.hover-card.is-portrait .hover-play { width: 28px; height: 28px; left: 7px; top: 40%; }
+.hover-card.is-portrait .hover-play svg { width: 13px; height: 13px; }
+/* Bottom-anchored like the wide variant — the old `top: 42%` is dropped, since a
+   top offset and a bottom offset on the same box fight and the bottom one wins. */
+.hover-card.is-portrait .hover-side { right: 7px; bottom: 7px; gap: 5px; }
+.hover-card.is-portrait .hover-circle-btn { width: 26px; height: 26px; }
+.hover-card.is-portrait .hover-circle-btn svg { width: 13px; height: 13px; }
+.hover-card.is-portrait .hover-chevron { margin-top: 1px; }

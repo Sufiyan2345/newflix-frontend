@@ -1,0 +1,683 @@
+/* ============ ROWS / CAROUSELS ============ */
+/* The first block under the billboard rides UP over the artwork, Netflix-style:
+   the cards sit ON the image with nothing painted over them. The billboard used
+   to end in a full-width black gradient plus a 130px black band, which is what
+   made that row look darkened. --sf-row-overlap is derived from the card height
+   in core.css, so the row's bottom edge lands on the banner's bottom edge at any
+   viewport width. */
+.hero-follow {
+  position: relative; z-index: 12;
+  margin-top: calc(-1 * var(--sf-row-overlap));
+  transform: translateY(-24px);
+}
+.rows { position: relative; z-index: 10; margin-top: 0; display: flex; flex-direction: column; gap: 28px; padding-bottom: 60px; background: var(--sf-black, #000); }
+.new-popular-rows { margin-top: 26px; }
+.row { position: relative; }
+.row-header { display: flex; align-items: baseline; justify-content: space-between; padding: 0 var(--sf-gutter, 48px); margin-bottom: 10px; }
+.row-header-actions { display: flex; align-items: center; gap: 14px; }
+.row-page-indicators { display: flex; align-items: center; gap: 4px; }
+.row-page-indicator { width: 24px; height: 2px; padding: 0; border: 0; background: #555; cursor: pointer; transition: background-color .18s; }
+.row-page-indicator.active { background: #fff; }
+.row-page-indicator:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.row-title { font-size: 20px; font-weight: 700; letter-spacing: -.2px; text-shadow: 0 2px 10px rgba(0,0,0,.75); }
+/* The rail is a horizontal scroll box, so `overflow-x:auto` also clips vertically
+   (overflow-y computes to auto). --sf-scale-pad reserves symmetric headroom so the
+   hovered tile can grow to --sf-card-scale without its top/bottom being cut off, and
+   the negative margin cancels that padding back out so the row's own position and
+   the banner overlap (--sf-row-overlap) are unchanged. */
+.row-slider { display: flex; justify-content: flex-start; gap: 8px; margin: calc(-1 * var(--sf-scale-pad, 0px)) 0 calc(-1 * var(--sf-scale-pad, 0px)) var(--sf-gutter, 48px); padding: var(--sf-scale-pad, 0px) 0 calc(var(--sf-scale-pad, 0px) + 10px); overflow-x: auto; scroll-behavior: auto; scrollbar-width: none; scrollbar-height: none; }
+.row:not(.row-cw) .row-slider { align-items: center; }
+/* A rail tile. It carries NO width/height/margin of its own beyond the .card inside,
+   so the flex track it occupies is identical whether it is hovered or not — that is
+   what keeps the row from reflowing. transform-origin stays at the default centre. */
+.rail-item { position: relative; z-index: 1; display: flex; flex: 0 0 auto; align-items: center; transform-origin: center; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+/* The hovered tile pops in place:
+   - transform:scale() scales width AND height by the same factor, so the tile keeps
+     its exact aspect ratio (no re-cropping of the poster);
+   - neighbors translate outward by half the added width, without resizing;
+   - because it grows symmetrically about a centre that sits on the rail's
+     align-items:center line, every tile stays on the same vertical centre.
+   --sf-card-scale is shared with .card:hover and with the JS that sizes/positions
+   the hover preview, so everything stays in agreement. */
+.rail-item.is-expanded { z-index: 31; transform: scale(var(--sf-card-scale, 1.22)); }
+.rail-item.shifts-left { transform: translateX(calc(-1 * var(--hover-neighbor-shift, 0px))); }
+.rail-item.shifts-right { transform: translateX(var(--hover-neighbor-shift, 0px)); }
+.row-slider::-webkit-scrollbar { display: none; }
+.row-arrow-scrolling .row-slider { pointer-events: none; }
+.row-arrow { position: absolute; top: 0; bottom: 0; width: 48px; z-index: 410; border: none; background: rgba(20,20,20,.5); color: #fff; font-size: 26px; opacity: 0; transition: opacity .2s; display: flex; align-items: center; justify-content: center; }
+.row:hover .row-arrow { opacity: 1; }
+.row-arrow:hover { background: rgba(20,20,20,.8); }
+.row-arrow:disabled { opacity: .2; cursor: default; }
+.row-arrow.left { left: 0; border-radius: 0 4px 4px 0; }
+.row-arrow.right { right: 0; border-radius: 4px 0 0 4px; }
+.row-arrow.left { background: transparent; }
+.row-arrow.left:hover { background: transparent; }
+.row-arrow.right { width: 48px; opacity: 1; background: linear-gradient(to left, rgba(0, 0, 0, .58), rgba(0, 0, 0, .08) 70%, transparent); }
+.row-arrow.right:hover { background: linear-gradient(to left, rgba(0, 0, 0, .76), rgba(0, 0, 0, .14) 70%, transparent); }
+
+/* ============ CARDS (design reference: chip top-right, ribbon bottom) ============ */
+/* Size comes from --sf-card-w / --sf-card-h (core.css) so the rail, the row
+   overlap under the billboard and the mobile breakpoint can never drift apart. */
+.card { position: relative; flex: 0 0 auto; width: var(--sf-card-w, 240px); border-radius: 16px; cursor: pointer; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+.card-art { position: relative; border-radius: 16px; overflow: hidden; }
+.card-art > img { width: 100%; height: var(--sf-card-h, 135px); object-fit: cover; border-radius: 16px; display: block; background: #222; }
+.card > img { width: var(--sf-card-w, 240px); height: var(--sf-card-h, 135px); object-fit: cover; border-radius: 16px; display: block; background: #222; }
+
+/* No-artwork placeholder — TMDB has titles with neither backdrop nor poster.
+   Print the title on a dark branded tile instead of showing a broken image. */
+.card-art-placeholder {
+  width: 100%; height: var(--sf-card-h, 135px); /* matches .card-art > img in the rails */
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: 12px 16px;
+  background:
+    radial-gradient(120% 150% at 18% 0%, rgba(229, 9, 20, .16), transparent 55%),
+    linear-gradient(150deg, #101013 0%, #1a1a1e 55%, #232328 100%);
+}
+.card-art-placeholder span {
+  color: #e5e5e5; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px;
+  font-size: 14px; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  text-shadow: 0 2px 6px rgba(0,0,0,.6);
+}
+.card.top10-card .card-art-placeholder { height: 100%; } /* portrait Top 10 tile */
+.card.top10-card .card-art-placeholder span { font-size: 12px; letter-spacing: .6px; }
+.grid .card-art-placeholder,
+.tmdb-mlt-art .card-art-placeholder,
+.my-list-art .card-art-placeholder { height: 100%; } /* parents get height from aspect-ratio */
+.mlt-art .card-art-placeholder { height: auto; aspect-ratio: 16 / 9; } /* parent height comes from the artwork */
+@media (max-width: 768px) {
+  .card-art-placeholder { height: 79px; } /* matches the compact rail cards */
+  .card-art-placeholder span { font-size: 11px; }
+}
+
+/* N brand badge (top-left corner of card artwork). Uses a higher-specificity
+   selector on purpose: the generic artwork rules (.card-art > img, .mlt-art > img,
+   .grid .card-art > img) would otherwise win and stretch the badge to the full
+   card size with a #222 background — the "giant N in a dark box" bug.
+   Size/position matched to the Netflix reference: small N tucked into the
+   top-left corner (~18px tall on a 320x180 card). */
+.card .card-art > img.card-brand-badge,
+.mlt-card .mlt-art > img.card-brand-badge {
+  position: absolute;
+  left: 9px;
+  top: 7px;
+  z-index: 5;
+  width: auto;
+  height: 18px;
+  object-fit: contain;
+  background: none;
+  border-radius: 0;
+  transform: none;
+  display: block;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,.65));
+}
+/* Small red "TOP 10" badge on Top 10 rail cards — Netflix reference match.
+   Sits at the top-right of the poster artwork, stacked "TOP" / "10". */
+.card-top10-badge {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  z-index: 5;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--sf-red, #e50914);
+  color: #fff;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .4px;
+  line-height: 1;
+  padding: 2px 4px 1px;
+  border-radius: 2px;
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.tmdb-artwork-logo-slot {
+  position: absolute;
+  z-index: 4;
+  left: 7%;
+  right: 25%;
+  bottom: 9%;
+  height: 38%;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.tmdb-artwork-logo {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: left bottom;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .75));
+}
+.tmdb-cw-logo-slot { z-index: 3; }
+.tmdb-cw-title-fallback {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(11px, 1.15vw, 17px);
+  font-weight: 800;
+  line-height: 1.08;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, .95), 0 0 16px rgba(0, 0, 0, .8);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.tmdb-modal-logo-slot {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: min(360px, 58%);
+  height: 105px;
+  margin-bottom: 14px;
+}
+/* ===== Top 10 rail (outlined ranks overlapped by portrait posters) =====
+  The numeral is inline <svg> (see Top10Rank in Row.jsx): `textLength` pins its width, so it
+  cannot drift with font loading. Poster and rank share the same responsive variables, so
+  the poster-over-numeral overlap below survives every breakpoint. */
+.card-top10 {
+  --t10-w: 158px;
+  --t10-h: 237px;
+  /* Keep enough of the numeral visible so it reads clearly while still letting
+     the poster cover the right edge, matching the reference layout. */
+  --t10-num-w: calc(var(--t10-w) * 0.9);
+  --t10-overlap: calc(var(--t10-w) * -0.22);
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+.top10-num {
+  position: relative;
+  z-index: 0;
+  flex: 0 0 auto;
+  display: block;
+  width: var(--t10-num-w);
+  height: calc(var(--t10-h) * 1.02);
+  margin-right: -4px;
+  pointer-events: none;
+  user-select: none;
+  overflow: visible;
+}
+.top10-num.top10-double-digit { width: calc(var(--t10-num-w) * 1.12); }
+.top10-num svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.card.top10-card {
+  position: relative;
+  z-index: 1;
+  width: var(--t10-w);
+  margin-top: calc(var(--t10-h) * .02);
+  margin-left: var(--t10-overlap);
+}
+.card.top10-card .card-art { width: var(--t10-w); height: var(--t10-h); border-radius: 0; }
+.card.top10-card .card-art > img:first-child { width: var(--t10-w); height: var(--t10-h); object-fit: cover; border-radius: 0; }
+.card.top10-card .card-title-mini { width: var(--t10-w); }
+/* "Recently added" / "New Season" as a small centered chip on Top 10 posters */
+.card.top10-card .card-ribbon {
+  left: 50%; right: auto; bottom: 8px; transform: translateX(-50%);
+  width: max-content; max-width: 92%; padding: 3px 9px; border-radius: 2px;
+}
+@media (max-width: 1200px) {
+  .card-top10 { --t10-w: 120px; --t10-h: 180px; }
+}
+@media (max-width: 768px) {
+  .card-top10 { --t10-w: clamp(96px, 28vw, 112px); --t10-h: calc(var(--t10-w) * 1.5); }
+}
+
+/* ============ CONTINUE WATCHING (design reference) ============
+   A wide 16:9 "resume" lead tile ringed in white, then a run of 2:3 poster tiles.
+   Every tile carries the red progress bar flush with its bottom edge, and only the
+   lead prints "S3:E4 · Old Friends" / "20m left" underneath. --cw-lw / --cw-pw are
+   held at the reference ratio (lead = 2.59x a poster, lead = 1.72:1) at every
+   breakpoint, so the row keeps its exact shape instead of drifting per screen. */
+.row-cw { --cw-h: 237px; --cw-pw: 157px; --cw-lw: 407px; --cw-open-pw: 220px; --cw-open-lw: 430px; --cw-detail-h: 104px; }
+.cw-lead, .cw-card {
+  position: relative;
+  flex: 0 0 auto;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: width .48s cubic-bezier(.22, .61, .36, 1), z-index 0s;
+}
+.cw-lead { width: var(--cw-lw); }
+.cw-card { width: var(--cw-pw); }
+.cw-art {
+  position: relative;
+  width: 100%;
+  height: var(--cw-h);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #222;
+  transition: box-shadow .2s;
+}
+.cw-art > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cw-art .card-art-placeholder { height: 100%; }
+/* the white "you were here" ring on the lead tile, reused on hover elsewhere */
+.cw-lead .cw-art { box-shadow: 0 0 0 2px rgba(255, 255, 255, .92); }
+.cw-card .cw-art, .cw-lead .cw-art { transition: box-shadow .2s; }
+.cw-card:hover, .cw-card:focus-visible { width: var(--cw-open-pw); }
+.cw-lead:hover, .cw-lead:focus-visible { width: var(--cw-open-lw); }
+.cw-card:hover .cw-art, .cw-card:focus-visible .cw-art,
+.cw-lead:hover .cw-art, .cw-lead:focus-visible .cw-art {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .95);
+}
+.cw-card:hover, .cw-card:focus-visible, .cw-lead:hover, .cw-lead:focus-visible { z-index: 30; }
+.cw-card:focus-visible, .cw-lead:focus-visible { outline: none; }
+.cw-progress {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 4px;
+  background: rgba(255, 255, 255, .4); z-index: 4;
+}
+.cw-progress span { display: block; height: 100%; background: var(--sf-red); }
+.cw-meta { padding: 10px 2px 0; display: flex; flex-direction: column; gap: 4px; }
+.cw-line1 {
+  font-size: 13px; font-weight: 600; color: #fff; line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cw-line2 { font-size: 12.5px; font-weight: 500; color: #b3b3b3; line-height: 1.25; }
+.cw-details {
+  position: absolute;
+  z-index: 7;
+  top: calc(var(--cw-h) - var(--cw-detail-h));
+  left: 0;
+  right: 0;
+  height: var(--cw-detail-h);
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: 9px 10px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  background: rgba(8, 8, 8, .76);
+  border-top: 1px solid rgba(255, 255, 255, .18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity .2s ease, transform .28s cubic-bezier(.2, .8, .2, 1), visibility .2s;
+}
+.cw-card:hover .cw-details, .cw-card:focus-visible .cw-details,
+.cw-lead:hover .cw-details, .cw-lead:focus-visible .cw-details {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.cw-details-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 7px; max-height: 30px; overflow: hidden; color: #d0d0d0; font-size: 11px; line-height: 1.25; }
+.cw-details-meta > span { flex: 0 0 auto; }
+.cw-details-meta .cw-rating { border: 1px solid rgba(255,255,255,.48); padding: 1px 4px; }
+.cw-details p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0 0; color: #fff; font-size: 12px; line-height: 1.35; }
+.cw-side-preview {
+  position: absolute;
+  z-index: 50;
+  top: 34px;
+  right: 48px;
+  width: min(390px, 36vw);
+  overflow: hidden;
+  border-radius: 5px;
+  background: #181818;
+  box-shadow: 0 12px 44px rgba(0, 0, 0, .75);
+  animation: cw-preview-in .32s cubic-bezier(.2, 1.15, .35, 1) both;
+}
+@keyframes cw-preview-in {
+  from { opacity: 0; transform: translateX(22px) scale(.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+.cw-side-art { position: relative; height: auto; aspect-ratio: 16 / 9; background: #222; }
+.cw-side-art > img, .cw-side-art > .card-art-placeholder { width: 100%; height: 100%; object-fit: cover; }
+.cw-side-art::after { content: ''; position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(24, 24, 24, .98)); pointer-events: none; }
+.cw-side-title { position: absolute; z-index: 1; left: 18px; right: 50px; bottom: 14px; color: #fff; font-size: 23px; font-weight: 800; line-height: 1.1; text-transform: uppercase; text-shadow: 0 2px 8px #000; }
+.cw-side-close { position: absolute; z-index: 2; top: 10px; right: 10px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(20, 20, 20, .82); color: #fff; font-size: 24px; line-height: 1; cursor: pointer; }
+.cw-side-body { padding: 14px 18px 18px; }
+.cw-side-meta { display: flex; align-items: center; gap: 9px; color: #c5c5c5; font-size: 12px; white-space: nowrap; overflow: hidden; }
+.cw-side-meta > span { flex: 0 0 auto; }
+.cw-side-meta .cw-rating { border: 1px solid #777; padding: 2px 5px; }
+.cw-side-body p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 34px; margin: 11px 0 14px; color: #e2e2e2; font-size: 13px; line-height: 1.35; }
+.cw-side-play { min-width: 96px; padding: 9px 18px; border: 0; border-radius: 3px; background: #fff; color: #111; font-size: 14px; font-weight: 700; cursor: pointer; }
+.cw-side-play:hover { background: #e6e6e6; }
+@media (max-width: 1200px) {
+  .row-cw { --cw-h: 180px; --cw-pw: 120px; --cw-lw: 310px; --cw-open-pw: 176px; --cw-open-lw: 330px; }
+}
+@media (max-width: 768px) {
+  .row-cw { --cw-h: 144px; --cw-pw: 96px; --cw-lw: 236px; --cw-open-pw: 150px; --cw-open-lw: 248px; --cw-detail-h: 78px; }
+  .cw-meta { padding-top: 7px; }
+  .cw-line1 { font-size: 12px; }
+  .cw-line2 { font-size: 11px; }
+  .cw-details { padding: 7px 8px; }
+  .cw-details-meta { gap: 3px 5px; max-height: 25px; font-size: 9px; }
+  .cw-details p { margin-top: 4px; font-size: 10px; line-height: 1.25; }
+  .cw-side-preview { position: fixed; top: auto; right: 14px; bottom: 74px; left: 14px; width: auto; max-height: calc(100dvh - 100px); overflow-y: auto; }
+  .cw-side-title { font-size: 20px; }
+  .cw-side-body { padding: 12px 14px 14px; }
+}
+/* Rail tiles are already popped by their `.rail-item` wrapper (is-expanded), which
+   scales to --sf-card-scale. Scaling the inner .card as well would compound to
+   1.22 × 1.025 and leave the artwork peeking out from behind the hover preview, so
+   the wrapper owns the pop and the card itself stays put. The preview card is
+   sized from the tile's expanded width, so the two must agree exactly. */
+.rail-item .card,
+.rail-item .card:hover { transform: none; }
+.rail-item .card:hover { transform: none; }
+.card-title-mini { font-size: 13px; line-height: 1.25; padding: 8px 4px 6px; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card.top10-card .card-title-mini { width: 158px; padding-left: 2px; padding-right: 2px; }
+
+/* ===== Full browse pages (Movies / TV Series) ===== */
+.browse-page { min-height: 100vh; background: #000; padding: calc(var(--nav-h, 68px) + 26px) 0 80px; }
+.browse-page-with-hero { padding-top: 12px; }
+.browse-heading { padding: 0 56px; font-size: 26px; font-weight: 700; margin: 0 0 22px; }
+
+.card-chip { position: absolute; top: 8px; right: 8px; z-index: 3; background: rgba(0,0,0,.72); color: #fff; font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 3px; letter-spacing: .2px; }
+
+.card-ribbon { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; background: var(--sf-red); color: #fff; font-size: 11.5px; font-weight: 700; text-align: center; padding: 4px 6px; letter-spacing: .3px; }
+.card-ribbon.episode { background: #b1060f; }
+/* Small red "Recently added" pill centered at the bottom of the artwork —
+   matches the Netflix reference (top row, "I Will Find You" card). */
+.card-ribbon-pill {
+  position: absolute; left: 50%; bottom: 7px; transform: translateX(-50%);
+  z-index: 6; background: #b1060f; color: #fff;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+  padding: 3px 8px; border-radius: 2px; white-space: nowrap;
+  pointer-events: none; box-shadow: 0 1px 3px rgba(0,0,0,.6);
+}
+.card-ribbon.bottom { left: 0; right: auto; bottom: 10px; background: none; display: flex; gap: 4px; text-align: left; }
+.ribbon-red { background: #b1060f; color: #fff; font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 2px; }
+.ribbon-white { background: #fff; color: #000; font-size: 11.5px; font-weight: 700; padding: 4px 9px; border-radius: 2px; }
+
+.card-progress, .progress-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,.35); z-index: 3; }
+.card-progress span, .progress-bar span { display: block; height: 100%; background: var(--sf-red); }
+.progress-elapsed { position: absolute; right: 6px; bottom: 6px; font-style: normal; font-size: 11px; color: #e5e5e5; text-shadow: 0 1px 3px rgba(0,0,0,.9); }
+
+/* ============ MORE LIKE THIS (3-up grid inside the title modal) ============ */
+.mlt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.mlt-card { background: #2f2f2f; border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .2s ease; }
+.mlt-card:hover { transform: translateY(-2px); }
+.mlt-art { position: relative; overflow: hidden; border-radius: 16px; }
+.mlt-art > img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: #222; }
+.mlt-body { min-height: 150px; padding: 14px 16px 18px; }
+.mlt-meta { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 10px; color: #ddd; }
+.mlt-meta .match { color: #46d369; font-weight: 700; }
+.mlt-meta .age { border: 1px solid rgba(255,255,255,.4); padding: 0 6px; border-radius: 2px; font-size: 12px; }
+.mlt-add { margin-left: auto; width: 36px; height: 36px; border-radius: 50%; background: rgba(42,42,42,.6); border: 2px solid rgba(255,255,255,.5); color: #fff; display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s; }
+.mlt-add:hover, .mlt-add.on { border-color: #fff; background: rgba(255,255,255,.18); }
+.mlt-desc { font-size: 13.5px; line-height: 1.5; color: #ddd; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ============ NAVBAR LIVE SEARCH SUGGESTIONS ============ */
+.nav-search { position: relative; }
+.search-suggest {
+  position: absolute; top: calc(100% + 8px); right: 0; z-index: 100;
+  width: 360px; max-height: 420px; overflow-y: auto;
+  background: rgba(20, 20, 20, .97); border: 1px solid rgba(255,255,255,.12);
+  border-radius: 6px; box-shadow: 0 8px 30px rgba(0,0,0,.7);
+}
+.ss-item { display: flex; align-items: center; gap: 12px; padding: 8px 12px; cursor: pointer; transition: background .15s; }
+.ss-item:hover { background: rgba(255,255,255,.09); }
+.ss-item img { width: 38px; height: 54px; object-fit: cover; border-radius: 3px; background: #222; flex-shrink: 0; }
+.ss-item.ss-dim { color: #999; cursor: default; font-size: 13.5px; }
+.ss-title { color: #fff; font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ss-type { margin-left: auto; color: #54b9c5; font-size: 11.5px; border: 1px solid rgba(84,185,197,.5); padding: 1px 7px; border-radius: 10px; flex-shrink: 0; }
+.ss-year { color: #999; font-size: 12px; margin-left: 8px; flex-shrink: 0; }
+
+/* ============ CONTINUE WATCHING RESUME SHEET ============
+   Clicking a Continue Watching tile opens this sheet instead of starting
+   playback, so the viewer sees what they left off and presses Resume. Laid out
+   like the reference: full-width 16:9 artwork on top, then the episode line,
+   title, meta, the red progress bar with "22m left", the synopsis and the
+   Resume / More Info pair. */
+.cwm-backdrop {
+  position: fixed; inset: 0; z-index: 320;
+  background: rgba(0, 0, 0, .78);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 6vh 16px 40px; overflow-y: auto;
+}
+.cwm {
+  position: relative; width: min(820px, 96vw);
+  background: #141414; border-radius: 8px; overflow: hidden;
+  box-shadow: 0 12px 56px rgba(0, 0, 0, .85);
+  animation: cwm-in .24s ease;
+}
+@keyframes cwm-in { from { transform: translateY(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.cwm-art { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+.cwm-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cwm-art-empty { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; color: #bbb; font-size: 14px; background: linear-gradient(135deg, #2b2b2b, #111); }
+.cwm-shade { position: absolute; inset: 0; background: linear-gradient(to top, #141414 0%, rgba(20,20,20,.55) 26%, transparent 60%); pointer-events: none; }
+.cwm-close {
+  position: absolute; top: 12px; right: 12px; z-index: 3;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #141414; color: #fff; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.cwm-close:hover { background: #2a2a2a; }
+.cwm-body { padding: 0 34px 30px; }
+.cwm-episode { font-size: 15px; font-weight: 600; color: #b3b3b3; margin-bottom: 6px; }
+.cwm-title { margin: 0 0 10px; font-size: 28px; font-weight: 800; color: #fff; line-height: 1.15; }
+.cwm-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 14px; font-weight: 600; color: #d2d2d2; margin-bottom: 14px; }
+.cwm-age { border: 1px solid #8c8c8c; border-radius: 2px; padding: 1px 5px; font-size: 12px; color: #e4e4e4; }
+.cwm-progress { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.cwm-progress-track { flex: 1 1 auto; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, .25); overflow: hidden; }
+.cwm-progress-track span { display: block; height: 100%; background: var(--sf-red); }
+.cwm-left { flex: 0 0 auto; font-size: 13.5px; font-weight: 600; color: #b3b3b3; }
+.cwm-desc { margin: 0 0 22px; font-size: 15.5px; line-height: 1.5; color: #dcdcdc; max-width: 640px; }
+.cwm-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 768px) {
+  .cwm-backdrop { padding: 0; }
+  .cwm { width: 100vw; border-radius: 0; }
+  .cwm-body { padding: 0 18px 26px; }
+  .cwm-title { font-size: 23px; }
+  .cwm-actions .btn-white, .cwm-actions .btn-gray { flex: 1; padding: 10px 14px; font-size: 15px; }
+}
+
+/* ============ KIDS PROFILE BANNER (browse page) ============ */
+/* Sits over the bottom of the hero, left-aligned with the hero copy, so it reads
+   as part of the billboard rather than a bar under the navbar. */
+.browse-kids-banner {
+  position: relative;
+  z-index: 8;
+  display: flex; align-items: center; gap: 10px;
+  margin: -78px 0 0 56px; padding: 9px 16px 9px 12px;
+  max-width: 560px;
+  background: rgba(20, 20, 20, .82);
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 6px;
+  color: #e6e6e6; font-size: 13.5px; line-height: 1.4;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.browse-kids-badge {
+  flex: 0 0 auto;
+  background: #2f6f4f; color: #fff;
+  font-size: 12px; font-weight: 800; letter-spacing: .4px;
+  padding: 3px 9px; border-radius: 3px;
+}
+@media (max-width: 1100px) {
+  .browse-kids-banner { margin-left: 40px; max-width: 78%; }
+}
+@media (max-width: 768px) {
+  .browse-kids-banner { margin: -60px 12px 0; max-width: none; font-size: 12.5px; }
+}
+
+/* ============ TMDB DETAIL MODAL (Netflix-style, in-page) ============ */
+/* The scrim. The whole overlay scrolls (Netflix scrolls the modal, not the page
+   behind it) and `overscroll-behavior` stops the chained scroll from dragging the
+   page underneath once the modal hits its own end. */
+.tmdb-modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.7); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; animation: tmdb-overlay-in .2s ease-out; }
+@keyframes tmdb-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+/* Soft-edged frame: 8px corners all round, a 1px rim so the panel reads as a
+   card against the black scrim, and Netflix's own #181818 surface. `overflow:
+   hidden` clips the hero's top corners to the same radius. */
+.tmdb-modal { position: relative; width: min(850px, 94vw); margin: 40px auto 60px; background: #181818; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,.8); animation: tmdb-in .3s cubic-bezier(.2,.8,.3,1); }
+/* ZOOM-OUT: the panel scales down from 0.92 and settles at full size, the way
+   Netflix grows a title out of the card that was clicked. */
+@keyframes tmdb-in { from { opacity: 0; transform: scale(.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .tmdb-modal-overlay { animation: none; }
+  .tmdb-modal { animation: none; }
+}
+.tmdb-close { position: absolute; top: 14px; right: 14px; z-index: 5; width: 36px; height: 36px; border-radius: 50%; background: rgba(20,20,20,.85); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s, transform .2s; }
+.tmdb-close:hover { background: #2a2a2a; transform: scale(1.06); }
+.tmdb-scroll { border-radius: inherit; overflow: hidden; }
+/* Netflix's dark scrollbar for the overlay track. */
+.tmdb-modal-overlay::-webkit-scrollbar { width: 12px; }
+.tmdb-modal-overlay::-webkit-scrollbar-track { background: #141414; }
+.tmdb-modal-overlay::-webkit-scrollbar-thumb { background: #4d4d4d; border: 3px solid #141414; border-radius: 8px; }
+.tmdb-modal-overlay::-webkit-scrollbar-thumb:hover { background: #6d6d6d; }
+
+/* 16:9 hero (the modal is 850px wide, so this lands on Netflix's ~478px panel),
+   with the backdrop cover-cropped and clipped to the frame's top corners. */
+.tmdb-hero { position: relative; aspect-ratio: 16 / 9; max-height: 480px; min-height: 280px; background-size: cover; background-position: center; background-repeat: no-repeat; overflow: hidden; }
+/* Bottom scrim so the logo and controls always read against the art, plus a
+   faint top vignette behind the close button. Solid #181818 at the very floor
+   hands straight off to the modal body with no seam. */
+.tmdb-hero-shade { position: absolute; inset: 0; background: linear-gradient(to top, #181818 0%, rgba(24,24,24,.92) 8%, rgba(24,24,24,.4) 28%, rgba(24,24,24,0) 58%), linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,0) 22%); }
+.tmdb-hero-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 48px 30px; }
+/* The transparent title logo Netflix paints on the backdrop, with a text
+   fallback when TMDB ships no logo. */
+.tmdb-logo { display: block; max-width: min(360px, 52%); max-height: 130px; width: auto; height: auto; object-fit: contain; object-position: left bottom; margin: 0 0 14px; filter: drop-shadow(0 2px 10px rgba(0,0,0,.75)); }
+.tmdb-title { font-size: clamp(28px, 3.6vw, 44px); font-weight: 800; margin: 0 0 14px; text-shadow: 2px 2px 8px rgba(0,0,0,.8); }
+.tmdb-resume-context { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 8px; text-shadow: 1px 1px 5px rgba(0,0,0,.8); }
+.tmdb-tagline { color: #ccc; font-style: italic; font-size: 14.5px; margin: 0 0 14px; }
+.tmdb-resume-progress { display: flex; align-items: center; gap: 10px; max-width: 520px; margin: 0 0 14px; color: #ddd; font-size: 12px; font-weight: 600; }
+.tmdb-resume-track { flex: 1 1 auto; height: 4px; border-radius: 2px; overflow: hidden; background: rgba(255,255,255,.35); }
+.tmdb-resume-track span { display: block; height: 100%; background: var(--sf-red, #e50914); }
+/* Netflix controls row: Play + the circle buttons on the left, and the metadata
+   run (match / year / seasons / rating / HD) pushed to the right on the SAME
+   line — that shared baseline is the modal's signature. */
+.tmdb-controls { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; }
+.tmdb-actions { display: flex; gap: 10px; align-items: center; }
+.tmdb-list-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(109,109,110,.7); border: 2px solid rgba(255,255,255,.45); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s, transform .2s; }
+.tmdb-list-btn:hover, .tmdb-list-btn.on { border-color: #fff; background: rgba(255,255,255,.18); transform: scale(1.05); }
+.tmdb-like-btn.on { background: #fff; color: #111; }
+.tmdb-list-btn.pulse { animation: tmdb-action-pulse .3s ease; }
+@keyframes tmdb-action-pulse { 0% { transform: scale(1); } 45% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.tmdb-toast { position: fixed; left: 50%; top: 86px; z-index: 500; transform: translateX(-50%); max-width: min(320px, calc(100vw - 32px)); padding: 9px 15px; border-radius: 4px; background: rgba(24,24,24,.96); border: 1px solid rgba(255,255,255,.2); box-shadow: 0 8px 24px rgba(0,0,0,.55); color: #fff; font-size: 13px; font-weight: 600; text-align: center; animation: tmdb-toast-in .2s ease-out; }
+@keyframes tmdb-toast-in { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+.tmdb-info { display: flex; align-items: flex-start; gap: 28px; padding: 14px 16px 10px; }
+.tmdb-col-main { flex: 1.7; min-width: 0; }
+.tmdb-info-meta { margin-bottom: 28px; }
+.tmdb-col-side { flex: 1; min-width: 0; font-size: 14px; color: #fff; }
+.tmdb-col-side p { margin: 0 0 10px; line-height: 1.45; }
+.tmdb-col-side .lbl { color: #777; }
+/* Reference-style details: metadata and synopsis on the left, credits on the right. */
+.tmdb-meta-row { display: flex; align-items: center; gap: 9px; margin: 0 0 6px; font-size: 15px; font-weight: 500; color: #fff; flex-wrap: wrap; }
+.tmdb-meta-row .match { color: #46d369; font-weight: 700; }
+.tmdb-meta-row .hd { color: #fff; border: 1px solid rgba(255,255,255,.45); padding: 0 6px; border-radius: 2px; font-size: 11px; letter-spacing: .5px; }
+.tmdb-content-tags { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 22px; margin-bottom: 38px; font-size: 13px; color: #fff; }
+.tmdb-content-tags .age { border: 1px solid rgba(255,255,255,.45); padding: 1px 6px; border-radius: 2px; font-size: 12px; }
+.tmdb-content-tags > span:not(.age) { color: #ddd; }
+.tmdb-desc { font-size: 15.5px; line-height: 1.55; color: #fff; margin: 0; }
+.tmdb-languages { display: flex; gap: 24px; align-items: flex-end; overflow-x: auto; padding: 0 40px 12px; border-bottom: 1px solid #2c2c2c; scrollbar-width: none; }
+.tmdb-languages::-webkit-scrollbar { display: none; }
+.tmdb-languages button { position: relative; flex: 0 0 auto; padding: 10px 0 11px; border: 0; background: transparent; color: #999; font-size: 14px; font-weight: 600; cursor: pointer; }
+.tmdb-languages button:hover, .tmdb-languages button.active { color: #fff; }
+.tmdb-languages button.active::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--sf-red, #e50914); }
+
+.tmdb-episodes { padding: 22px 40px 6px; }
+.tmdb-ep-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.tmdb-ep-head h3 { font-size: 21px; font-weight: 700; margin: 0; }
+.tmdb-episodes-toggle { display: flex; align-items: center; gap: 8px; padding: 0; border: 0; background: transparent; color: #fff; cursor: pointer; }
+.tmdb-episodes-toggle h3 { font-size: 21px; font-weight: 700; margin: 0; }
+.tmdb-episodes-toggle svg { color: #aaa; transition: transform .2s ease; }
+.tmdb-episodes-toggle svg.open { transform: rotate(180deg); }
+.tmdb-episodes-bottom-toggle { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; margin-top: 8px; border: 0; background: transparent; color: #aaa; cursor: pointer; }
+.tmdb-episodes-bottom-toggle::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; border-top: 2px solid #3a3a3a; }
+.tmdb-episodes-bottom-toggle svg { position: relative; z-index: 1; width: 38px; height: 38px; padding: 7px; border: 2px solid #888; border-radius: 9px; background: #141414; transition: transform .2s ease, border-color .2s ease; }
+.tmdb-episodes-bottom-toggle:hover { color: #fff; border-color: #555; }
+.tmdb-episodes-bottom-toggle:hover svg { border-color: #fff; } 
+.tmdb-episodes-bottom-toggle svg.open { transform: rotate(180deg); }
+.tmdb-bottom-details { padding: 0 16px 28px; }
+.tmdb-bottom-details-toggle { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 48px; margin: 0 0 28px; padding: 0; border: 0; background: transparent; color: #fff; cursor: pointer; }
+.tmdb-bottom-details-toggle::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,.025) 5%, rgba(255,255,255,.16) 18%, rgba(255,255,255,.16) 82%, rgba(255,255,255,.025) 95%, transparent 100%); filter: drop-shadow(0 0 3px rgba(255,255,255,.12)); -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 17%, #000 83%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0%, #000 17%, #000 83%, transparent 100%); }
+.tmdb-bottom-details-toggle svg { position: relative; z-index: 1; width: 42px; height: 42px; padding: 8px; border: 2px solid rgba(255,255,255,.56); border-radius: 11px; background: #181818; box-shadow: 0 2px 8px rgba(0,0,0,.42); transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease; }
+.tmdb-bottom-details-toggle:hover svg { border-color: rgba(255,255,255,.82); box-shadow: 0 2px 10px rgba(0,0,0,.55); }
+.tmdb-bottom-details-toggle:active svg { transform: scale(.96); }
+.tmdb-bottom-details-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 3px; }
+.tmdb-bottom-details-toggle svg.closed { transform: rotate(180deg); }
+.tmdb-bottom-details-content { padding: 0 0 4px; color: #fff; }
+.tmdb-bottom-details-content { animation: tmdb-bottom-details-reveal .24s ease-out; }
+@keyframes tmdb-bottom-details-reveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.tmdb-bottom-details-content h2 { margin: 0 0 34px; font-size: 23px; line-height: 1.25; font-weight: 700; }
+.tmdb-bottom-details-content dl { display: grid; gap: 8px; margin: 0; font-size: 13.5px; line-height: 1.45; }
+.tmdb-bottom-detail-row { display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 10px; }
+.tmdb-bottom-detail-row dt { color: #777; }
+.tmdb-bottom-detail-row dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.tmdb-season-select { position: relative; display: flex; align-items: center; gap: 6px; color: #999; }
+.tmdb-season-select select { appearance: none; background: #242424; border: 1px solid #444; color: #fff; font-size: 14px; font-weight: 600; padding: 8px 34px 8px 14px; border-radius: 4px; cursor: pointer; }
+.tmdb-season-select svg { position: absolute; right: 12px; pointer-events: none; }
+.tmdb-ep { display: flex; align-items: center; gap: 16px; padding: 12px 0; border: 0; border-bottom: 1px solid #2c2c2c; background: transparent; color: #fff; text-align: left; width: 100%; cursor: pointer; font: inherit; transition: background .15s, padding .15s; }
+.tmdb-ep:hover, .tmdb-ep:focus-visible { background: #1c1c1c; padding-left: 8px; padding-right: 8px; outline: none; }
+.tmdb-ep:focus-visible { box-shadow: inset 0 0 0 2px #fff; }
+.tmdb-ep-num { width: 30px; font-size: 20px; color: #ccc; text-align: center; flex-shrink: 0; }
+.tmdb-ep-thumb { position: relative; width: 140px; height: 79px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #222; display: block; }
+.tmdb-ep-thumb img, .tmdb-ep-art-fallback { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tmdb-ep-art-fallback { display: flex; align-items: center; justify-content: center; padding: 8px; text-align: center; font-size: 11px; color: #aaa; background: linear-gradient(135deg, #2b2b2b, #141414); }
+.tmdb-ep-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; background: rgba(0,0,0,.42); opacity: 0; transition: opacity .18s; }
+.tmdb-ep:hover .tmdb-ep-play, .tmdb-ep:focus-visible .tmdb-ep-play { opacity: 1; }
+.tmdb-ep-info { flex: 1; min-width: 0; }
+.tmdb-ep-title { display: block; font-size: 14.5px; font-weight: 600; margin: 0 0 4px; color: #fff; }
+.tmdb-ep-desc { display: -webkit-box; font-size: 13px; color: #999; line-height: 1.4; margin: 0; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* TMDB has no overview for many episodes (esp. variety shows like "2 Days and 1
+   Night") — show an honest placeholder + the air date instead of an empty gap. */
+.tmdb-ep-info .tmdb-ep-nosyn { color: #6f6f6f; font-style: italic; }
+.tmdb-ep-info .tmdb-ep-date { color: #757575; font-size: 12px; margin-top: 3px; -webkit-line-clamp: 1; display: block; }
+.tmdb-ep-dur { color: #ccc; font-size: 13px; flex-shrink: 0; margin-right: 6px; }
+
+.tmdb-mlt { padding: 24px 40px 34px; }
+.tmdb-mlt h3 { font-size: 21px; font-weight: 700; margin: 0 0 16px; }
+.tmdb-mlt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.tmdb-mlt-card { position: relative; background: #2f2f2f; border-radius: 6px; overflow: hidden; cursor: pointer; transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.tmdb-mlt-card:hover { transform: translateY(-3px); background: #3a3a3a; box-shadow: 0 12px 26px rgba(0,0,0,.6); }
+.tmdb-mlt-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px 6px 0 0; background: #222; }
+.tmdb-mlt-art > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tmdb-mlt-chip { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 3px; background: rgba(0,0,0,.78); color: #fff; font-size: 12px; }
+.tmdb-mlt-body { padding: 12px 14px 16px; }
+.tmdb-mlt-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tmdb-mlt-meta { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #ddd; margin-bottom: 8px; }
+.tmdb-mlt-meta .match { color: #46d369; font-weight: 700; }
+.tmdb-mlt-meta .age { border: 1px solid rgba(255,255,255,.4); padding: 0 6px; border-radius: 2px; font-size: 11.5px; }
+.tmdb-mlt-add { margin-left: auto; width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%; background: rgba(42,42,42,.6); border: 2px solid rgba(255,255,255,.55); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.tmdb-mlt-add:hover, .tmdb-mlt-add.on { border-color: #fff; background: rgba(255,255,255,.2); }
+.tmdb-mlt-desc { font-size: 13px; line-height: 1.45; color: #ddd; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; margin: 0; }
+
+/* My-list (+/✓) button shown on TMDB cards — Netflix hover chrome */
+.card-list-btn {
+  position: absolute; right: 8px; bottom: 8px; z-index: 6;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(20, 20, 20, .75); border: 2px solid rgba(255,255,255,.5);
+  color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: border-color .2s, background .2s, transform .15s;
+}
+.card-list-btn:hover, .card-list-btn.on { border-color: #fff; background: rgba(255,255,255,.22); }
+.card-list-btn:active { transform: scale(.9); }
+.card-top10 .card-list-btn { right: 10px; bottom: 10px; }
+
+/* My List page: section labels + remove chip under TMDB cards */
+.list-section-title { font-size: 16px; color: #999; font-weight: 600; margin: 22px 0 10px; }
+.list-item-wrap { position: relative; display: inline-block; }
+.list-remove {
+  display: block; width: 100%; margin-top: 4px; padding: 5px 0;
+  background: #2f2f2f; color: #ddd; border: none; border-radius: 4px;
+  font-size: 11.5px; font-weight: 600; cursor: pointer; letter-spacing: .3px;
+  transition: background .2s, color .2s;
+}
+.list-remove:hover { background: var(--sf-red, #E50914); color: #fff; }
+
+@media (max-width: 768px) {
+  .tmdb-modal { margin: 10px auto 40px; width: 97vw; }
+  .tmdb-info, .tmdb-episodes, .tmdb-mlt { padding-left: 18px; padding-right: 18px; }
+  .tmdb-info { flex-direction: column; gap: 10px; }
+  .tmdb-info-meta { margin-bottom: 20px; }
+  .tmdb-content-tags { margin-bottom: 20px; }
+  .tmdb-bottom-details { padding-left: 18px; padding-right: 18px; }
+  .tmdb-bottom-detail-row { grid-template-columns: 82px minmax(0, 1fr); gap: 8px; }
+  .tmdb-bottom-details-content h2 { margin-bottom: 22px; font-size: 20px; }
+  .tmdb-mlt-grid { grid-template-columns: 1fr; }
+  .tmdb-ep-thumb { width: 110px; height: 62px; }
+  .tmdb-ep-desc { -webkit-line-clamp: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tmdb-bottom-details-toggle svg,
+  .tmdb-bottom-details-content { animation: none; transition: none; }
+}

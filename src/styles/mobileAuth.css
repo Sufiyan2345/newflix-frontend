@@ -1,0 +1,263 @@
+/* ==========================================================================
+   LANDING / SIGN IN / SIGN UP — PHONE FLOWS
+   Imported after mobile.css from main.jsx, and gated to the same 768px
+   breakpoint the JS reads (MOBILE_MAX_WIDTH in hooks/useIsMobile.js).
+
+   These pages are the ones a phone user hits FIRST, and they are the ones the
+   old responsive layer handled worst: netflix.com's own composition is measured
+   in rem against a 46.67%-of-width hero spacer, so below 600px the billboard
+   either collapsed to an unreadable 1rem headline or pushed the whole sign-up
+   flow below the fold. Everything below re-composes them to the app's phone
+   shape: full-bleed hero, one-column form, 44px+ controls, and a footer that
+   actually fits a thumb.
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  /* ---------- LANDING: the billboard ---------- */
+  /* The ::before spacer is a percentage of the VIEWPORT width, which is what
+     keeps "Trending Now" pinned just above the fold on a desktop. On a phone it
+     makes the hero taller than the screen, so the phone hero is sized in svh
+     instead and the spacer is removed. */
+  .nx-hero-box {
+    box-sizing: border-box;
+    min-height: min(650px, 82svh);
+    align-items: stretch;
+    padding-top: calc(56px + env(safe-area-inset-top));
+  }
+  .nx-hero-box::before { display: none; }
+
+  .nx-hero-nav {
+    width: calc(100% - 32px);
+    height: 56px;
+    margin-left: 0;
+  }
+  .nx-hero-nav .nx-logo {
+    width: clamp(96px, 30vw, 116px) !important;
+    height: auto !important;
+    max-width: 100% !important;
+  }
+  .nx-btn-signin { min-height: 40px; padding: 7px 14px; font-size: 14px; line-height: 1.2; }
+
+  .nx-hero-copy-layer { justify-content: flex-end; margin-bottom: 5.25rem; }
+  .nx-hero-copy {
+    min-height: 0;
+    margin: 0 auto;
+    padding: 0 20px 24px;
+    justify-content: flex-end;
+  }
+  .nx-hero-headline-group { max-width: 25rem; text-align: center; }
+  .nx-hero-title { margin-bottom: 10px; font-size: clamp(30px, 8vw, 36px); line-height: 1.12; }
+  .nx-hero-price { margin-bottom: 18px; font-size: 16px; line-height: 1.4; }
+  .nx-hero-cta-inner { padding: 0; text-align: center; }
+  .nx-hero-cta { margin-bottom: 8px; font-size: 15px; line-height: 1.4; }
+
+  /* The email capture stacks field-over-button on a phone. Side by side the
+     field collapses to ~140px and the placeholder truncates mid-word. */
+  .nx-email-form { gap: 12px; }
+  .nx-email-row { flex-direction: column; align-items: stretch; gap: 10px; padding-top: 8px; }
+  .nx-email-field { flex: 1 1 auto; min-width: 0; width: 100%; }
+  .nx-email-form input { height: 54px; padding: 22px 14px 6px; font-size: 16px; }
+  .nx-btn-getstarted {
+    width: 100%;
+    min-width: 0;
+    height: 50px;
+    min-height: 50px;
+    padding: 10px 16px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #b000e8 0%, #ff1744 100%);
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .nx-btn-getstarted:hover { background: linear-gradient(90deg, #c000f5 0%, #ff2d55 100%); }
+  .nx-email-error { justify-content: center; font-size: 13px; line-height: 1.4; }
+
+  /* ---------- LANDING: Trending / Reasons / FAQ ---------- */
+  .nx-trend-wrap { width: 100%; max-width: none; margin: -2.5rem auto 2rem; padding: 0 20px; }
+  .nx-section-title { font-size: 20px; line-height: 1.25; }
+  .nx-trend-item { padding: 6px 8px; }
+  .nx-trend-card { width: clamp(92px, 28vw, 108px); height: auto; aspect-ratio: 5 / 7; border-radius: 5px; }
+  .nx-trend-art { border-radius: 5px; }
+  .nx-trend-rank { bottom: 0; left: -.3rem; font-size: 2.75rem; }
+  /* The FAQ row is the one tappable target on the whole landing page. */
+  .nx-faq-item button { min-height: 56px; }
+  .nx-reason-card p { font-size: 14px; line-height: 1.45; }
+
+  /* ---------- LANDING footer ---------- */
+  .nx-footer-inner { width: 100%; max-width: none; padding: 28px 20px calc(40px + env(safe-area-inset-bottom)); }
+  .nx-footer-contact { margin-bottom: 14px; font-size: 14px; line-height: 1.5; }
+  .nx-footer-contact a, .nx-footer-grid a { font-size: 13px; line-height: 1.5; }
+  .nx-footer-grid { gap: 12px; margin: 0 0 20px; }
+  .nx-footer-grid ul { gap: 10px; }
+  .nx-footer-language { height: 40px; margin: 16px 0; }
+  .nx-footer-lang { min-height: 38px; margin: 0; padding: 6px 28px 6px 6px; font-size: 13px; }
+  .nx-footer-country { margin: 12px 0; font-size: 13px; }
+  .nx-footer-note { font-size: 11px; line-height: 1.4; }
+}
+
+/* ---------- SIGN IN (/login) ---------- */
+@media (max-width: 768px) {
+  /* svh (not vh) so the collapsing mobile URL bar cannot cut off the footer
+     links; the page itself scrolls rather than clipping. */
+  .nx-login {
+    min-height: 100svh;
+    overflow-x: hidden;
+    background: #080808;
+  }
+  /* The backdrop is a wide desktop crop; recentre it so the collage's focal
+     point is still behind the form rather than off the right edge. */
+  .nx-login-background-image { background-position: 57% center; }
+
+  .nx-auth-nav { padding: calc(14px + env(safe-area-inset-top)) 20px 14px; }
+  .nx-login .nx-auth-nav .nx-logo-sm {
+    width: clamp(96px, 30vw, 116px) !important;
+    height: auto !important;
+    max-width: 100% !important;
+  }
+
+  /* One column, edge-to-edge gutters. The desktop 540px column plus its 70px
+     side padding overflows a 360px phone and forced a horizontal scroll. */
+  .nx-login-main { width: 100%; max-width: 480px; padding: 38px 17px 52px; }
+  .nx-login-main h1 { margin-bottom: 10px; font-size: 28px; line-height: 1.2; }
+  .nx-login-sub { margin-bottom: 22px; font-size: 15px; line-height: 1.45; }
+
+  /* 50px tall, not 48 — a thumb target you cannot miss one-handed. */
+  .nx-login-main .nx-btn-continue { min-height: 49px; font-size: 16px; }
+  .nx-login-help { margin-top: 26px; }
+  .nx-login .nx-captcha-note { margin-top: 24px; line-height: 1.45; }
+
+  /* The password step puts the address above a floating label; at 22px side
+     padding that label needs a little more room than the desktop 20px. */
+  .nx-infield-combo input { height: 54px; padding: 20px 18px 6px; }
+  .nx-login-email { left: 18px; max-width: calc(100% - 96px); }
+  .nx-show-pass { right: 12px; min-width: 48px; min-height: 44px; }
+  /* "Show"/"Hide" and "Forgot password?" are the only small tap targets here. */
+  .nx-forgot-link { padding: 10px 0; }
+  .nx-pass-row { flex-wrap: wrap; row-gap: 8px; }
+  .nx-remember input { width: 20px; height: 20px; }
+
+  .nx-auth-error { font-size: 14px; padding: 12px 14px; }
+
+  .nx-auth-footer-inner { width: calc(100% - 40px); padding: 28px 0 calc(36px + env(safe-area-inset-bottom)); }
+  .nx-auth-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+  .nx-auth-footer-links a { font-size: 12px; line-height: 1.45; }
+}
+
+
+/* ---------- SIGN UP (/signup) and its sub-steps ---------- */
+@media (max-width: 768px) {
+  .nx-signup { min-height: 100svh; overflow-x: hidden; }
+
+  .nx-signup-nav { min-height: 62px; padding: calc(10px + env(safe-area-inset-top)) 20px 10px; }
+  .nx-signup-nav .nx-logo-sm {
+    width: clamp(96px, 30vw, 116px) !important;
+    height: auto !important;
+    max-width: 100% !important;
+  }
+  .nx-signup-nav-link { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; padding: 0 8px; font-size: 15px; }
+
+  /* One column for every step: details, plan picker, card form. */
+  .nx-signup-main,
+  .nx-signup-pay-main,
+  .nx-signup-card-main { width: 100%; max-width: 480px; padding: 36px 22px 48px; }
+  .nx-signup-main h1,
+  .nx-signup-plan-main h1 { font-size: 27px; line-height: 1.2; }
+  .nx-signup-sub { font-size: 15px; line-height: 1.45; }
+  .nx-signup-main .nx-infield { margin-bottom: 16px; }
+  .nx-signup-main .nx-btn-continue,
+  .nx-btn-submit { min-height: 50px; font-size: 17px; }
+
+  /* Plan picker — one card per row. Side by side on a phone each plan's
+     features get clipped to two or three words. */
+  .nx-signup-plan-main { width: calc(100% - 40px); padding: 28px 0 44px; }
+  .nx-plan-grid { grid-template-columns: 1fr; gap: 10px; }
+  .nx-plan-card, .nx-plan-card.popular { min-height: 0; height: auto; }
+
+  /* "Check your inbox" step. */
+  .nx-signup-inbox { padding: 36px 22px calc(48px + env(safe-area-inset-bottom)); }
+  .nx-signup-inbox-col { width: 100%; max-width: 460px; }
+
+  .nx-signup-footer { padding: 26px 20px calc(36px + env(safe-area-inset-bottom)); }
+  .nx-signup-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+  .nx-signup-footer-links a { font-size: 12px; line-height: 1.45; }
+}
+
+
+/* ---------- FORGOT PASSWORD / FIND ACCOUNT / LOGOUT ----------
+   These share the sign-in shell (nx-login), so the nav + footer rules above
+   already cover them. Only the white help card needs its own phone shape. */
+@media (max-width: 768px) {
+  .nx-help-main { width: 100%; max-width: 480px; padding: 24px 18px 44px; }
+  .nx-help-card { padding: 28px 20px 24px; }
+  .nx-help-card h1 { font-size: 26px; line-height: 1.2; }
+  .nx-help-desc { font-size: 15px; line-height: 1.45; }
+  .nx-help-card .nx-btn-continue { min-height: 50px; font-size: 17px; }
+  .nx-radio-row { gap: 12px; }
+  .nx-radio-row label { font-size: 15px; }
+
+  /* OTP boxes: five at a fixed 54px overflow a 360px screen once the gaps are
+     added, so the row is what gives here. */
+  .nx-otp-boxes { gap: 6px; }
+  .nx-otp-box { width: 100%; height: 52px; font-size: 20px; }
+
+  .nx-logout-nav { padding: calc(14px + env(safe-area-inset-top)) 20px 14px; }
+  .nx-logout-card { padding: 32px 22px; }
+  .nx-logout-card h1 { font-size: 28px; line-height: 1.2; }
+  .nx-logout-go { min-height: 50px; font-size: 17px; }
+}
+
+/* Landscape phones: the auth forms are tall and the hero is short, so cap the
+   billboard and let the page scroll. */
+@media (max-width: 900px) and (max-height: 500px) {
+  .nx-hero-box { min-height: 100svh; }
+  .nx-hero-copy-layer { margin-bottom: 3rem; }
+  .nx-login-main,
+  .nx-signup-main { padding-top: 24px; padding-bottom: 36px; }
+}
+
+@media (max-width: 600px) {
+  .nx-ob2 input,
+  .nx-ob2 select,
+  .nx-signup input,
+  .nx-signup select {
+    color: #111;
+    caret-color: #111;
+    -webkit-text-fill-color: #111;
+  }
+  .nx-ob2-phone { width: 100%; min-width: 0; }
+  .nx-ob2-phone-cc-select { width: 100px; flex-basis: 100px; min-width: 0; }
+  .nx-ob2-phone-field { min-width: 0; }
+  .nx-ob2-phone-field input { font-size: 16px; }
+  .nx-ob2-col { padding: 30px 20px calc(48px + env(safe-area-inset-bottom)); }
+  .nx-ob2-col h1 { font-size: 28px; line-height: 1.18; }
+  .nx-ob2-split { width: 100%; display: flex; flex-direction: column; gap: 18px; padding: 22px 18px calc(48px + env(safe-area-inset-bottom)); }
+  .nx-ob2-left { width: 100%; min-width: 0; }
+  .nx-ob2-left h1 { font-size: 28px; line-height: 1.18; margin-bottom: 12px; }
+  .nx-ob2-left .nx-ob2-p { font-size: 15px; line-height: 1.45; }
+  .nx-ob2-right { width: 100%; }
+  .nx-ob2-devices { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .nx-ob2-device { min-width: 0; min-height: 146px; padding: 16px 9px 14px; }
+  .nx-ob2-device-img { width: min(100%, 96px); height: 68px; margin: 0; }
+  .nx-ob2-device b { font-size: 15px; line-height: 1.2; text-align: center; }
+  .nx-ob2-device-desc { font-size: 12px; }
+  .nx-ob2-something { padding: 14px 12px; font-size: 16px; }
+  .nx-ob2-actions { justify-content: stretch; margin-top: 20px; }
+  .nx-ob2-next { width: 100%; min-width: 0; min-height: 50px; font-size: 18px; }
+  .nx-ob2-namefield { gap: 8px; }
+  .nx-ob2-namefield > svg { flex: 0 0 18px; }
+  .nx-ob2-note { padding: 13px 14px; font-size: 14px; line-height: 1.4; }
+  .nx-ob2-bankwrap { padding: 30px 18px calc(44px + env(safe-area-inset-bottom)); }
+  .nx-ob2-banktitle { font-size: 27px; }
+  .nx-ob2-bankcard { padding: 20px 16px; }
+  .nx-ob2-verify { padding: 32px 20px; }
+  .nx-ob2-verify h1 { font-size: 28px; }
+  .nx-ob2-verify p { font-size: 16px; }
+  .nx-ob2-verify-btn { width: 100%; min-width: 0; min-height: 50px; font-size: 18px; }
+  .nx-ob2-langs { grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  .nx-ob2-lang { min-height: 44px; gap: 8px; font-size: 14px; }
+  .nx-ob2-picks-wrap { max-height: none; }
+  .nx-ob2-picks-right .nx-ob2-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-height: 52svh; overflow-y: auto; }
+  .nx-ob2-title { min-width: 0; border-width: 2px; }
+  .nx-ob2-nav { padding: calc(10px + env(safe-area-inset-top)) 18px 10px; }
+  .nx-ob2-footer { padding: 26px 18px calc(36px + env(safe-area-inset-bottom)); }
+  .nx-ob2-footer-links { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}

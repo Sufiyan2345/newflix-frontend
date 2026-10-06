@@ -1,0 +1,100 @@
+/* ============ STREAMFLIX — Netflix-exact design system (core) ============ */
+:root {
+  --sf-black: #141414;
+  --sf-card: #181818;
+  --sf-red: #e50914;
+  --sf-nav: #000000;
+  --sf-white: #ffffff;
+  --sf-gray: #b3b3b3;
+  --sf-border: rgba(255, 255, 255, 0.2);
+  --nav-h: 68px;
+  /* Netflix page gutter: the billboard copy and the rail titles/cards all start
+     on the same 4% line, which is what lines the whole column up on desktop. */
+  --sf-gutter: clamp(16px, 4%, 56px);
+  /* Rail card geometry — Netflix measures the tile at roughly 1/6 of the
+     viewport. --sf-row-overlap is derived from it so the first row under the
+     billboard always lands exactly on the banner's bottom edge (see
+     .hero-follow in cards.css). */
+   --sf-card-w: clamp(250px, 19vw, 320px);
+  --sf-card-h: calc(var(--sf-card-w) * 0.5625);
+  /* How far a rail tile grows on hover. Netflix pops the hovered tile noticeably.
+     A transform:scale() keeps its aspect ratio and — crucially — does not touch
+     layout, so no neighbour resizes or shifts out of the way. */
+  --sf-card-scale: 1.22;
+  /* Headroom inside the rail's scroll clip so the grown tile is not cut off.
+     `overflow-x: auto` forces overflow-y to compute to `auto`, so without this
+     padding the top and bottom of the hovered tile get clipped by the rail. */
+  --sf-scale-pad: calc((var(--sf-card-scale) - 1) * var(--sf-card-h) / 2);
+  /* The 10px is the rail's own bottom padding (see .row-slider) — leave it out
+     here so the cards' bottom edge lands exactly on the banner's bottom edge. */
+  --sf-row-overlap: calc(34px + var(--sf-card-h));
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+body {
+  background: var(--sf-black); color: var(--sf-white);
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+html:has(.nx-landing), body:has(.nx-landing), #root:has(.nx-landing) { background: #000; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+button:active:not(:disabled) { filter: brightness(.82); }
+input, select { font-family: inherit; }
+img { user-select: none; }
+
+/* ============ BUTTONS ============ */
+.btn-red { background: var(--sf-red); color: #fff; border: none; border-radius: 4px; padding: 10px 22px; font-size: 15px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: background .2s; }
+.btn-red:hover { background: #f6121d; }
+.btn-white { background: #fff; color: #000; border: none; border-radius: 4px; padding: 10px 24px; font-size: 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; justify-content: center; transition: background .2s, color .2s; }
+.btn-white:hover { background: rgba(255,255,255,.75); }
+.btn-white.play-action:hover { background: #e50914; color: #fff; }
+.btn-gray { background: rgba(109,109,110,.7); color: #fff; border: none; border-radius: 4px; padding: 10px 24px; font-size: 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: background .2s; }
+.btn-gray:hover { background: rgba(109,109,110,.5); }
+button.like-action { transition: background-color .2s, border-color .2s, color .2s, transform .2s; }
+button.like-action.on { background: #e50914; border-color: #e50914; color: #fff; animation: like-action-pop .38s cubic-bezier(.2,.8,.3,1); }
+@keyframes like-action-pop {
+  0% { transform: scale(.82); box-shadow: 0 0 0 0 rgba(229,9,20,.5); }
+  55% { transform: scale(1.14); box-shadow: 0 0 0 7px rgba(229,9,20,0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(229,9,20,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  button.like-action, button.like-action.on { animation: none; transition: none; }
+}
+
+/* ============ LANDING PAGE (netflix.com exact) ============ */
+.landing { min-height: 100vh; background: #000; position: relative; }
+.landing-hero { position: relative; min-height: 700px; border-bottom: 8px solid #232323; background-image: linear-gradient(to top, rgba(0,0,0,.8) 0, rgba(0,0,0,.4) 60%, rgba(0,0,0,.8) 100%), url('/background.jpg'); background-size: cover; background-position: center; }
+.landing-hero::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,.55); pointer-events: none; }
+.landing-nav { position: relative; z-index: 10; max-width: 1300px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 24px 48px; height: 90px; }
+.logo-text { color: var(--sf-red); font-family: 'Bebas Neue', 'Arial Narrow', sans-serif; font-size: 44px; letter-spacing: 1px; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,.6); }
+.lang-select { background: rgba(0,0,0,.4); color: #fff; border: 1px solid rgba(255,255,255,.45); padding: 6px 26px 6px 10px; border-radius: 4px; font-size: 14px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+.landing-nav-actions { display: flex; gap: 16px; align-items: center; }
+.btn-login { background: var(--sf-red); color: #fff; border: none; border-radius: 4px; padding: 7px 17px; font-size: 14.5px; font-weight: 600; }
+.btn-login:hover { background: #f6121d; }
+.landing-content { position: relative; z-index: 5; text-align: center; max-width: 700px; margin: 0 auto; padding: 100px 24px 160px; }
+.landing-title { font-size: 56px; font-weight: 900; letter-spacing: -1px; line-height: 1.1; }
+.landing-sub { font-size: 24px; margin: 16px 0 28px; font-weight: 400; }
+.landing-cta-label { font-size: 17px; margin-bottom: 18px; }
+.landing-form { display: flex; gap: 8px; max-width: 600px; margin: 0 auto; }
+.landing-form input { flex: 1; background: rgba(22,22,22,.7); border: 1px solid rgba(128,128,128,.7); color: #fff; padding: 16px; border-radius: 4px; font-size: 16px; outline: none; }
+.landing-form input:focus { border-color: #fff; }
+.landing-form .btn-red { font-size: 24px; padding: 12px 24px; white-space: nowrap; }
+.landing-divider { height: 8px; background: #232323; }
+.landing-section { max-width: 1200px; margin: 0 auto; padding: 70px 24px; display: flex; align-items: center; justify-content: space-between; gap: 40px; border-bottom: 8px solid #232323; }
+.landing-section .sec-text h2 { font-size: 48px; font-weight: 900; letter-spacing: -1px; }
+.landing-section .sec-text p { font-size: 22px; margin-top: 16px; }
+.sec-media { position: relative; flex-shrink: 0; width: 480px; max-width: 45%; }
+.sec-media img, .sec-media video { width: 100%; border-radius: 4px; }
+.faq-item { background: #2d2d2d; margin-bottom: 8px; border-radius: 4px; overflow: hidden; }
+.faq-item button { width: 100%; text-align: left; background: none; border: none; color: #fff; font-size: 24px; padding: 24px; display: flex; justify-content: space-between; align-items: center; }
+.faq-item .faq-body { padding: 24px; font-size: 20px; color: #ddd; border-top: 1px solid #000; }
+.faq-icon { font-size: 30px; font-weight: 300; transition: transform .2s; }
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+.landing-footer { color: #737373; max-width: 1000px; margin: 0 auto; padding: 60px 24px; font-size: 14px; }
+.landing-footer a { color: #737373; display: inline-block; margin: 8px 16px 8px 0; }
+.landing-footer a:hover { text-decoration: underline; }
+.footer-links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 30px; }

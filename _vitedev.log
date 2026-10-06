@@ -1,0 +1,104 @@
+
+> streamflix-frontend@1.0.0 dev
+> vite
+
+Re-optimizing dependencies because vite config has changed
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m7422[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5175[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m7:07:10 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:08:39 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:08:39 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m7:10:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:12:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:12:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:14:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:31:56 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:33:00 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:33:01 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/src/styles/onlyOnNetflix.css:816:1: Unexpected }[39m
+  Plugin: [35mvite:css[39m
+  File: [36mC:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/src/styles/onlyOnNetflix.css[39m:816:0
+[33m  814|    background: #0f0f0f;
+  815|    pointer-events: none;
+  816|  }
+     |  ^
+  817|  @media (min-width: 1920px) {
+  818|    .oon-hero { aspect-ratio: 2.08; border-radius: 20px 20px 0 0; }[39m
+      at Input.error (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\input.js:135:16)
+      at Parser.unexpectedClose (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parser.js:597:22)
+      at Parser.end (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parser.js:337:12)
+      at Parser.parse (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parser.js:466:16)
+      at parse (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parse.js:11:12)
+      at new LazyResult (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\lazy-result.js:171:16)
+      at Processor.process (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\processor.js:53:14)
+      at compileCSS (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:36898:59)
+      at async TransformPluginContext.transform (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:36171:11)
+      at async PluginContainer.transform (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m7:33:53 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:33:54 pm[22m [31m[1m[vite][22m[39m [31mInternal server error: [postcss] C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/src/styles/onlyOnNetflix.css:819:1: Unexpected }[39m
+  Plugin: [35mvite:css[39m
+  File: [36mC:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/src/styles/onlyOnNetflix.css[39m:819:0
+[33m  817|    background: #0f0f0f;
+  818|    pointer-events: none;
+  819|  }
+     |  ^
+  820|  @media (min-width: 1920px) {
+  821|    .oon-hero { aspect-ratio: 2.08; border-radius: 20px 20px 0 0; }[39m
+      at Input.error (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\input.js:135:16)
+      at Parser.unexpectedClose (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parser.js:597:22)
+      at Parser.end (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parser.js:337:12)
+      at Parser.parse (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parser.js:466:16)
+      at parse (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\parse.js:11:12)
+      at new LazyResult (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\lazy-result.js:171:16)
+      at Processor.process (C:\Users\IQRACOM\OneDrive\Desktop\Netflix2026\frontend\node_modules\postcss\lib\processor.js:53:14)
+      at compileCSS (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:36898:59)
+      at async TransformPluginContext.transform (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:36171:11)
+      at async PluginContainer.transform (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18)
+      at async loadAndTransform (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27)
+      at async viteTransformMiddleware (file:///C:/Users/IQRACOM/OneDrive/Desktop/Netflix2026/frontend/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24)
+[2m7:34:40 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m7:35:04 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:24:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:24:26 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m8:24:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:24:26 pm[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mindex.html[22m
+[2m8:25:22 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:26:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:27:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:28:06 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:29:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:29:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:33:33 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:47:53 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:47:56 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:48:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:48:20 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:51:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/OnlyOnNetflix.jsx[22m
+[2m8:51:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m8:51:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/OnlyOnNetflix.jsx[22m
+[2m9:02:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:02:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/OnlyOnNetflix.jsx[22m
+[2m9:02:42 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:03:31 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:04:02 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:04:03 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:04:28 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:05:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:22:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:22:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:46:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:46:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:46:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:47:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:47:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:48:57 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:48:57 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:49:36 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m
+[2m9:53:08 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/onlyOnNetflix.css[22m

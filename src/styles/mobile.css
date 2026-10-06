@@ -1,0 +1,528 @@
+/* ==========================================================================
+   MOBILE (Netflix phone UI)
+   Imported LAST from main.jsx so it wins over responsive.css at equal
+   specificity, and gated to the same 768px breakpoint the JS reads
+   (MOBILE_MAX_WIDTH in hooks/useIsMobile.js). Change one, change both.
+   ========================================================================== */
+
+/* Netflix never flashes the grey tap highlight, never lets a rail drag-select
+   the artwork as text, and always lets the page itself scroll — a horizontal
+   rail is the ONLY thing that should capture sideways drags. */
+@media (max-width: 768px) {
+  html, body, #root { min-height: 100%; }
+  html, body { touch-action: pan-x pan-y; }
+  body {
+    /* env(safe-area-inset-*) is 0 on desktop/Android and the real inset on a
+       notched iPhone — that is what keeps the tab bar off the home indicator. */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  a, button, input, select, .card, .row-slider, .genre-showcase-grid {
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Rails scroll sideways, the page scrolls vertically. Without this a diagonal
+     swipe on a rail scrolls the whole page instead. */
+  .row-slider, .genre-showcase-grid, .mts-rail {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+  /* Chrome, not content: no text selection or long-press callout on artwork. */
+  .card, .card-art, .grid-card, .my-list-art, .row-title, .brand-logo, .mobile-bottom-nav {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+  .nav-icon-btn, .kids-link, .card-list-btn, .my-list-remove { min-width: 44px; min-height: 44px; }
+  .card-list-btn { width: 36px; height: 36px; }
+  /* iOS zooms the page when a focused field is under 16px — every input is now
+     16px on a phone, which is also just a better tap target. */
+  input, select, textarea { font-size: 16px !important; }
+}
+
+/* ============ BOTTOM TAB BAR ============ */
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 150;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, .97);
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    /* The inset is the home-indicator strip on a notched iPhone; the 6px keeps a
+       comfortable pad everywhere else. */
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .mobile-bottom-nav a {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 44px;                 /* proper thumb target */
+    padding: 4px 2px;
+    color: #b3b3b3;                   /* Netflix's inactive grey */
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.1;
+    text-align: center;
+    transition: color .18s ease;
+  }
+  .mobile-bottom-nav a svg { width: 24px; height: 24px; flex-shrink: 0; }
+  .mobile-bottom-nav a span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mobile-bottom-nav a.active { color: #fff; font-weight: 700; }
+  .mobile-bottom-nav a:active { opacity: .6; }
+  /* The sheet covers the bar (as Netflix does); the player unmounts it. */
+  body.mts-open .mobile-bottom-nav { display: none; }
+}
+
+/* ============ NAVBAR ON A PHONE ============ */
+@media (max-width: 768px) {
+  .navbar {
+    padding-top: env(safe-area-inset-top);
+    height: calc(56px + env(safe-area-inset-top));
+  }
+  .navbar .brand-logo { height: 26px; }
+  .profile-avatar { width: 38px; height: 38px; }
+  /* Netflix's phone header is logo · search · bell · avatar. The genre grid and
+     the friends rail are desktop chrome — the app reaches genres through Browse
+     — so they are dropped rather than crowding a 360px bar. The hamburger STAYS:
+     it is the only route to Kids and "Browse by Languages". */
+  .nav-right .social-toggle,
+  .nav-right .nav-pop-apps { display: none; }
+  /* The search field takes the whole bar, like the app: tapping the magnifier
+     slides a full-width input in under the header. */
+  .nav-right { gap: 6px; }
+  .nav-search { flex: 1 1 auto; min-width: 0; }
+  .search-box.open {
+    position: absolute;
+    top: calc(56px + env(safe-area-inset-top));
+    left: 8px; right: 8px;
+    width: auto;
+    margin: 0;
+    padding: 10px 12px;
+    background: rgba(10, 10, 10, .98);
+    border-color: rgba(255, 255, 255, .4);
+  }
+  .search-box.open input { font-size: 16px; }
+  /* Popovers must not run off a narrow screen. */
+  .notif-panel, .apps-panel, .profile-dropdown {
+    position: fixed;
+    top: calc(56px + env(safe-area-inset-top) + 6px);
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-width: 340px;
+    margin-left: auto;
+  }
+}
+
+/* ============ TITLE SHEET (the phone answer to a hover card) ============ */
+@media (max-width: 768px) {
+  .mts-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 600;                       /* above navbar, rails and tab bar */
+    display: flex;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, .78);
+    animation: mts-fade .22s ease-out;
+  }
+  @keyframes mts-fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .mts {
+    width: 100%;
+    /* 92dvh keeps the header art visible on a short phone and lets the body
+       scroll inside. dvh (not vh) tracks the collapsing mobile URL bar, which
+       otherwise crops the action row. */
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+    background: #141414;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, .7);
+    animation: mts-rise .3s cubic-bezier(.2, .8, .2, 1);
+    touch-action: pan-y;
+  }
+  @keyframes mts-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+  /* --- drag handle + backdrop art block --- */
+  .mts-grab {
+    position: relative;
+    flex: 0 0 auto;
+    padding-top: 10px;
+    touch-action: none;                 /* the handle owns the drag */
+  }
+  .mts-grab-bar {
+    position: absolute;
+    top: 8px; left: 50%;
+    z-index: 4;
+    width: 38px; height: 4px;
+    margin-left: -19px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, .55);
+  }
+  .mts-art {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #1f1f1f;
+  }
+  .mts-art-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 800;
+    /* Same branded dark tile the rail cards use for artwork-less titles. */
+    background: radial-gradient(120% 150% at 18% 0%, rgba(229, 9, 20, .16), transparent 55%),
+                linear-gradient(150deg, #101013 0%, #1a1a1e 55%, #232328 100%);
+  }
+  /* Blends the artwork into the sheet body and keeps the close button legible
+     over a bright still. */
+  .mts-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, .35) 0%, transparent 30%, #141414 99%);
+    pointer-events: none;
+  }
+  .mts-close {
+    position: absolute;
+    top: 16px; right: 12px;
+    z-index: 5;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; border-radius: 50%;
+    background: rgba(20, 20, 20, .8);
+    color: #fff;
+  }
+  .mts-close:active { background: #2a2a2a; }
+
+  .mts-heading { position: absolute; left: 16px; right: 16px; bottom: 12px; z-index: 3; }
+  .mts-logo { display: block; max-height: 46px; max-width: 72%; object-fit: contain; }
+  .mts-title {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.4px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, .8);
+  }
+
+  /* --- scrolling body --- */
+  .mts-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding: 4px 16px calc(28px + env(safe-area-inset-bottom));
+  }
+
+  /* --- action cluster: one wide white Play, then outlined circles --- */
+  .mts-actions { display: flex; align-items: center; gap: 10px; margin: 14px 0 12px; }
+  .mts-play {
+    flex: 1 1 auto;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #fff;
+    color: #000;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .mts-circle {
+    flex: 0 0 auto;
+    width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid rgba(255, 255, 255, .55);
+    border-radius: 50%;
+    background: rgba(42, 42, 42, .6);
+    color: #fff;
+  }
+  /* Filled state is Netflix's "already in My List" / "liked" chrome. */
+  .mts-circle.on { border-color: #fff; background: #fff; color: #000; }
+  .mts-circle.like-action.on { border-color: #e50914; background: #e50914; color: #fff; }
+  .mts-circle:disabled { opacity: .6; }
+
+  .mts-note { padding: 10px 0; color: #b3b3b3; font-size: 13px; }
+  .mts-note-error { color: #e50914; }
+  .mts-spinner { margin: 18px auto; }
+
+  /* --- meta line: match · year · certificate · runtime · HD --- */
+  .mts-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 9px;
+    font-size: 13px;
+    color: #d0d0d0;
+    margin-bottom: 10px;
+  }
+  .mts-meta .match { color: #46d369; font-weight: 700; }
+  .mts-meta .age { border: 1px solid rgba(255, 255, 255, .45); padding: 0 5px; border-radius: 2px; }
+  .mts-meta .hd { border: 1px solid rgba(255, 255, 255, .45); padding: 0 4px; border-radius: 2px; font-size: 10px; }
+
+  .mts-genres { display: flex; flex-wrap: wrap; gap: 5px; font-size: 13px; color: #ddd; margin-bottom: 10px; }
+  .mts-genres span:not(:last-child)::after { content: '\2022'; margin-left: 5px; color: #666; }
+
+  /* Clamped until the viewer taps More — the desktop hover card does the same. */
+  .mts-desc {
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: #ddd;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .mts-desc.open { -webkit-line-clamp: unset; display: block; }
+  .mts-more {
+    display: block;
+    margin: 0 0 12px;
+    padding: 4px 0;
+    border: none;
+    background: none;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .mts-side { font-size: 12.5px; color: #9a9a9a; margin: 0 0 6px; line-height: 1.4; }
+  .mts-side span { color: #6f6f6f; }
+}
+
+
+/* ============ TITLE SHEET — episodes / More Like This / toast ============ */
+@media (max-width: 768px) {
+  .mts-section { margin-top: 20px; }
+  .mts-section-title { margin: 0 0 10px; font-size: 17px; font-weight: 700; color: #fff; }
+  .mts-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .mts-section-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0;
+    border: none;
+    background: none;
+    color: #fff;
+  }
+  .mts-section-toggle h3 { margin: 0; font-size: 17px; font-weight: 700; }
+  .mts-section-toggle svg { transition: transform .22s ease; }
+  .mts-section-toggle svg.open { transform: rotate(180deg); }
+  .mts-season { position: relative; display: flex; align-items: center; }
+  .mts-season select {
+    max-width: 150px;
+    padding: 8px 26px 8px 10px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: 4px;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 12px;
+    appearance: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mts-season svg { position: absolute; right: 8px; pointer-events: none; }
+
+  /* --- episode rows: number · 16:9 still · copy · runtime --- */
+  .mts-ep {
+    display: grid;
+    grid-template-columns: 20px 112px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, .07);
+    background: none;
+    color: #fff;
+    text-align: left;
+  }
+  .mts-ep-num { font-size: 15px; color: #b3b3b3; text-align: center; }
+  .mts-ep-thumb {
+    position: relative;
+    display: block;
+    width: 112px;
+    aspect-ratio: 16 / 9;
+    border-radius: 3px;
+    overflow: hidden;
+    background: #1f1f1f;
+  }
+  .mts-ep-thumb > img,
+  .mts-ep-thumb .card-art-placeholder { width: 100%; height: 100%; object-fit: cover; display: block; font-size: 9px; }
+  .mts-ep-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: rgba(0, 0, 0, .3);
+    opacity: 0;
+    transition: opacity .2s;
+  }
+  .mts-ep:active .mts-ep-play { opacity: 1; }
+  .mts-ep-info { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .mts-ep-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .mts-ep-desc {
+    font-size: 11.5px;
+    color: #9a9a9a;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .mts-ep-date { font-size: 11px; color: #757575; }
+  .mts-ep-dur { font-size: 12px; color: #ccc; }
+  .mts-episodes-more {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 4px;
+    background: transparent;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* --- More Like This: the phone shape of the desktop 3-up grid --- */
+  .mts-rail {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .mts-rail::-webkit-scrollbar { display: none; }
+  .mts-rail .card { width: 150px; scroll-snap-align: start; }
+  .mts-rail .card > img,
+  .mts-rail .card-art > img { width: 150px; height: 84px; }
+  .mts-rail .card-art-placeholder { height: 84px; }
+  .mts-rail .card-list-btn { width: 30px; height: 30px; }
+
+  .mts-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    z-index: 610;
+    padding: 10px 18px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, .92);
+    border: 1px solid rgba(255, 255, 255, .2);
+    color: #fff;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .nx-hero-nav .nx-logo,
+  .nx-auth-nav .nx-logo-sm,
+  .nx-signup-nav .nx-logo-sm {
+    width: 112px !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain;
+  }
+}
+
+
+/* ============ PAGE SHAPE ON A PHONE ============ */
+@media (max-width: 768px) {
+  /* Keep enough banner height for the title, synopsis and buttons to fit above
+     the overlapping first rail on short phones as well as tall devices. */
+  .hero { height: clamp(500px, 76svh, 640px); }
+  .hero-img { object-position: center 20%; }
+  .hero-content { bottom: calc(var(--sf-row-overlap, 150px) + 22px); }
+  .hero-brandtag { gap: 9px; margin-bottom: 14px; }
+  .hero-content.has-title-art .hero-brandtag { margin-bottom: 18px; transform: translateY(6px); }
+  .hero-brandtag-n { height: 26px; }
+  .hero-brandtag span { font-size: 12px; letter-spacing: 2.4px; margin-right: -2.4px; }
+  .hero-logo { max-height: clamp(68px, 18vw, 112px); max-width: min(100%, 460px); margin-bottom: 12px; }
+  .hero-title-text { margin-bottom: 12px; line-height: 1; }
+  .hero-description {
+    max-width: 38ch;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  /* Netflix's phone rails snap card-to-card. `proximity` (not `mandatory`) keeps
+     a fast flick from fighting the viewer. */
+  .row-slider { scroll-snap-type: x proximity; }
+  .row-slider > .card,
+  .row-slider > .card-top10,
+  .row-slider > .cw-lead,
+  .row-slider > .cw-card { scroll-snap-align: start; }
+  /* The rail edges are the page gutter, so a card can finish flush with the
+     screen edge the way it does in the app. */
+  .row-slider { margin-left: 0; margin-right: 0; padding-left: 16px; padding-right: 16px; }
+  .row-header { padding-left: 16px; padding-right: 16px; }
+
+  /* Two-up 2:3 posters, the Netflix phone browse grid. */
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }
+  .search-result-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* Every scrollable page has to clear the fixed tab bar, or the last row sits
+     underneath it and can never be tapped. */
+  .grid-page,
+  .kids-page,
+  .search-page,
+  .browse-page,
+  .rows,
+  .landing-content,
+  .footer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  .grid-page { padding-top: calc(var(--nav-h) + env(safe-area-inset-top) + 16px); }
+  .grid-page h2 { font-size: 21px; margin-bottom: 16px; }
+}
+
+/* Tablet: three-up posters. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Short phones in landscape: the billboard must not eat the whole screen. */
+@media (max-width: 900px) and (max-height: 480px) {
+  .hero { height: 58vh; }
+  .mts { max-height: 96dvh; }
+}

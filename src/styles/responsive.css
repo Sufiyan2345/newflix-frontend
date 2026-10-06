@@ -1,0 +1,230 @@
+  .tmdb-languages { padding-left: 18px; padding-right: 18px; gap: 18px; }
+/* ============ RESPONSIVE (Netflix breakpoints) ============ */
+@media (max-width: 1100px) {
+  .social-sidebar { top: 60px; bottom: 58px; width: min(340px, 92vw); padding: 14px 12px 24px; }
+   .navbar { padding: 0 32px; gap: 12px; }
+   .nav-links { gap: 5px; }
+   .nav-pill { min-height: 38px; padding: 0 8px; font-size: 13px; }
+   .nav-right { gap: 10px; }
+  .row-header { padding-left: 32px; padding-right: 32px; }
+  .row-slider { margin-left: 32px; margin-right: 32px; }
+  .hero-content { left: 32px; }
+  /* The maturity chip is a desktop-only part of the billboard chrome. */
+  .hero-foot { display: none; }
+  .hero-rating { display: none; }
+  .tm-hero-content { left: 32px; right: 32px; }
+  .tm-actions { padding: 20px 32px 4px; }
+  .tm-body { padding: 20px 32px 40px; }
+  .tm-progress { margin: 0 32px; }
+  .grid-page { padding: calc(var(--nav-h) + 30px) 32px 80px; }
+  .landing-title { font-size: 42px; }
+  .landing-section .sec-text h2 { font-size: 36px; }
+}
+@media (min-width: 769px) and (max-width: 1280px) {
+  :root {
+    --sf-gutter: clamp(24px, 3.1vw, 40px);
+    --sf-card-w: clamp(220px, 18vw, 280px);
+  }
+  .navbar { padding: 0 clamp(24px, 3vw, 40px); gap: 12px; }
+  .mobile-menu-toggle {
+    display: inline-flex;
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 4px;
+    background: rgba(20,20,20,.68);
+    color: #fff;
+    cursor: pointer;
+  }
+  .mobile-menu-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .nav-links { display: none; }
+  .nav-links.mobile-open {
+    position: absolute;
+    top: calc(100% - 2px);
+    left: clamp(24px, 3vw, 40px);
+    z-index: 120;
+    display: flex;
+    width: min(340px, calc(100vw - 48px));
+    max-height: calc(100vh - var(--nav-h) - 24px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 6px;
+    background: rgba(10,10,10,.98);
+    box-shadow: 0 16px 28px rgba(0,0,0,.5);
+  }
+  .nav-links.mobile-open .nav-pill {
+    width: 100%;
+    min-height: 46px;
+    justify-content: flex-start;
+    gap: 13px;
+    padding: 0 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: left;
+  }
+  .nav-links.mobile-open .mobile-nav-icon { display: block; flex: 0 0 20px; color: #b8b8b8; }
+  .nav-links.mobile-open .mobile-extra-link { display: flex; }
+  .nav-links.mobile-open .nav-pill.active { color: #fff; background: rgba(229,9,20,.12); border-color: rgba(229,9,20,.24); }
+  .nav-links.mobile-open .nav-pill.active .mobile-nav-icon { color: #f0444d; }
+  .nav-right { gap: clamp(8px, .8vw, 12px); }
+}
+@media (max-width: 768px) {
+  /* Rail cards shrink here; --sf-row-overlap follows automatically, so the row
+     under the billboard still lands on the banner's bottom edge. */
+   :root { --sf-card-w: clamp(180px, 55vw, 220px); }
+  .navbar { padding: 0 14px; gap: 8px; height: 60px; }
+  .brand-logo { height: 30px; }
+  .mobile-menu-toggle { display: inline-flex; flex: 0 0 38px; width: 38px; height: 38px; align-items: center; justify-content: center; padding: 0; border: 1px solid rgba(255,255,255,.18); border-radius: 4px; background: rgba(20,20,20,.68); color: #fff; cursor: pointer; }
+  .mobile-menu-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .nav-right { gap: 7px; }
+  .notif-panel, .apps-panel { width: min(320px, calc(100vw - 24px)); }
+  .search-box.open { position: absolute; top: 60px; left: 12px; right: 12px; width: auto; margin: 0; padding: 10px 12px; background: rgba(10,10,10,.98); }
+  .nav-search { position: static; }
+  .nav-links { display: none; }
+  .nav-links.mobile-open { position: absolute; top: 60px; left: 0; right: 0; z-index: 120; display: flex; flex-direction: column; align-items: stretch; gap: 2px; max-height: calc(100dvh - 72px); overflow-y: auto; overscroll-behavior: contain; padding: 10px 14px 14px; background: rgba(10,10,10,.98); border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 16px 28px rgba(0,0,0,.5); }
+  .nav-links.mobile-open .nav-pill { width: 100%; min-height: 50px; justify-content: flex-start; gap: 13px; padding: 0 12px; border-radius: 5px; font-size: 15px; text-align: left; }
+  .nav-links.mobile-open .mobile-nav-icon { display: block; flex: 0 0 20px; color: #b8b8b8; }
+  .nav-links.mobile-open .nav-pill.active { color: #fff; background: rgba(229,9,20,.12); border-color: rgba(229,9,20,.24); }
+  .nav-links.mobile-open .nav-pill.active .mobile-nav-icon { color: #f0444d; }
+  .mobile-extra-link { display: flex; }
+  .mobile-bottom-nav { display: flex; }
+  .kids-page { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .grid-page { padding-bottom: 120px; }
+  .hero { height: clamp(430px, 70svh, 620px); }
+  .hero-follow { margin-top: calc(-1 * var(--sf-row-overlap)); transform: translateY(-12px); }
+  /* The copy clears the card row riding up under the banner, exactly as it does
+     on desktop — the offset is read from the same --sf-row-overlap. */
+  .hero-content { left: 16px; right: 16px; bottom: calc(var(--sf-row-overlap, 0px) + 18px); max-width: none; }
+  .hero { touch-action: pan-y; }
+  .hero-brandtag { gap: 9px; }
+  .hero-brandtag-n { height: 18px; }
+  .hero-brandtag span { font-size: 11px; letter-spacing: 2.2px; margin-right: -2.2px; }
+  .hero-logo { max-height: clamp(38px, 11vw, 60px); }
+  .hero-description { max-width: 42ch; margin-bottom: 14px; font-size: 13px; }
+  /* The wordmark fallback for a title with no logo art. This used to target
+     .hero-title-img, a class <HeroBanner> never renders — so the mobile
+     override silently died and every text title rendered at the 30px floor
+     instead of scaling to ~42px on a phone. */
+  .hero-title-text { font-size: clamp(30px, 10vw, 42px); }
+  .hero-meta { font-size: 12px; margin-bottom: 10px; }
+  .hero-actions { gap: 6px; }
+  .hero-actions .btn-white, .hero-actions .btn-gray { min-width: 0; min-height: 42px; padding: 9px 10px; border-radius: 9px; font-size: 13px; gap: 6px; }
+  .hero-reactions { gap: 5px; }
+  .hero-reaction-btn { width: 38px; height: 38px; }
+  .hero-progress { height: 28px; align-items: flex-end; gap: 5px; padding: 0 var(--sf-gutter, 16px) 6px; background: linear-gradient(transparent, rgba(0,0,0,.35)); }
+  .hero-seg { height: 20px; background: transparent; overflow: visible; }
+  .hero-seg:hover { background: transparent; }
+  .hero-seg::before { content: ''; position: absolute; left: 0; right: 0; bottom: 7px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.48); }
+  .hero-seg.active::after { inset: auto 0 7px; height: 3px; border-radius: 2px; }
+  .rows { margin-top: -40px; }
+  .row-header { padding-left: 16px; padding-right: 16px; margin-bottom: 9px; }
+  .row-title { font-size: 17px; line-height: 1.25; }
+  .row-explore { opacity: 1; }
+  .row-slider { gap: 10px; margin-left: 16px; margin-right: 16px; padding-bottom: 14px; scroll-snap-type: x proximity; overscroll-behavior-inline: contain; }
+  .row-slider > .card, .row-slider > .card-top10 { scroll-snap-align: start; }
+  .row-arrow { display: none; }
+  .rows { gap: 22px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .genre-showcase { padding: 20px 16px 10px; }
+  .genre-showcase-head h2 { font-size: 18px; }
+  .genre-showcase-grid { gap: 10px; }
+  .genre-showcase-card { flex-basis: 210px; }
+  .genre-showcase-card span { font-size: 18px; }
+   .card { width: var(--sf-card-w); }
+   .card > img { width: var(--sf-card-w); height: var(--sf-card-h); }
+  /* Top 10 and Continue Watching sizes live in cards.css, driven by the --t10-w
+     and --cw-h custom properties. Repeating them here would win on load order. */
+  .grid-page { padding: calc(var(--nav-h) + 20px) 18px 120px; }
+  .filters-bar { gap: 8px; }
+  .filters-bar select { flex: 1 1 calc(50% - 8px); min-width: 0; min-height: 42px; }
+  .search-page { padding-top: calc(var(--nav-h) + 24px); }
+  .search-page h2 { font-size: 24px; margin-bottom: 16px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .search-result-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 8px; }
+  .my-list-remove { opacity: 1; }
+  .my-list-card h3 { font-size: 12px; }
+  .tm-modal { inset: 12px 0 24px; width: min(900px, 96vw); }
+  .tm-hero-content { left: 20px; right: 20px; bottom: 18px; }
+  .tm-actions { padding: 16px 20px 0; gap: 10px; }
+  .tm-body { padding: 18px 20px 32px; }
+  .tm-progress { margin: 0 20px; }
+  .tm-cols { grid-template-columns: 1fr; gap: 20px; }
+  .tm-title { font-size: 38px; }
+  .tm-logo { max-height: 90px; max-width: 70%; }
+  .tm-play { width: 100%; }
+  .tm-ep { grid-template-columns: 22px 104px 1fr; }
+  .tm-ep-dur { display: none; }
+  .tm-ep-thumb { aspect-ratio: 16 / 9; }
+  .mlt-grid { grid-template-columns: 1fr; }
+  .landing-content { padding: 60px 20px 100px; }
+  .landing-title { font-size: 32px; }
+  .landing-sub { font-size: 18px; }
+  .landing-form { flex-direction: column; }
+  .landing-form .btn-red { font-size: 17px; }
+  .landing-section { flex-direction: column; text-align: center; }
+  .sec-media { width: 100%; max-width: 100%; }
+  .landing-section .sec-text h2 { font-size: 30px; }
+  .landing-section .sec-text p { font-size: 17px; }
+  .faq-item button { font-size: 18px; padding: 18px; }
+  .faq-item .faq-body { font-size: 15px; }
+  .auth-card { padding: 32px 24px; margin: 40px 16px; }
+  .profile-item .avatar { width: 100px; height: 100px; font-size: 40px; }
+  .profiles-title { font-size: 30px; }
+  /* player sheets + overlays go edge-to-edge on phones (see player.css) */
+  .pc-opt { width: calc(100% - 40px); margin-left: 20px; }
+  .skip-btn, .next-ep-btn { padding: 9px 16px; font-size: 14px; }
+  .report-box { padding: 22px 18px 16px; }
+  .footer { padding: 40px 20px; }
+  .footer { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+  .footer-links-4, .footer-links { grid-template-columns: repeat(2, 1fr); }
+  /* Hover chrome shrinks with the card. The CARD BOX itself is deliberately NOT
+     overridden here: Row.jsx derives --hover-card-w/-h together (16:9, clamped to
+     the viewport), so pinning the width alone would desync the aspect ratio. Hover
+     never opens at this width anyway — Row.jsx bails at MOBILE_MAX_WIDTH. */
+  .hover-play { width: 28px; height: 28px; }
+  .hover-play svg { width: 13px; height: 13px; }
+  .hover-circle-btn { width: 26px; height: 26px; }
+  .hover-circle-btn svg { width: 13px; height: 13px; }
+  .hover-title { font-size: 16px; }
+  .hover-body { padding: 12px 10px 9px; }
+  .tmdb-hero { height: 105vw; min-height: 300px; max-height: 500px; background-position: center top; }
+  .tmdb-hero-body { left: 0; right: 0; bottom: 0; padding: 0 18px 20px; }
+  .tmdb-logo { max-width: 62%; max-height: 88px; margin-bottom: 10px; }
+  .tmdb-modal-logo-slot { width: min(280px, 72%); height: 78px; margin-bottom: 10px; }
+  .tmdb-title { font-size: 30px; }
+  .tmdb-controls { gap: 10px 12px; }
+  .tmdb-meta-row { margin-left: 0; font-size: 13px; gap: 9px; }
+  .tmdb-actions .btn-white { padding: 9px 16px; font-size: 15px; }
+  .tmdb-list-btn { width: 38px; height: 38px; }
+  .tmdb-ep-head { gap: 10px; align-items: center; }
+  .tmdb-episodes-toggle h3, .tmdb-ep-head h3 { font-size: 19px; }
+  .tmdb-season-select { max-width: 58%; }
+  .tmdb-season-select select { max-width: 100%; overflow: hidden; text-overflow: ellipsis; padding: 8px 28px 8px 10px; font-size: 12px; }
+  .tmdb-ep { gap: 10px; padding: 11px 0; }
+  .tmdb-ep-num { width: 22px; font-size: 17px; }
+  .tmdb-ep-thumb { width: 96px; height: 54px; }
+  .tmdb-ep-info h4 { font-size: 13px; }
+  .tmdb-ep-info p { font-size: 11px; -webkit-line-clamp: 2; }
+  .tmdb-languages { padding-left: 18px; padding-right: 18px; gap: 18px; }
+  .tmdb-languages button { font-size: 13px; }
+  .tmdb-toast { top: 70px; font-size: 12px; }
+}
+@media (max-width: 600px) {
+  .search-result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 420px) {
+  .social-toggle, .kids-link { display: none; }
+}
+@media (hover: none) and (max-width: 768px) {
+  .card:hover, .grid .grid-card:hover { transform: none; }
+  .row-slider, .genre-showcase-grid { -webkit-overflow-scrolling: touch; }
+}

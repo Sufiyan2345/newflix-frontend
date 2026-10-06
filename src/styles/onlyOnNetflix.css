@@ -1,0 +1,1037 @@
+/* ============================================================================
+   /p/only-on-netflix — the "Only on Netflix" browse page.
+
+   Every number in this file was READ OFF the live reference
+   (netflix.com/pk/browse/genre/839338) with getComputedStyle + pixel sampling,
+   not eyeballed. The reference is a marketing page: it is PUBLIC, so it must not
+   sit behind <Protected>, and it uses its own two-item masthead (wordmark +
+   Sign In) rather than the member Navbar.
+
+   The skeleton it reproduces, measured at 1280x800:
+     header    y 0    .. 72      72px tall, transparent
+     hero      y 72   .. 638.5   gutter 48px, 1184 x 566.5 panel (2.09:1)
+     copy      x 112  .. 752     64px inside the panel, h1 top at 47.2% of it
+     cta       y 502.5 .. 550.5  48px row: 312 field + 12 gap + 240 pill
+     rails     y 678  .. 7478    17 title rails, 976 wide
+     plans     y 7478 .. 7813    4 x 235px cards, 12px gutters, 280px tall
+     banner    y 7853 .. 7957    104px tall
+     tudum     y 7997 .. 8062    65px tall
+     footer    y 8198 .. 8512
+
+   The rail column is inset 104px INSIDE the 48px page gutter (48 + 104 = 152),
+   which is what leaves the 128px bleed each side where the scroll arrows live.
+   ==========================================================================[cite: 9] */
+
+.oon-page {
+  /* Base = the reference's own PHONE numbers, measured at a 414 viewport
+     (351px hero inside a 24px gutter, 0px rail inset, 24px h1, 20px h2):
+        <=599   gutter 24  inset 0    h1 24  h2 20
+        600-959       32       0        32     20
+        960-1279      32      48        40     24
+        1280-1919     48     104        48     32
+        >=1920         48     152        56     32
+     Every one of those is read off the live page, not eyeballed. The steps below
+     only restate them per breakpoint; nothing interpolates between them.[cite: 9] */
+  --oon-gutter: 24px;      /* page edge inset         [cite: 9] */
+  --oon-inset: 0px;        /* extra inset of the column[cite: 9] */
+  --oon-h1: 24px;
+  --oon-h2: 20px;
+  --oon-copy-inset: 4px;   /* hero copy inset inside the panel[cite: 9] */
+  /* The panel's ratio, read off the live page as w/h of the measured box:
+       414  375x535.7   0.70   <- portrait below 600
+       640  561x316     16:9
+       768  689x387.6   16:9
+       900  821x462     16:9
+       1024 945x454.3   2.08
+       1280 1184x566.5  2.09
+     Declared HERE, on `.oon-page`, because `.oon-hero-frame` reads it via
+     `var(--oon-hero-ratio, 2.09)` and a custom property only reaches a
+     descendant if it is declared on an ancestor. Each step below overrides it;
+     the 2.09 fallback is deliberately the desktop value so the frame still has
+     the reference's default if this ever resolves with no variable in scope.[cite: 9] */
+  --oon-hero-ratio: 0.7;
+  --oon-card-w: 144px;     /* the <li> box: 132px poster + the 12px item gap[cite: 9] */
+  --oon-tile-pad-y: 6.4px;
+  /* The gap between the hero's floor and the FIRST rail's heading row. The
+     reference renders 40px from 1280 up but only 32px in the 960-1279 band: its
+     first h2 sits at 546.8 under a 442.8-tall hero panel there, and at 671.3
+     under a 559.3 one, so the band below overrides this. The offset lives on
+     `.oon-column` - the single wrapper holding all 17 rails plus the plans and
+     the closing strip - so it is one offset for the whole stack, not a per-rail
+     margin.[cite: 9] */
+  --oon-rail-top: 40px;
+  --oon-tile-radius: 16px;
+  --oon-header-h: 56px;    /* see the masthead block below[cite: 9] */
+  --oon-header-pad-y: 8px;
+  --oon-header-pad-x: 24px;
+  --oon-logo-h: 32px;
+
+  /* Match the reference's full-width desktop layout up to 1920px, then keep the
+     page centered at that width on the very wide CSS viewports created by browser
+     zoom-out. The fixed blurred backdrop remains viewport-wide behind it. */
+  position: relative;
+  width: 100%;
+  max-width: 1920px;
+  margin-inline: auto;
+  min-height: 100vh;
+  /* Keep the blurred fixed collage visible behind the full page, including the
+     footer; the body supplies the same dark fallback under the backdrop. */
+  background: transparent;
+  color: #fff;
+  padding: 0 var(--oon-gutter);
+  /* The reference's own footer wrapper carries 96px of floor under the language
+     picker (its content ends 8484, the document 8580), so the page ends with the
+     same breathing room instead of cutting off flush.[cite: 9] */
+  padding-bottom: 93px;
+  overflow-x: hidden;
+  isolation: isolate;
+}
+/* A low-contrast version of the hero collage gives the page its dark ambient
+   color without competing with the framed artwork or page copy.[cite: 9] */
+.oon-page::before {
+  content: '';
+  position: fixed;
+  inset: -32px;
+  z-index: -1;
+  pointer-events: none;
+  background: url('/large.jpg') center / cover no-repeat;
+  filter: blur(28px) brightness(.38);
+  opacity: .45;
+  transform: scale(1.04);
+}
+/* ============ MASTHEAD ============ */
+/* The reference masthead is a FULL-BLEED bar holding exactly two things: the
+   wordmark and a white "Sign In" pill. Read off the live page:
+     >= 960    72px tall, pad 16px 48px (32px at 960), transparent over a
+               black-to-clear gradient, 45px wordmark at y16, 32px pill
+     <  960    56px tall, rgba(0,0,0,.8), pad 8px 32px (24px at <=599), 32px
+               wordmark at y8, 32px pill at y12
+   The gradient darkens DOWNWARD (`to top`), so the bar is opaque under the logo
+   and fades to clear at its bottom edge - the reverse orientation reads as a
+   dark smear across the top of the hero.
+   The BAR spans the viewport while its two children sit on the same gutter as
+   the hero, so the bar has to break out of the page padding and re-add its own
+   (at <=599 those differ: 12px page gutter vs 24px header padding).[cite: 9] */
+.oon-header {
+  /* The reference header computes to `position: relative` with `padding: 0` —
+     it occupies real flow space above the hero rather than floating over it, and
+     it holds the bar's own horizontal inset on its children. The clone had this
+     absolutely positioned with its own padding, which put the wordmark and pill
+     on a different box from the reference's and left the hero's `margin-top`
+     doing the job the layout already did.[cite: 9] */
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: 20;
+  box-sizing: border-box;
+  height: var(--oon-header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* The BAR spans the viewport while its two children sit on the page gutter, so
+     the bar breaks OUT of `.oon-page`'s own gutter padding and re-adds that
+     inset as its own horizontal padding. Measured on the live page: the header's
+     own box is x0 / 1265 wide with `padding: 0`, holding a wordmark at x48 and a
+     pill ending at x1217 - i.e. full-bleed bar, both children on the 48px gutter.
+     Without this negative margin the clone inherited the page gutter AND added
+     its own padding on top of it, which is why its wordmark sat 48px too far
+     right (x96) and its pill 48px too far left (ending at x1169).[cite: 9] */
+  margin: 0 calc(-1 * var(--oon-gutter));
+  padding: var(--oon-header-pad-y) var(--oon-header-pad-x);
+  /* The reference's masthead wash, read off the live page at 1280x900:
+     `linear-gradient(to top, rgba(0,0,0,0) 0%, rgb(0,0,0) 100%)`.
+
+     Read that direction carefully before editing it. `to top` puts the FIRST stop
+     at the bar's BOTTOM edge, so `rgba(0,0,0,0)` is the bottom and `rgb(0,0,0)`
+     is the TOP: the bar is opaque black under the wordmark and clears where it
+     meets the hero. (The comment this replaces claimed clear-at-top /
+     black-at-bottom, i.e. it described `to bottom` - which is how this gradient
+     got inverted in the first place.)[cite: 9]
+
+     The ramp is eased instead of linear on purpose. A straight two-stop ramp puts
+     a noticeable share of its range in the middle of the bar, so the bar lands on
+     the artwork as a hard-edged slab rather than dissolving into it. These stops
+     hold near-black through the top third - which is where the reference is
+     genuinely black - and then release smoothly, so there is no seam where the
+     masthead ends.
+
+     ONE ramp for every width. The flat `rgba(0,0,0,.8)` this used to fall back to
+     below 960px was the real mismatch at those sizes: a uniform, hard-bottomed
+     slab with no fade into the hero, which is not what the reference draws.[cite: 9] */
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.42) 38%,
+    rgba(0, 0, 0, 0.78) 68%,
+    rgba(0, 0, 0, 0.94) 86%,
+    rgb(0, 0, 0) 100%
+  );
+}
+.oon-header-actions { display: flex; align-items: center; }
+
+
+/* The reference logo is 45px on a 40px content box, so it hangs 5px past the
+   bottom padding rather than centring; the pill DOES centre in that box.[cite: 9] */
+.oon-brand { display: block; align-self: flex-start; }
+.oon-logo {
+  display: block;
+  width: auto;
+  height: var(--oon-logo-h);
+  object-fit: contain;
+}
+/* The reference "Sign In" is a fully rounded 32px white pill carrying 14px/500
+   black text with 4px 16px of padding — NOT a 4px-radius rectangle.[cite: 9] */
+.oon-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  background: #fff;
+  color: #000;
+  border: none;
+  border-radius: 100px;
+  padding: 4px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+  transition: background .2s;
+}
+.oon-signin:hover { background: rgba(255, 255, 255, .75); }
+.oon-signin:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ============ HERO ============ */
+.oon-hero-frame {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: var(--oon-hero-ratio, 2.09);
+  /* Ultra-thin precise Netflix border rim & custom radius */
+  border-radius: 20px 20px 16px 16px;
+  -webkit-mask: radial-gradient(103% 12% at 50% 102%, transparent 50%, #fff 51%);
+  mask: radial-gradient(103% 12% at 50% 102%, transparent 50%, #fff 51%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.12) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  filter: drop-shadow(rgba(0, 0, 0, .6) 24px 32px 24px);
+  overflow: hidden;
+}
+.oon-hero-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  border-radius: inherit;
+  background: radial-gradient(at 0% 0%, rgba(255, 255, 255, .04) 25%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+}
+.oon-hero {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+  isolation: isolate;
+}
+.oon-hero-art {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 16px;
+  background: #000;
+  transform: none;
+  transform-origin: center center;
+}
+@media (max-width: 599px) {
+  .oon-hero-art { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 8px; }
+}
+.oon-hero-art-tile {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: cover;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  filter: brightness(.95) saturate(1);
+}
+.oon-hero-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  filter: none;
+  /* The slow push-in / pull-back ("breathing") of the collage.
+     `scale(1)` is the REST state, not a starting offset: the animation passes
+     through it every cycle, so at that instant the panel is pixel-for-pixel the
+     same frame the page renders with motion switched off. `center` origin keeps
+     the zoom concentric, so the collage grows evenly instead of drifting off one
+     corner. 18s each way with `alternate` gives a 36s round trip - slow enough
+     to read as ambience rather than as a slideshow, and eased so the turnarounds
+     have no visible corner. */
+  transform: scale(1);
+  transform-origin: center center;
+  animation: oonHeroZoom 18s ease-in-out infinite alternate;
+}
+@keyframes oonHeroZoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+/* The zoom is decoration, never information, so a visitor who has asked the OS to
+   calm the page down gets the still collage - the same `scale(1)` frame the
+   animation rests on anyway. Without this the page ignores that setting, because
+   a CSS animation is not auto-disabled by the OS the way a JS one usually is. */
+@media (prefers-reduced-motion: reduce) {
+  .oon-hero-background { animation: none; }
+}
+.oon-hero-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, .24);
+  background-image:
+      linear-gradient(180deg, rgba(37, 35, 33, 0) 58%, #252321 100%),
+      radial-gradient(ellipse 46% 37% at 20% 56%, rgba(0, 0, 0, .8), rgba(0, 0, 0, 0) 100%),
+      linear-gradient(180deg,
+         rgba(0, 0, 0, 0) 40%,
+         rgba(0, 0, 0, .008) 45%,
+         rgba(0, 0, 0, .03) 50%,
+         rgba(0, 0, 0, .075) 55%,
+         rgba(0, 0, 0, .133) 60%,
+         rgba(0, 0, 0, .208) 65%,
+         rgba(0, 0, 0, .3) 70%,
+         rgba(0, 0, 0, .392) 75%,
+         rgba(0, 0, 0, .467) 80%,
+         rgba(0, 0, 0, .525) 85%,
+         rgba(0, 0, 0, .57) 90%,
+         rgba(0, 0, 0, .592) 95%,
+         rgba(0, 0, 0, .6) 100%),
+      linear-gradient(224deg,
+         rgba(20, 20, 20, 0) 45.72%,
+         rgba(0, 0, 0, .6) 63.85%,
+         #252321 87.47%);
+}
+
+.oon-hero-copy {
+  position: absolute;
+  z-index: 2;
+  top: 47.2%;
+  left: var(--oon-copy-inset);
+  max-width: 456px;
+}
+@media (min-width: 960px) and (max-width: 1279px) { .oon-hero-copy { max-width: 480px; } }
+@media (min-width: 1280px) { .oon-hero-copy { max-width: 640px; } }
+@media (min-width: 1920px) { .oon-hero-copy { max-width: 694px; } }
+@media (max-width: 599px) {
+  .oon-hero-copy { right: var(--oon-copy-inset); max-width: none; text-align: center; }
+}
+.oon-hero-copy h1 {
+  font-size: var(--oon-h1);
+  font-weight: 700;
+  line-height: 30px;
+  margin: 0 0 8px;
+}
+@media (min-width: 600px) { .oon-hero-copy h1 { line-height: 40px; } }
+@media (min-width: 960px) { .oon-hero-copy h1 { line-height: 51px; } }
+@media (min-width: 1280px) { .oon-hero-copy h1 { font-weight: 900; line-height: 62px; margin-bottom: 12px; } }
+@media (min-width: 1920px) { .oon-hero-copy h1 { line-height: 70px; } }
+@media (max-width: 599px) { .oon-hero-copy h1 { font-weight: 500; } }
+.oon-hero-copy > p:not(.oon-hero-price) {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  margin: 0;
+}
+@media (min-width: 960px) { .oon-hero-copy > p:not(.oon-hero-price) { font-size: 16px; line-height: 20px; } }
+@media (min-width: 1280px) { .oon-hero-copy > p:not(.oon-hero-price) { font-size: 18px; line-height: 23px; } }
+@media (min-width: 1920px) { .oon-hero-copy > p:not(.oon-hero-price) { font-size: 20px; line-height: 30px; } }
+@media (min-width: 1920px) { .oon-hero-copy .oon-hero-price { font-size: 17px; line-height: 22px; } }
+
+.oon-hero-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  max-width: 386px;
+}
+@media (min-width: 960px) { .oon-hero-form { margin-top: 20px; max-width: 414px; } }
+@media (min-width: 1280px) { .oon-hero-form { max-width: 564px; } }
+
+.oon-field {
+  position: relative;
+  flex: 0 0 auto;
+  width: 240px;
+  height: 40px;
+  border: 1px solid rgba(128, 128, 128, .7);
+  border-radius: 100px;
+  background: rgba(22, 22, 22, .7);
+  transition: border-color .2s;
+}
+.oon-field:focus-within { border-color: #fff; }
+@media (min-width: 960px) { .oon-field { width: 268px; } }
+@media (min-width: 1280px) { .oon-field { width: 312px; height: 48px; } }
+.oon-field input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  border-radius: inherit;
+  padding: 16px 12px 0;
+  font-size: 16px;
+  line-height: 24px;
+}
+@media (min-width: 1280px) { .oon-field input { padding: 20px 16px 4px; } }
+.oon-field label {
+  position: absolute;
+  top: 7px;
+  left: 11px;
+  font-size: 16px;
+  line-height: 24px;
+  color: rgba(255, 255, 255, .7);
+  pointer-events: none;
+  transition: top .15s, font-size .15s, line-height .15s;
+}
+@media (min-width: 1280px) { .oon-field label { top: 11px; left: 15px; } }
+.oon-field.filled label,
+.oon-field input:focus + label { top: 0; font-size: 12px; line-height: 16px; }
+@media (min-width: 1280px) {
+  .oon-field.filled label,
+  .oon-field input:focus + label { top: 4px; }
+}
+
+.oon-join {
+  background: #E50914;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  padding: 6px 32px;
+  font-size: 16px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background .2s;
+}
+.oon-join:hover { background: #f6121d; }
+.oon-join:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+@media (min-width: 1280px) { .oon-join { min-height: 48px; padding: 8px 32px; font-size: 18px; } }
+@media (min-width: 600px) {
+  .oon-hero-form {
+    width: min(602px, calc(100vw - 68px));
+    max-width: 602px;
+  }
+  .oon-field {
+    flex: 1 1 auto;
+    width: auto;
+    height: 56px;
+  }
+  .oon-field input { padding: 18px 16px 0; }
+  .oon-field label { top: 15px; left: 16px; }
+  .oon-join {
+    flex: 0 0 170px;
+    width: 170px;
+    min-height: 56px;
+    padding: 8px 20px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+@media (max-width: 599px) {
+  .oon-hero-form {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 220px;
+    max-width: 220px;
+    margin-inline: auto;
+  }
+  .oon-field { width: 100%; flex: 0 0 auto; height: 40px; }
+  .oon-join { width: 100%; flex: 0 0 auto; min-height: 40px; align-self: stretch; }
+}
+.oon-hero-copy .oon-hero-price {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18px;
+  width: fit-content;
+  margin: 8px 0 0 12px;
+}
+@media (min-width: 1280px) { .oon-hero-copy .oon-hero-price { font-size: 16px; line-height: 20px; margin-top: 12px; } }
+@media (max-width: 599px) { .oon-hero-copy .oon-hero-price { margin: 12px auto 0; } }
+
+/* ============ TITLE RAILS ============ */
+.oon-column { padding: 0 var(--oon-inset); margin-top: var(--oon-rail-top, 40px); }
+.oon-rail { margin: 0 0 32px; }
+.oon-rail.is-last { margin-bottom: 0; }
+.oon-rail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }
+.oon-rail-head h2 {
+  font-size: var(--oon-h2);
+  font-weight: 700;
+  line-height: 40px;
+  margin: 0;
+}
+
+.oon-explore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  color: #fff;
+  flex: 0 0 auto;
+  transition: background .18s;
+}
+.oon-explore:hover { background: rgba(255, 255, 255, .14); }
+.oon-explore:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.oon-explore svg { display: block; }
+
+.oon-rail-viewport { position: relative; }
+.oon-rail-track {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  padding: 8px 0;
+  margin: -8px 0;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+}
+.oon-rail-track::-webkit-scrollbar { display: none; }
+
+.oon-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 24px;
+  height: 80px;
+  border: none;
+  border-radius: 256px;
+  background: rgba(128, 128, 128, .4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: .72;
+  transition: opacity .2s, background .2s;
+}
+.oon-rail-viewport:hover .oon-arrow:not(:disabled) { opacity: 1; }
+.oon-arrow:disabled { opacity: .38; pointer-events: none; }
+.oon-arrow:hover:not(:disabled) { background: rgba(128, 128, 128, .7); }
+.oon-arrow.prev { left: 0; }
+.oon-arrow.next { right: 0; }
+
+.oon-tile {
+  flex: 0 0 auto;
+  width: var(--oon-card-w);
+  /* The reference's own <li> padding is `0.4rem 0.375rem` (0.65rem vertical
+     from 1280 up) with `:first-of-type { padding-left: 0.5rem }`, so the 196px
+     item box carries a 184x257.6px poster - exactly the reference's 11.5rem x
+     16.1rem art box - and the first card alone sits 2px further in. */
+  padding: var(--oon-tile-pad-y) 6px;
+}
+.oon-tile:first-of-type { padding-left: 8px; }
+.oon-tile-link {
+  display: block;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  color: #fff;
+  border-radius: var(--oon-tile-radius);
+  transition: transform .22s cubic-bezier(.2, .8, .3, 1);
+}
+.oon-tile-link:hover, .oon-tile-link:focus-visible { transform: scale(1.06); }
+.oon-tile-link:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.oon-tile-art {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  object-fit: cover;
+  border-radius: var(--oon-tile-radius);
+  background: #232323;
+}
+.oon-tile-art-missing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #232323;
+}
+.oon-tile-art-missing img {
+  width: auto;
+  height: 24px;
+  opacity: .45;
+  object-fit: contain;
+}
+.oon-tile-name {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  text-align: center;
+  color: #fff;
+  margin: 4px 0 0;
+  min-height: 42px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* ============ PLAN GRID ============ */
+.oon-plans { margin: 40px 0 0; }
+@media (min-width: 1280px) { .oon-plans { margin-top: 21px; } }
+.oon-plans-title {
+  font-size: var(--oon-h2);
+  font-weight: 700;
+  line-height: 40px;
+  margin: 0 0 15px;
+}
+.oon-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.oon-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  box-sizing: border-box;
+  height: clamp(220px, calc(580px - 20vw), 260px);
+  border-radius: 16px;
+  border: 1px solid var(--plan-border);
+  background: var(--plan-bg);
+  padding: 24px 25px;
+  color: #fff;
+  transition: transform .2s, border-color .2s;
+}
+.oon-plan:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, .5); }
+.oon-plan:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.oon-plan[data-tier="mobile"],
+.oon-plan[data-tier="basic"] {
+  --plan-bg: linear-gradient(180deg, #2e4d77 0%, #1c3f70 12%, #1a3861 30%, #182f4e 55%, #16233d 78%, #141414 100%);
+  --plan-border: #2f4460;
+}
+.oon-plan[data-tier="standard"] {
+  --plan-bg: linear-gradient(180deg, #623375 0%, #57216c 12%, #441d5d 30%, #2e194a 55%, #20143a 78%, #141414 100%);
+  --plan-border: #44305d;
+}
+.oon-plan[data-tier="premium"] {
+  --plan-bg: linear-gradient(180deg, #73304e 0%, #691e41 12%, #4f1b42 30%, #311843 55%, #20143a 78%, #141414 100%);
+  --plan-border: #473056;
+}
+.oon-plan-name { font-size: 24px; font-weight: 700; line-height: 1.25; margin: 0 0 8px; }
+.oon-plan-quality { font-size: 18px; font-weight: 700; line-height: 23px; color: rgba(255, 255, 255, .7); margin: 0 0 12px; }
+.oon-plan-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.oon-plan-points li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(255, 255, 255, .7);
+}
+.oon-plan-points svg { flex: 0 0 24px; width: 24px; height: 20px; }
+.oon-plan-price {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, .7);
+  margin: auto 0 0;
+}
+.oon-plan-tag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 103px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border-bottom-left-radius: 12px;
+  border-top-right-radius: 16px;
+  background: rgba(112, 105, 132, .78);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 18px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* ============ "MORE ABOUT NETFLIX" BANNER ============ */
+.oon-banner { position: relative; margin: 40px 0 0; overflow: hidden; isolation: isolate; border-radius: 16px; }
+.oon-banner-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('/NMHP_LINK.png'), url('/large.jpg');
+  background-position: center 46%, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat;
+  opacity: .55;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, .1) 0%, #000 42%, #000 100%);
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, .1) 0%, #000 42%, #000 100%);
+}
+.oon-banner-inner {
+  position: relative;
+  z-index: 1;
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 0 32px;
+}
+@media (min-width: 1280px) { .oon-banner-inner { padding-right: 65px; } }
+.oon-banner p { font-size: 24px; font-weight: 500; line-height: 1.3; margin: 0; }
+.oon-banner p strong { font-weight: 700; }
+.oon-banner-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  background: rgba(22, 22, 22, .7);
+  color: #fff;
+  border-radius: 100px;
+  padding: 4px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+  transition: background .2s;
+}
+.oon-banner-cta:hover { background: rgba(22, 22, 22, .95); }
+.oon-banner-cta:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ============ TUDUM STRIP ============ */
+.oon-tudum {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255, 255, 255, .1);
+  padding: 8px 16px;
+  min-height: 65px;
+  margin: 40px 0 0;
+  border-radius: 12px;
+}
+.oon-tudum-mark { flex: 0 0 auto; display: block; }
+.oon-tudum p { font-size: 14px; font-weight: 400; line-height: 21px; color: #808080; margin: 0; }
+.oon-tudum a { color: #808080; text-decoration: underline; }
+.oon-tudum a:hover { color: #b3b3b3; }
+
+/* ============ CLOSING / FLOATING CTA ============ */
+.oon-float {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 30;
+  height: 104px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 420ms ease, transform 420ms ease, visibility 0s linear 420ms;
+}
+.oon-float.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 420ms ease, transform 420ms ease, visibility 0s;
+}
+.oon-float-inner {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+  padding: 0 16px 8px;
+  box-sizing: border-box;
+}
+.oon-float-inner::before {
+  position: absolute;
+  inset: auto 0 0;
+  height: 200%;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 15, 15, 0) 0%,
+    rgba(15, 15, 15, .4) 20.83%,
+    rgba(15, 15, 15, .7) 38.75%,
+    #0f0f0f 63.33%
+  );
+  content: '';
+  pointer-events: none;
+}
+.oon-float .oon-join {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 240px;
+  min-height: 40px;
+  padding: 8px 24px;
+  font-size: 16px;
+}
+@media (min-width: 1280px) {
+  .oon-float .oon-join { min-height: 40px; }
+}
+
+.oon-footer-join {
+  position: relative;
+  width: calc(100% + 2 * (var(--oon-gutter) + var(--oon-inset)));
+  height: 64px;
+  margin: 40px 0 32px calc(-1 * (var(--oon-gutter) + var(--oon-inset)));
+}
+.oon-footer-join-inner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+.oon-footer-join-inner::before {
+  position: absolute;
+  inset: auto 0 0;
+  height: 200%;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 15, 15, 0) 0%,
+    rgba(15, 15, 15, .4) 20.83%,
+    rgba(15, 15, 15, .7) 38.75%,
+    #0f0f0f 63.33%
+  );
+  content: '';
+  pointer-events: none;
+}
+.oon-footer-join .oon-join {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: 240px;
+  min-height: 48px;
+  padding: 8px 24px;
+  font-size: 16px;
+}
+
+/* ============ FOOTER + STATES ============ */
+.oon-page .footer {
+  width: calc(100% + var(--oon-gutter) + var(--oon-gutter));
+  margin-left: calc(0px - var(--oon-gutter));
+  padding-left: calc(var(--oon-gutter) + var(--oon-inset));
+  padding-right: calc(var(--oon-gutter) + var(--oon-inset));
+}
+.oon-page .footer-region,
+.oon-page .footer-copy { display: none; }
+.oon-page .footer { padding-top: 36px; padding-bottom: 3px; }
+.oon-page .footer-contact { padding: 3px; font-size: 16px; line-height: 20px; }
+.oon-page .footer-links-4 { margin: 36px 0 39px; }
+.oon-page .footer-lang-btn { padding: 5px 12px; }
+.oon-page .footer a { color: #fff; }
+.oon-page .footer a:hover,
+.oon-page .footer a:focus-visible,
+.oon-page .footer-lang-btn:hover,
+.oon-page .footer-lang-btn:focus-visible { color: #E50914; }
+.oon-page .footer-lang-btn:hover { border-color: #E50914; }
+.oon-empty { color: #808080; font-size: 16px; padding: 24px 0 8px; margin: 0; }
+.oon-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .oon-rail-track { scroll-behavior: auto; }
+  .oon-tile-link, .oon-plan { transition: none; }
+  .oon-float,
+  .oon-float.is-visible { transition: none; }
+}
+
+@media (max-width: 959px) {
+  .oon-plans-grid { grid-template-columns: repeat(2, 1fr); }
+  .oon-plan { height: auto; min-height: 220px; }
+}
+@media (max-width: 599px)  { .oon-plans-grid { grid-template-columns: 1fr; } .oon-plan { min-height: 0; } }
+
+/* ============ RESPONSIVE SCALE ============ */
+@media (min-width: 600px) {
+  .oon-page {
+    --oon-gutter: 32px;
+    --oon-inset: 0px;
+    --oon-copy-inset: 40px;
+    --oon-h1: 32px;
+    --oon-h2: 20px;
+    --oon-card-w: 144px;
+    --oon-header-pad-x: 32px;
+    --oon-hero-ratio: 16 / 9;
+  }
+}
+
+@media (min-width: 960px) {
+  .oon-page {
+    --oon-gutter: 32px;
+    --oon-inset: 48px;
+    --oon-copy-inset: 48px;
+    --oon-h1: 40px;
+    --oon-h2: 24px;
+    --oon-card-w: 162px;
+    --oon-header-h: 72px;
+    --oon-header-pad-y: 16px;
+    --oon-header-pad-x: 32px;
+    --oon-logo-h: 45px;
+    --oon-tile-pad-y: 10.4px;
+    --oon-tile-radius: 12px;
+    --oon-rail-top: 32px;
+    --oon-hero-ratio: 2.08;
+  }
+}
+
+@media (min-width: 1280px) {
+  .oon-page {
+    --oon-gutter: 48px;
+    --oon-inset: 104px;
+    --oon-copy-inset: 64px;
+    --oon-h1: 48px;
+    --oon-h2: 32px;
+    --oon-card-w: 196px;
+    --oon-tile-radius: 12px;
+    --oon-rail-top: 40px;
+    --oon-header-pad-x: 48px;
+    --oon-hero-ratio: 2.09;
+  }
+}
+
+@media (min-width: 1920px) {
+  .oon-page {
+    --oon-gutter: 48px;
+    --oon-inset: 152px;
+    --oon-copy-inset: 116px;
+    --oon-h1: 56px;
+    --oon-h2: 32px;
+    --oon-card-w: 252px;
+    --oon-tile-radius: 16px;
+  }
+}
+.oon-tile-art-box {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 5/7;
+  border-radius: var(--oon-tile-radius);
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Card badges.
+
+   In the reference these marks are NOT DOM: they are baked into Netflix's
+   boxart JPEG (300x420, 5:7). The template is fixed, so every poster carries
+   its marks at byte-identical positions, which a red-pixel bounding-box scan
+   of four live boxarts confirmed:
+
+     N           x15  y14  23x43  ->  5.000% / 3.333% / 7.667% / 10.238%
+     TOP 10      x250 y0   50x68  ->  right 0 / top 0 / 16.667% / 16.190%
+     ribbon      x29  y372 242x48 ->  9.667% / bottom 0 / 80.667% / 11.429%
+                 (29 + 242 + 29 = 300, i.e. exactly centred)
+
+   The three marks therefore sit at fixed PERCENTAGES of the 5:7 art box, so
+   the clone overlays them at those same percentages and they track the box
+   through every breakpoint instead of needing a px value per media query.
+   The percentages were read off the 184x257.6px art box the reference uses
+   from 1280 up and reproduce it exactly there (14.1x26.4, 30.7x41.7,
+   148.4x29.5 px).
+   --------------------------------------------------------------------------- */
+
+/* The brand mark. The reference prints a bare white "N" with no plate behind
+   it; Netflix.png is 116x209 (aspect 0.555) against the mark's 0.536, so
+   `contain` parks it a hair short in the vertical and never crops it. */
+.oon-tile-brand {
+  position: absolute;
+  left: 5%;
+  top: 3.333%;
+  width: 7.667%;
+  height: 10.238%;
+  object-fit: contain;
+  object-position: left top;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* The Top 10 sticker is flush to the poster's top and right edges, with a
+   rounded upper-right corner and one angled lower edge. */
+.oon-tile-top {
+  position: absolute; right: 0; top: 0; z-index: 5;
+  background: #E50914;
+  clip-path: polygon(
+    0 0, 66% 0, 76% 2%, 86% 7%, 94% 16%, 99% 26%, 100% 31%,
+    100% 100%, 0 88%
+  );
+  color: #fff;
+  display: inline-flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 16.667%;
+  height: 16.190%;
+  font-size: calc(var(--oon-card-w) * 0.056);   /* 11px at the 196px card */
+  font-weight: 800; line-height: 1; letter-spacing: 0;
+  text-transform: uppercase;
+}
+.oon-tile-top b { font-size: 1em; }
+.oon-tile-top i { font-style: normal; font-size: 1.18em; margin-top: 0.1em; }
+
+/* The bottom ribbon. 9.667% + 80.667% + 9.667% = 100%: the reference centres
+   it, so `left:50% / translateX(-50%)` lands on the same pixels while still
+   letting the shorter "New Season" wording stay centred as well. */
+.oon-tile-chip {
+  position: absolute; left: 50%; bottom: 0; z-index: 4;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 11.429%;
+  min-width: 80.667%;
+  max-width: 100%;
+  padding: 0 calc(var(--oon-card-w) * 0.062);
+  background: #E50914; color: #fff;
+  font-size: calc(var(--oon-card-w) * 0.066);   /* 12.9px at the 196px card */
+  font-weight: 700;
+  text-align: center; white-space: nowrap;
+  border-radius: 0;
+}
+
+/* Mid-season shows get two stacked chips instead of one ribbon, sharing the
+   same bottom band and height as the ribbon above so the two line up. */
+.oon-tile-chips {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+  display: flex; gap: 2px;
+  height: 11.429%;
+}
+.oon-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: calc(var(--oon-card-w) * 0.055);
+  font-weight: 700; padding: 0 4px; flex: 1; text-align: center;
+  white-space: nowrap; overflow: hidden;
+}
+.oon-chip.red { background: #E50914; color: #fff; }
+.oon-chip.white { background: #fff; color: #000; }

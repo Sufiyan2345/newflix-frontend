@@ -1,0 +1,250 @@
+import { useEffect, useState } from 'react';
+import { applyLanguageToDocument, getLanguage } from './footerLinks';
+
+const translations = {
+  '한국어': {
+    Home: '홈', 'TV Shows': 'TV 프로그램', Movies: '영화', 'New & Popular': '신작 및 인기 콘텐츠',
+    'New & Hot': '신작 및 인기', 'My List': '내가 찜한 콘텐츠', 'Browse by Languages': '언어별 찾아보기',
+    Kids: '키즈', Search: '검색', 'Titles, people, genres': '작품, 인물, 장르', 'Search titles': '작품 검색',
+    'Browse genres': '장르별 찾아보기', 'TV Series': 'TV 시리즈', 'Friends & Activity': '친구 및 활동',
+    'No genres created yet.': '아직 장르가 없습니다.', 'No notifications yet.': '새 알림이 없습니다.',
+    Notifications: '알림', 'Manage Profiles': '프로필 관리', 'Profile Transfer': '프로필 이전', 'Viewing Activity': '시청 기록', Account: '계정',
+    'Audio & Subtitles': '음성 및 자막', 'Sign out': '로그아웃', 'Select Language': '언어 선택',
+    'Questions?': '궁금한 점이 있으신가요?', 'Contact us.': '문의하기.', FAQ: '자주 묻는 질문',
+    'Help Center': '고객 센터', 'Media Center': '미디어 센터', 'Investor Relations': '투자자 정보',
+    Jobs: '채용 정보', 'Ways to Watch': '시청 방법', 'Terms of Use': '이용 약관', Privacy: '개인정보 보호',
+    'Cookie Preferences': '쿠키 설정', 'Corporate Information': '회사 정보', 'Contact Us': '문의하기',
+    'Speed Test': '속도 테스트', 'Legal Notices': '법적 고지', 'Only on Netflix': 'Newflix에서만',
+    'Continue Watching': '이어보기', 'Trending This Week': '이번 주 인기 콘텐츠', 'Explore All': '모두 보기',
+    Play: '재생', 'More Info': '상세 정보', 'Previous title': '이전 작품',
+    'Movies & TV': '영화 및 TV', 'Search Newflix': 'Newflix 검색', 'Popular Movies & TV': '인기 영화 및 TV', 'Popular on Newflix': 'Newflix 인기 콘텐츠',
+    'Your list is empty. Add movies and series with the + button.': '목록이 비어 있습니다. + 버튼으로 영화와 시리즈를 추가하세요.',
+    'Choose photo': '사진 선택', Save: '저장', Cancel: '취소',
+  },
+  '简体中文': {
+    Home: '首页', 'TV Shows': '电视剧', Movies: '电影', 'New & Popular': '新上线与热门',
+    'New & Hot': '新上线与热门', 'My List': '我的片单', 'Browse by Languages': '按语言浏览',
+    Kids: '少儿', Search: '搜索', 'Titles, people, genres': '片名、人物、类型', 'Search titles': '搜索片名',
+    'Browse genres': '按类型浏览', 'TV Series': '剧集', 'Friends & Activity': '好友与动态',
+    'No genres created yet.': '尚未创建类型。', 'No notifications yet.': '暂无通知。',
+    Notifications: '通知', 'Manage Profiles': '管理个人资料', 'Profile Transfer': '资料转移', 'Viewing Activity': '观看记录', Account: '账户',
+    'Audio & Subtitles': '音频与字幕', 'Sign out': '退出登录', 'Select Language': '选择语言',
+    'Questions?': '有疑问吗？', 'Contact us.': '联系我们。', FAQ: '常见问题', 'Help Center': '帮助中心',
+    'Media Center': '媒体中心', 'Investor Relations': '投资者关系', Jobs: '招聘信息',
+    'Ways to Watch': '观看方式', 'Terms of Use': '使用条款', Privacy: '隐私',
+    'Cookie Preferences': 'Cookie 设置', 'Corporate Information': '公司信息', 'Contact Us': '联系我们',
+    'Speed Test': '网速测试', 'Legal Notices': '法律声明', 'Only on Netflix': 'Newflix 独家',
+    'Continue Watching': '继续观看', 'Trending This Week': '本周热门', 'Explore All': '查看全部',
+    Play: '播放', 'More Info': '更多信息', 'Previous title': '上一个片名',
+    'Movies & TV': '电影和剧集', 'Search Newflix': '搜索 Newflix', 'Popular Movies & TV': '热门电影和剧集', 'Popular on Newflix': 'Newflix 热门内容',
+    'Your list is empty. Add movies and series with the + button.': '片单为空。点击 + 按钮添加电影和剧集。',
+    'Choose photo': '选择照片', Save: '保存', Cancel: '取消',
+  },
+  Italiano: {
+    Home: 'Home', 'TV Shows': 'Serie TV', Movies: 'Film', 'New & Popular': 'Novità e popolari',
+    'New & Hot': 'Novità', 'My List': 'La mia lista', 'Browse by Languages': 'Sfoglia per lingua',
+    Kids: 'Bambini', Search: 'Cerca', 'Titles, people, genres': 'Titoli, persone, generi', 'Search titles': 'Cerca titoli',
+    'Browse genres': 'Sfoglia per genere', 'TV Series': 'Serie TV', 'Friends & Activity': 'Amici e attività',
+    'No genres created yet.': 'Nessun genere disponibile.', 'No notifications yet.': 'Nessuna notifica.',
+    Notifications: 'Notifiche', 'Manage Profiles': 'Gestisci profili', 'Profile Transfer': 'Trasferimento profilo', 'Viewing Activity': 'Attività di visione', Account: 'Account',
+    'Audio & Subtitles': 'Audio e sottotitoli', 'Sign out': 'Esci', 'Select Language': 'Seleziona lingua',
+    'Questions?': 'Domande?', 'Contact us.': 'Contattaci.', FAQ: 'Domande frequenti', 'Help Center': 'Centro assistenza',
+    'Media Center': 'Media Center', 'Investor Relations': 'Investitori', Jobs: 'Lavora con noi',
+    'Ways to Watch': 'Come guardare', 'Terms of Use': 'Condizioni di utilizzo', Privacy: 'Privacy',
+    'Cookie Preferences': 'Preferenze cookie', 'Corporate Information': 'Informazioni aziendali', 'Contact Us': 'Contattaci',
+    'Speed Test': 'Test di velocità', 'Legal Notices': 'Note legali', 'Only on Netflix': 'Solo su Newflix',
+    'Continue Watching': 'Continua a guardare', 'Trending This Week': 'Di tendenza questa settimana', 'Explore All': 'Scopri tutto',
+    Play: 'Riproduci', 'More Info': 'Altre info', 'Previous title': 'Titolo precedente',
+    'Movies & TV': 'Film e serie TV', 'Search Newflix': 'Cerca su Newflix', 'Popular Movies & TV': 'Film e serie TV popolari', 'Popular on Newflix': 'Popolari su Newflix',
+    'Your list is empty. Add movies and series with the + button.': 'La tua lista è vuota. Aggiungi film e serie con il pulsante +.',
+    'Choose photo': 'Scegli una foto', Save: 'Salva', Cancel: 'Annulla',
+  },
+  Français: {
+    Home: 'Accueil', 'TV Shows': 'Séries', Movies: 'Films', 'New & Popular': 'Nouveautés et populaires',
+    'New & Hot': 'Nouveautés', 'My List': 'Ma liste', 'Browse by Languages': 'Parcourir par langue',
+    Kids: 'Jeunesse', Search: 'Rechercher', 'Titles, people, genres': 'Titres, personnes, genres', 'Search titles': 'Rechercher des titres',
+    'Browse genres': 'Parcourir les genres', 'TV Series': 'Séries', 'Friends & Activity': 'Amis et activité',
+    'No genres created yet.': 'Aucun genre disponible.', 'No notifications yet.': 'Aucune notification.',
+    Notifications: 'Notifications', 'Manage Profiles': 'Gérer les profils', 'Profile Transfer': 'Transfert de profil', 'Viewing Activity': 'Historique de visionnage', Account: 'Compte',
+    'Audio & Subtitles': 'Audio et sous-titres', 'Sign out': 'Se déconnecter', 'Select Language': 'Choisir une langue',
+    'Questions?': 'Des questions ?', 'Contact us.': 'Contactez-nous.', FAQ: 'FAQ', 'Help Center': "Centre d'aide",
+    'Media Center': 'Espace presse', 'Investor Relations': 'Relations investisseurs', Jobs: 'Emplois',
+    'Ways to Watch': 'Comment regarder', 'Terms of Use': "Conditions d'utilisation", Privacy: 'Confidentialité',
+    'Cookie Preferences': 'Préférences de cookies', 'Corporate Information': "Informations sur l'entreprise", 'Contact Us': 'Nous contacter',
+    'Speed Test': 'Test de vitesse', 'Legal Notices': 'Mentions légales', 'Only on Netflix': 'Seulement sur Newflix',
+    'Continue Watching': 'Reprendre la lecture', 'Trending This Week': 'Tendances de la semaine', 'Explore All': 'Tout explorer',
+    Play: 'Lecture', 'More Info': "Plus d'infos", 'Previous title': 'Titre précédent',
+    'Movies & TV': 'Films et séries', 'Search Newflix': 'Rechercher sur Newflix', 'Popular Movies & TV': 'Films et séries populaires', 'Popular on Newflix': 'Populaire sur Newflix',
+    'Your list is empty. Add movies and series with the + button.': 'Votre liste est vide. Ajoutez des films et des séries avec le bouton +.',
+    'Choose photo': 'Choisir une photo', Save: 'Enregistrer', Cancel: 'Annuler',
+  },
+  '日本語': {
+    Home: 'ホーム', 'TV Shows': 'TV番組', Movies: '映画', 'New & Popular': '新作・人気作',
+    'New & Hot': '新作・人気', 'My List': 'マイリスト', 'Browse by Languages': '言語から探す',
+    Kids: 'キッズ', Search: '検索', 'Titles, people, genres': '作品名、人物、ジャンル', 'Search titles': '作品を検索',
+    'Browse genres': 'ジャンルから探す', 'TV Series': 'TVシリーズ', 'Friends & Activity': 'フレンドとアクティビティ',
+    'No genres created yet.': 'ジャンルはまだありません。', 'No notifications yet.': '通知はありません。',
+    Notifications: '通知', 'Manage Profiles': 'プロフィールの管理', 'Profile Transfer': 'プロフィールの移行', 'Viewing Activity': '視聴履歴', Account: 'アカウント',
+    'Audio & Subtitles': '音声と字幕', 'Sign out': 'ログアウト', 'Select Language': '言語を選択',
+    'Questions?': 'ご質問がありますか？', 'Contact us.': 'お問い合わせ。', FAQ: 'よくある質問', 'Help Center': 'ヘルプセンター',
+    'Media Center': 'メディアセンター', 'Investor Relations': '投資家向け情報', Jobs: '採用情報',
+    'Ways to Watch': '視聴方法', 'Terms of Use': '利用規約', Privacy: 'プライバシー',
+    'Cookie Preferences': 'Cookie設定', 'Corporate Information': '会社概要', 'Contact Us': 'お問い合わせ',
+    'Speed Test': '速度テスト', 'Legal Notices': '法的通知', 'Only on Netflix': 'Newflix独占',
+    'Continue Watching': '視聴を続ける', 'Trending This Week': '今週の人気作品', 'Explore All': 'すべて見る',
+    Play: '再生', 'More Info': '詳細情報', 'Previous title': '前の作品',
+    'Movies & TV': '映画・テレビ', 'Search Newflix': 'Newflixを検索', 'Popular Movies & TV': '人気の映画・テレビ', 'Popular on Newflix': 'Newflixで人気',
+    'Your list is empty. Add movies and series with the + button.': 'リストは空です。+ボタンで映画やシリーズを追加してください。',
+    'Choose photo': '写真を選択', Save: '保存', Cancel: 'キャンセル',
+  },
+};
+
+const LANGUAGE_NAMES = {
+  Korean: '한국어',
+  'Chinese (Simplified)': '简体中文',
+  Italian: 'Italiano',
+  French: 'Français',
+  Japanese: '日本語',
+};
+
+const NAV_KEYS = ['Home', 'TV Shows', 'Movies', 'New & Popular', 'My List', 'Kids', 'Search'];
+const NAV_TRANSLATIONS = {
+  Arabic: ['الرئيسية', 'المسلسلات', 'الأفلام', 'الجديد والرائج', 'قائمتي', 'الأطفال', 'بحث'],
+  'Chinese (Simplified)': ['首页', '电视剧', '电影', '新上线与热门', '我的片单', '少儿', '搜索'],
+  'Chinese (Traditional)': ['首頁', '影集', '電影', '最新與熱門', '我的片單', '兒童', '搜尋'],
+  Croatian: ['Početna', 'Serije', 'Filmovi', 'Novo i popularno', 'Moj popis', 'Djeca', 'Pretraživanje'],
+  Czech: ['Domů', 'Seriály', 'Filmy', 'Nové a oblíbené', 'Můj seznam', 'Děti', 'Hledat'],
+  Danish: ['Hjem', 'Serier', 'Film', 'Nyt og populært', 'Min liste', 'Børn', 'Søg'],
+  Dutch: ['Home', 'Series', 'Films', 'Nieuw en populair', 'Mijn lijst', 'Kids', 'Zoeken'],
+  English: NAV_KEYS,
+  Filipino: ['Home', 'Mga Palabas sa TV', 'Mga Pelikula', 'Bago at Sikat', 'Aking Listahan', 'Mga Bata', 'Maghanap'],
+  Finnish: ['Etusivu', 'Sarjat', 'Elokuvat', 'Uutta ja suosittua', 'Oma lista', 'Lapset', 'Haku'],
+  French: ['Accueil', 'Séries', 'Films', 'Nouveautés et populaires', 'Ma liste', 'Jeunesse', 'Rechercher'],
+  'French (Canada)': ['Accueil', 'Séries', 'Films', 'Nouveautés et populaires', 'Ma liste', 'Enfants', 'Rechercher'],
+  German: ['Startseite', 'Serien', 'Filme', 'Neu und beliebt', 'Meine Liste', 'Kinder', 'Suchen'],
+  Greek: ['Αρχική', 'Σειρές', 'Ταινίες', 'Νέο και δημοφιλές', 'Η λίστα μου', 'Παιδιά', 'Αναζήτηση'],
+  Hebrew: ['בית', 'סדרות', 'סרטים', 'חדש ופופולרי', 'הרשימה שלי', 'ילדים', 'חיפוש'],
+  Hindi: ['होम', 'टीवी शो', 'फ़िल्में', 'नया और लोकप्रिय', 'मेरी सूची', 'बच्चों के लिए', 'खोजें'],
+  Hungarian: ['Kezdőlap', 'Sorozatok', 'Filmek', 'Új és népszerű', 'Saját lista', 'Gyerekek', 'Keresés'],
+  Indonesian: ['Beranda', 'Acara TV', 'Film', 'Baru & Populer', 'Daftar Saya', 'Anak-anak', 'Cari'],
+  Italian: ['Home', 'Serie TV', 'Film', 'Novità e popolari', 'La mia lista', 'Bambini', 'Cerca'],
+  Japanese: ['ホーム', 'テレビ番組', '映画', '新作・人気', 'マイリスト', 'キッズ', '検索'],
+  Korean: ['홈', 'TV 프로그램', '영화', '신작 및 인기 콘텐츠', '내가 찜한 콘텐츠', '키즈', '검색'],
+  Malay: ['Laman Utama', 'Rancangan TV', 'Filem', 'Baharu & Popular', 'Senarai Saya', 'Kanak-kanak', 'Cari'],
+  Norwegian: ['Hjem', 'Serier', 'Filmer', 'Nytt og populært', 'Min liste', 'Barn', 'Søk'],
+  Polish: ['Strona główna', 'Seriale', 'Filmy', 'Nowości i popularne', 'Moja lista', 'Dzieci', 'Szukaj'],
+  'Portuguese (Brazil)': ['Início', 'Séries', 'Filmes', 'Lançamentos e populares', 'Minha lista', 'Infantil', 'Buscar'],
+  'Portuguese (Portugal)': ['Início', 'Séries', 'Filmes', 'Novidades e populares', 'A minha lista', 'Infantil', 'Pesquisar'],
+  Romanian: ['Acasă', 'Seriale', 'Filme', 'Noi și populare', 'Lista mea', 'Copii', 'Căutare'],
+  Russian: ['Главная', 'Сериалы', 'Фильмы', 'Новинки и популярное', 'Мой список', 'Детям', 'Поиск'],
+  'Spanish (Latin America)': ['Inicio', 'Series', 'Películas', 'Novedades y populares', 'Mi lista', 'Niños', 'Buscar'],
+  'Spanish (Spain)': ['Inicio', 'Series', 'Películas', 'Novedades y populares', 'Mi lista', 'Infantil', 'Buscar'],
+  Swedish: ['Hem', 'Serier', 'Filmer', 'Nytt och populärt', 'Min lista', 'Barn', 'Sök'],
+  Thai: ['หน้าแรก', 'ซีรีส์', 'ภาพยนตร์', 'มาใหม่และกำลังนิยม', 'รายการของฉัน', 'เด็ก', 'ค้นหา'],
+  Turkish: ['Ana Sayfa', 'Diziler', 'Filmler', 'Yeni ve Popüler', 'Listem', 'Çocuklar', 'Ara'],
+  Ukrainian: ['Головна', 'Серіали', 'Фільми', 'Нове й популярне', 'Мій список', 'Дітям', 'Пошук'],
+  Vietnamese: ['Trang chủ', 'Chương trình truyền hình', 'Phim', 'Mới & Phổ biến', 'Danh sách của tôi', 'Trẻ em', 'Tìm kiếm'],
+};
+
+const RAIL_TRANSLATIONS = {
+  'Airing Today': {
+    Arabic: 'يعرض اليوم',
+    'Chinese (Simplified)': '今日播出',
+    'Chinese (Traditional)': '今日播出',
+    Croatian: 'Emitira se danas',
+    Czech: 'Dnes vysíláno',
+    Danish: 'Sendes i dag',
+    Dutch: 'Vandaag uitgezonden',
+    English: 'Airing Today',
+    Filipino: 'Mapapanood Ngayon',
+    Finnish: 'Esitetään tänään',
+    French: "À l’affiche aujourd’hui",
+    'French (Canada)': "À l’affiche aujourd’hui",
+    German: 'Heute im Programm',
+    Greek: 'Προβάλλεται σήμερα',
+    Hebrew: 'משודר היום',
+    Hindi: 'आज प्रसारित',
+    Hungarian: 'Ma adásban',
+    Indonesian: 'Tayang Hari Ini',
+    Italian: 'In onda oggi',
+    Japanese: '本日放送',
+    Korean: '오늘 방영',
+    Malay: 'Disiarkan Hari Ini',
+    Norwegian: 'Sendes i dag',
+    Polish: 'Dziś w emisji',
+    'Portuguese (Brazil)': 'No ar hoje',
+    'Portuguese (Portugal)': 'No ar hoje',
+    Romanian: 'În difuzare astăzi',
+    Russian: 'В эфире сегодня',
+    'Spanish (Latin America)': 'Se emite hoy',
+    'Spanish (Spain)': 'Se emite hoy',
+    Swedish: 'Sänds idag',
+    Thai: 'ออกอากาศวันนี้',
+    Turkish: 'Bugün Yayında',
+    Ukrainian: 'В ефірі сьогодні',
+    Vietnamese: 'Phát sóng hôm nay',
+  },
+};
+
+const FOOTER_GROUP_TRANSLATIONS = {
+  Arabic: ['القائمة', 'التنقل', 'معلومات', 'الدعم'],
+  'Chinese (Simplified)': ['菜单', '导航', '信息', '支持'],
+  'Chinese (Traditional)': ['選單', '導覽', '資訊', '支援'],
+  Croatian: ['Izbornik', 'Navigacija', 'Informacije', 'Podrška'],
+  Czech: ['Nabídka', 'Navigace', 'Informace', 'Podpora'],
+  Danish: ['Menu', 'Navigation', 'Info', 'Support'],
+  Dutch: ['Menu', 'Navigatie', 'Info', 'Ondersteuning'],
+  English: ['Menu', 'Navigation', 'Info', 'Support'],
+  Filipino: ['Menu', 'Nabigasyon', 'Impormasyon', 'Suporta'],
+  Finnish: ['Valikko', 'Navigointi', 'Tiedot', 'Tuki'],
+  French: ['Menu', 'Navigation', 'Infos', 'Assistance'],
+  'French (Canada)': ['Menu', 'Navigation', 'Infos', 'Soutien'],
+  German: ['Menü', 'Navigation', 'Info', 'Support'],
+  Greek: ['Μενού', 'Πλοήγηση', 'Πληροφορίες', 'Υποστήριξη'],
+  Hebrew: ['תפריט', 'ניווט', 'מידע', 'תמיכה'],
+  Hindi: ['मेनू', 'नेविगेशन', 'जानकारी', 'सहायता'],
+  Hungarian: ['Menü', 'Navigáció', 'Információ', 'Támogatás'],
+  Indonesian: ['Menu', 'Navigasi', 'Info', 'Dukungan'],
+  Italian: ['Menu', 'Navigazione', 'Info', 'Supporto'],
+  Japanese: ['メニュー', 'ナビゲーション', '情報', 'サポート'],
+  Korean: ['메뉴', '탐색', '정보', '고객 지원'],
+  Malay: ['Menu', 'Navigasi', 'Maklumat', 'Sokongan'],
+  Norwegian: ['Meny', 'Navigasjon', 'Info', 'Kundestøtte'],
+  Polish: ['Menu', 'Nawigacja', 'Informacje', 'Pomoc'],
+  'Portuguese (Brazil)': ['Menu', 'Navegação', 'Informações', 'Suporte'],
+  'Portuguese (Portugal)': ['Menu', 'Navegação', 'Informações', 'Apoio'],
+  Romanian: ['Meniu', 'Navigare', 'Informații', 'Asistență'],
+  Russian: ['Меню', 'Навигация', 'Информация', 'Поддержка'],
+  'Spanish (Latin America)': ['Menú', 'Navegación', 'Información', 'Ayuda'],
+  'Spanish (Spain)': ['Menú', 'Navegación', 'Información', 'Ayuda'],
+  Swedish: ['Meny', 'Navigering', 'Information', 'Support'],
+  Thai: ['เมนู', 'การนำทาง', 'ข้อมูล', 'ฝ่ายช่วยเหลือ'],
+  Turkish: ['Menü', 'Gezinme', 'Bilgi', 'Destek'],
+  Ukrainian: ['Меню', 'Навігація', 'Інформація', 'Підтримка'],
+  Vietnamese: ['Menu', 'Điều hướng', 'Thông tin', 'Hỗ trợ'],
+};
+
+export const translate = (text, language = getLanguage()) => {
+  const label = LANGUAGE_NAMES[language] || language;
+  const existing = translations[label]?.[text];
+  if (existing) return existing;
+  const footerGroupIndex = ['Menu', 'Navigation', 'Info', 'Support'].indexOf(text);
+  if (footerGroupIndex >= 0) return FOOTER_GROUP_TRANSLATIONS[language]?.[footerGroupIndex] || text;
+  const railTranslation = RAIL_TRANSLATIONS[text]?.[language] || RAIL_TRANSLATIONS[text]?.[label];
+  if (railTranslation) return railTranslation;
+  const navIndex = NAV_KEYS.indexOf(text);
+  return navIndex >= 0 ? NAV_TRANSLATIONS[language]?.[navIndex] || text : text;
+};
+
+export function useSiteTranslation() {
+  const [language, setLanguage] = useState(getLanguage);
+
+  useEffect(() => {
+    applyLanguageToDocument(language);
+    const onLanguageChange = (event) => setLanguage(event.detail);
+    window.addEventListener('sf-language-changed', onLanguageChange);
+    return () => window.removeEventListener('sf-language-changed', onLanguageChange);
+  }, []);
+
+  return (text) => translate(text, language);
+}

@@ -1,0 +1,98 @@
+
+> streamflix-frontend@1.0.0 dev
+> vite
+
+Port 5173 is in use, trying another one...
+Port 5174 is in use, trying another one...
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m838[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5175[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m8:03:04 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:20:47 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:20:47 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:22:13 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:22:20 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:22:31 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:24:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:24:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:25:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:26:33 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:26:52 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:27:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:27:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:27:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:28:19 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:30:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:33:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:33:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:33:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:33:44 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:33:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:34:20 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:34:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:35:23 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:35:38 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:35:58 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:35:58 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:39:48 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:39:48 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:40:06 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:40:23 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:40:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:42:11 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:42:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:45:10 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:45:10 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:45:14 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:47:20 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:47:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:51:14 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/StaticPage.jsx[22m
+[2m8:51:50 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m8:52:16 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:52:28 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/StaticPage.jsx[22m
+[2m8:52:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:54:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:54:48 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:56:03 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/StaticPage.jsx[22m
+[2m8:57:48 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m8:58:55 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/StaticPage.jsx[22m
+[2m8:58:55 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/StaticPage.jsx[22m
+[2m9:03:27 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:03:27 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:03:40 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:04:41 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:05:55 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:16:26 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:16:30 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:16:36 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:21:14 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:21:57 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:23:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:25:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:26:36 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:26:36 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:30:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:30:46 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:34:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:34:17 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:35:38 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:37:15 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:39:38 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:42:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:42:12 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:42:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:42:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:42:59 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:43:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m9:43:49 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m9:44:52 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m9:45:11 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/pages.css[22m
+[2m9:52:30 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:53:24 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:55:07 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m9:55:18 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m10:01:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m
+[2m10:01:51 pm[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/InvestorRelations.jsx[22m

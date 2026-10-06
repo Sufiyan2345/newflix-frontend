@@ -1,0 +1,649 @@
+/* ============================================================================
+   /p/only-on-netflix/title/:type/:id — the title screen a card on the "Only on
+   Netflix" page opens, laid out like netflix.com/pk/title/<id>.
+
+   This file only carries the rows that page ADDS. Everything it shares with the
+   rail page — the masthead, the hero's frame and copy geometry, the poster tiles
+   and arrows, the plan grid, the banner, the Tudum strip, the footer-join CTA
+   and the footer itself — is the rail page's own `.oon-*` markup, driven by the
+   token set declared on `.oon-page` (gutter, inset, h1/h2, card width). The page
+   root therefore carries BOTH classes, so both pages sit on one measured grid
+   instead of two that drift apart.
+
+   The skeleton this page reproduces, top to bottom:
+     masthead      wordmark + Sign In pill            (from the rail page)
+     pill nav      Trailers · Episodes · More to Watch · Plans — STICKY
+     hero          backdrop + title treatment + email capture + transport strip
+     info card     title, meta line, synopsis, Starring/Creators
+     Trailers      three 16:9 cards across the column
+     Episodes      season pill + a horizontal rail of episode cards
+     More Details  three glass panels
+     Join Now      centred mid-page call to action
+     rails         You Might Also Like, Trending Now (bare posters + N mark)
+     plans         the four tiers                    (from the rail page)
+     banner + Tudum + footer                         (from the rail page)
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Root. Two overrides only — the rail page's own background and box remain.
+   --------------------------------------------------------------------------- */
+.oon-page.ont-page {
+  /* `position: sticky` does NOT work inside an `overflow-x: hidden` box: the
+     hidden axis silently turns that box into a scrollport of its own, so the
+     sticky child measures against a box that never scrolls and simply sits
+     still. `clip` crops exactly the same way — so the footer CTA's bleed is
+     still cut — but is NOT a scroll container, which is what lets the pill nav
+     below ride the viewport while everything else keeps the rail page's
+     clipping. (With overflow-x: clip and overflow-y left visible, visible stays
+     visible: the auto-substitution only applies to a `scroll`/`auto`/`hidden`
+     sibling.) */
+  overflow-x: clip;
+}
+
+/* The rail page's ambient wash, re-pointed at THIS title's own artwork so the
+   room behind the page belongs to the film that is open. The URL arrives as
+   `--ont-ambient`, set inline on the root; the rail page's collage stays the
+   fallback if a title has no artwork at all. */
+.oon-page.ont-page::before {
+  background-image: var(--ont-ambient, url('/large.jpg'));
+  filter: blur(44px) brightness(.22);
+  opacity: .5;
+}
+.oon-page.ont-page.has-ambient-trailer::before { display: none; }
+.ont-video-ambient {
+  position: fixed;
+  inset: -36px;
+  z-index: -1;
+  overflow: hidden;
+  background: #050505;
+  pointer-events: none;
+}
+.ont-video-ambient::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .34), rgba(0, 0, 0, .18) 48%, rgba(0, 0, 0, .4)),
+    linear-gradient(0deg, rgba(0, 0, 0, .68), rgba(0, 0, 0, .24) 48%, rgba(0, 0, 0, .58));
+}
+
+/* ---------------------------------------------------------------------------
+   The sticky section switcher. It sits in flow directly under the masthead — so
+   at scroll zero it lands exactly where the reference draws it, 8px under the
+   wordmark — and then sticks to the top of the viewport once it reaches it,
+   which is why the wordmark and Sign In pill scroll away above it.
+
+   It breaks out of the page gutter with negative margins so the pill centres on
+   the VIEWPORT rather than on the page's inset content box; the padding puts the
+   inset straight back, so at rest it still lines up with the masthead.
+   --------------------------------------------------------------------------- */
+.ont-pillnav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  margin: 0 calc(-1 * var(--oon-gutter));
+  padding: 4px var(--oon-gutter) 8px;
+  pointer-events: none;
+}
+.ont-pillnav-inner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 6px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, .75);
+  pointer-events: auto;
+}
+.ont-pill {
+  appearance: none;
+  border: none;
+  background: none;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 8px 18px;
+  border-radius: 100px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .18s;
+}
+.ont-pill:hover { background: rgba(255, 255, 255, .16); }
+.ont-pill:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ---------------------------------------------------------------------------
+   The hero. The frame, the artwork stack and the email field are the rail page's
+   own; only the copy anchor, the title treatment and the transport strip differ.
+   --------------------------------------------------------------------------- */
+/* Keep the signup stack in a compact left-side column near the bottom of the
+   hero, with the logo, field, button and price centered within that column. */
+.ont-page .oon-hero-copy {
+  top: auto;
+  bottom: 12%;
+  left: 5%;
+  width: min(400px, 86vw);
+  transform: none;
+}
+
+.ont-hero-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto 34px;
+}
+.ont-hero-brand {
+  display: block;
+  width: 92px;
+  height: auto;
+  align-self: center;
+  margin: 0 0 26px;
+}
+.ont-hero-lockup .ont-hero-logo {
+  align-self: center;
+  max-width: min(100%, 460px);
+  max-height: 150px;
+  margin: 0;
+}
+@media (min-width: 1280px) {
+  .ont-hero-brand { width: 100px; margin-bottom: 28px; }
+  .ont-hero-lockup .ont-hero-logo { max-height: 165px; }
+}
+.ont-page .oon-hero-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: min(400px, 100%);
+  max-width: 400px;
+  margin: 0;
+}
+.ont-page .oon-hero-form .oon-field {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 56px;
+}
+.ont-page .oon-hero-form .oon-field input { padding: 18px 16px 0; }
+.ont-page .oon-hero-form .oon-field label { top: 15px; left: 16px; }
+.ont-page .oon-hero-form .oon-join {
+  flex: 0 0 auto;
+  align-self: center;
+  width: min(250px, 100%);
+  min-height: 48px;
+  padding: 8px 20px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.ont-signup-group { width: min(400px, 100%); margin: 0 auto; }
+.ont-page .ont-signup-group .oon-hero-price {
+  width: 100%;
+  margin: 10px 0 0;
+  text-align: center;
+}
+.ont-email-error {
+  width: 100%;
+  margin: -4px 0 0;
+  color: #ffb3b3;
+  font-size: 13px;
+  line-height: 18px;
+}
+@media (max-width: 599px) {
+  .ont-page .oon-hero-copy { bottom: 24px; left: 7%; width: min(320px, 86vw); }
+  .ont-hero-lockup { margin: 0 auto 22px; align-items: center; }
+  .ont-hero-brand { width: 76px; margin-bottom: 16px; }
+  .ont-hero-lockup .ont-hero-logo { max-width: 100%; max-height: 104px; }
+  .ont-signup-group { width: min(320px, 100%); margin: 0 auto; }
+  .ont-page .oon-hero-form { width: min(320px, 100%); max-width: 320px; }
+  .ont-page .oon-hero-form .oon-field { height: 48px; }
+  .ont-page .oon-hero-form .oon-field input { padding: 14px 14px 0; }
+  .ont-page .oon-hero-form .oon-field label { top: 11px; left: 14px; }
+  .ont-page .oon-hero-form .oon-join { width: min(240px, 100%); min-height: 46px; }
+}
+
+.ont-hero-trailer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100vw, 177.78vh);
+  height: max(56.25vw, 100vh);
+  max-width: none;
+  border: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1.12);
+  transform-origin: center;
+  filter: blur(14px) brightness(.3) saturate(.8);
+}
+.ont-hero-frame-trailer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  transform: scale(1.32);
+  transform-origin: center;
+}
+.ont-page .oon-hero-art.has-trailer {
+  background: transparent;
+}
+.ont-page .oon-hero-art.has-trailer .oon-hero-background {
+  display: none;
+}
+.ont-page .oon-hero-art.has-trailer .oon-hero-scrim {
+  background-color: rgba(0, 0, 0, .12);
+}
+.ont-page .oon-hero-frame:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  aspect-ratio: auto;
+  border-radius: 0;
+}
+
+/* The treatment is a transparent PNG with its own aspect, so it is capped by BOTH
+   axes and contained — never stretched, never wider than the copy block beside
+   it. `object-position: left bottom` keeps it flush with the copy column; the
+   phone layout is centred, so the art centres with it. */
+.ont-hero-logo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(58%, 460px);
+  max-height: 150px;
+  object-fit: contain;
+  object-position: left bottom;
+  margin: 0 0 18px;
+}
+@media (min-width: 1280px) { .ont-hero-logo { max-height: 165px; } }
+@media (max-width: 599px) {
+  .ont-hero-logo {
+    max-width: 72%;
+    max-height: 104px;
+    object-position: center bottom;
+    margin: 0 auto 14px;
+  }
+}
+
+/* The four decorative transport marks, sitting in the artwork's bottom-right
+   corner the way the reference draws them. */
+.ont-hero-controls {
+  position: absolute;
+  right: var(--oon-copy-inset);
+  /* The hero frame's mask fades its own bottom 4% away, so the strip is held just
+     above that band rather than sitting on the very bottom edge. */
+  bottom: clamp(56px, 12%, 88px);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ont-hero-ctrl {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(0, 0, 0, .4);
+  border: 1px solid rgba(255, 255, 255, .55);
+  color: #fff;
+  cursor: pointer;
+  transition: background .18s, transform .18s;
+}
+.ont-hero-ctrl svg { display: block; width: 21px; height: 21px; }
+.ont-hero-ctrl:hover { background: rgba(255, 255, 255, .18); transform: scale(1.04); }
+.ont-hero-ctrl:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.ont-hero-ctrl.active { background: rgba(255, 255, 255, .24); }
+.ont-player-error {
+  position: absolute;
+  right: var(--oon-copy-inset);
+  bottom: 8px;
+  margin: 0;
+  color: #fff;
+  font-size: 12px;
+  text-shadow: 0 1px 4px #000;
+}
+@media (max-width: 599px) {
+  .ont-hero-controls { right: 12px; bottom: 22px; gap: 8px; }
+  .ont-hero-ctrl { width: 36px; height: 36px; }
+}
+
+/* ---------------------------------------------------------------------------
+   The info card. A single glass panel: the title, the dot-separated meta line,
+   then the synopsis and the credits sharing a row below it. It is the first thing
+   in `.oon-column`, so it inherits the same inset as the rails underneath it.
+   --------------------------------------------------------------------------- */
+.ont-info {
+  margin: 32px 0 0;
+  padding: 22px 26px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .04));
+  backdrop-filter: blur(8px);
+}
+.ont-info-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  margin: 0 0 10px;
+}
+@media (min-width: 600px) { .ont-info-title { font-size: 24px; line-height: 30px; } }
+@media (min-width: 960px) { .ont-info-title { font-size: 26px; line-height: 32px; } }
+@media (min-width: 1280px) { .ont-info-title { font-size: 28px; line-height: 34px; } }
+@media (max-width: 599px) { .ont-info { padding: 18px 16px; } }
+
+/* One 8px gap either side of every "·", so the meta line reads
+   "2026 · 2 Seasons · 18+ · Comedy" the way the reference does. */
+.ont-info-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 18px;
+  color: #fff;
+}
+.ont-info-meta > span { display: inline-flex; align-items: center; gap: 8px; }
+.ont-info-meta i { font-style: normal; color: rgba(255, 255, 255, .55); }
+
+.ont-info-body { display: flex; align-items: flex-start; gap: 40px; }
+.ont-info-desc {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 640px;
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  color: rgba(255, 255, 255, .9);
+}
+.ont-info-credits { flex: 0 1 auto; max-width: 44%; }
+.ont-credit-row {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.ont-credit-row + .ont-credit-row { margin-top: 6px; }
+.ont-credit-label { flex: 0 0 auto; color: rgba(255, 255, 255, .6); }
+.ont-credit-value { color: #fff; }
+@media (max-width: 959px) {
+  .ont-info-body { flex-direction: column; gap: 14px; }
+  .ont-info-desc { max-width: none; }
+  .ont-info-credits { max-width: none; }
+}
+
+/* ---------------------------------------------------------------------------
+   Every row below the info card shares one vertical rhythm: 40px off, and the
+   rail page's own `--oon-h2` heading size, so "Trailers", "Episodes", "More
+   Details", "You Might Also Like" and "Trending Now" are all the same weight as
+   "Your Next Watch" above them on the rail page.
+
+   `scroll-margin-top` is what makes the sticky pill nav usable: it is roughly the
+   height of that pill, so a jump lands the heading just below it instead of
+   behind it.
+   --------------------------------------------------------------------------- */
+.ont-section {
+  margin: 40px 0 0;
+  scroll-margin-top: 72px;
+}
+.ont-section-title {
+  font-size: var(--oon-h2);
+  font-weight: 700;
+  line-height: 40px;
+  margin: 0 0 10px;
+}
+#ont-watch,
+.ont-page .oon-plans { scroll-margin-top: 72px; }
+
+/* ---------------------------------------------------------------------------
+   The horizontal rail: the rail page's own `.oon-arrow` paging marks, which sit
+   at `left: 0` / `right: 0` of this viewport and therefore overlay the ends of the
+   track. The rail page hides what is underneath them with the track's 40px edge
+   mask; Netflix's own rows leave the first and last item flush with the column and
+   simply overlay the arrow on hover, which is what happens here — the episode row
+   in particular is never faded.
+   --------------------------------------------------------------------------- */
+.ont-rail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }
+.ont-rail-head .ont-section-title { margin-bottom: 0; }
+.ont-rail-viewport { position: relative; }
+.ont-rail-track {
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  padding: 8px 0;
+  margin: -8px 0;
+}
+.ont-rail-viewport.can-scroll-left .ont-rail-track {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 54px, #000 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 54px, #000 100%);
+}
+.ont-rail-viewport.can-scroll-right .ont-rail-track {
+  -webkit-mask-image: linear-gradient(to left, transparent 0, #000 54px, #000 100%);
+  mask-image: linear-gradient(to left, transparent 0, #000 54px, #000 100%);
+}
+.ont-rail-viewport.can-scroll-left.can-scroll-right .ont-rail-track {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 54px, #000 calc(100% - 54px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 54px, #000 calc(100% - 54px), transparent 100%);
+}
+.ont-rail-track::-webkit-scrollbar { display: none; }
+.ont-rail-viewport .oon-arrow:disabled { opacity: 0; }
+/* The rail page only brightens its arrows on hover for its own viewport class. */
+.ont-rail-viewport:hover .oon-arrow:not(:disabled) { opacity: 1; }
+
+/* ---------------------------------------------------------------------------
+   The Trailers row: horizontal cards with the shared soft-edge mask and paging
+   arrows, sized to show three cards at once on desktop.
+   --------------------------------------------------------------------------- */
+.ont-trailers-rail .ont-rail-track { gap: 16px; }
+.ont-trailers-rail .ont-tcard { flex: 0 0 calc((100% - 32px) / 3); }
+@media (max-width: 799px) {
+  .ont-trailers-rail .ont-tcard { flex-basis: calc((100% - 16px) / 2); }
+}
+@media (max-width: 599px) {
+  .ont-trailers-rail .ont-tcard { flex-basis: 82%; }
+}
+
+.ont-tcard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ont-tcard-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #232323;
+}
+.ont-tcard-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ont-tcard-play {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .55);
+  border: 1.5px solid rgba(255, 255, 255, .85);
+  color: #fff;
+}
+.ont-tcard-play svg { margin-left: 2px; }
+.ont-tcard:hover .ont-tcard-art { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55); }
+.ont-tcard:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.ont-tcard-kind {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .7);
+}
+.ont-tcard-name {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+   The season dropdown, sitting beside the "Episodes" heading the way the
+   reference puts it: an outlined pill with the caret parked on its right edge.
+   --------------------------------------------------------------------------- */
+.ont-season { position: relative; display: inline-flex; align-items: center; }
+.ont-season select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(0, 0, 0, .6);
+  border: 1px solid rgba(255, 255, 255, .4);
+  border-radius: 100px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 7px 42px 7px 16px;
+  cursor: pointer;
+}
+.ont-season select:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.ont-season select option { background: #1f1f1f; color: #fff; }
+.ont-season svg { position: absolute; right: 12px; pointer-events: none; }
+
+/* ---------------------------------------------------------------------------
+   An episode card: a 16:9 still with its runtime in the corner, then the number
+   and name, then the synopsis clamped to four lines. The cards stretch to the
+   tallest in the rail, so a season with one long synopsis does not leave the rest
+   of the row ragged.
+   --------------------------------------------------------------------------- */
+.ont-ep {
+  flex: 0 0 auto;
+  width: 300px;
+  margin: 0 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s;
+}
+.ont-ep:hover { background: rgba(255, 255, 255, .13); }
+.ont-ep:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (max-width: 599px) { .ont-ep { width: 240px; } }
+
+.ont-ep-art { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px; background: #232323; }
+.ont-ep-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ont-ep-noart { display: block; width: 100%; height: 100%; background: #232323; }
+.ont-ep-dur {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .7);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+}
+.ont-ep-body { display: block; padding: 12px 14px 16px; }
+.ont-ep-title { display: block; font-size: 14px; font-weight: 700; line-height: 20px; }
+.ont-ep-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 19px;
+  color: rgba(255, 255, 255, .75);
+}
+
+/* ---------------------------------------------------------------------------
+   "More Details": three glass panels. Each is a column of label/value blocks, so
+   a panel with four blocks next to one with two simply gets taller — the grid
+   keeps all three on the same baseline, which is what the reference does.
+   --------------------------------------------------------------------------- */
+.ont-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (max-width: 1023px) { .ont-details-grid { grid-template-columns: minmax(0, 1fr); } }
+.ont-detail-card {
+  padding: 22px 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .035));
+}
+.ont-detail-block + .ont-detail-block { margin-top: 16px; }
+.ont-detail-label {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #fff;
+}
+.ont-detail-value {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: rgba(255, 255, 255, .7);
+}
+.ont-detail-link { color: #fff; text-decoration: underline; }
+.ont-detail-link:hover,
+.ont-detail-link:focus-visible { color: #E50914; }
+
+/* The page's own mid-page call to action: the same 240px red pill the closing
+   strip uses, centred under the detail panels. */
+.ont-join-row { display: flex; justify-content: center; margin: 40px 0 0; }
+.ont-join-row .oon-join { flex: 0 0 auto; width: 240px; min-height: 48px; }
+
+.ont-empty {
+  margin: 0;
+  padding: 24px 0;
+  font-size: 16px;
+  color: #808080;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ont-rail-track { scroll-behavior: auto; }
+  .ont-pill, .ont-ep { transition: none; }
+}
+@media (max-width: 599px) {
+  /* Four pills no longer fit a phone, so the pill scrolls sideways instead of
+     being squeezed — `margin-inline: auto` keeps it centred while it does fit. */
+  .ont-pillnav { justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+  .ont-pillnav::-webkit-scrollbar { display: none; }
+  .ont-pillnav-inner { margin-inline: auto; }
+}

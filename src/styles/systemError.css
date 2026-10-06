@@ -1,0 +1,73 @@
+.system-error-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-image: linear-gradient(to bottom, rgba(0,0,0,.26), rgba(0,0,0,.54)), url('/Wheel.jpg');
+  background-position: center;
+  background-size: cover;
+  color: #fff;
+}
+.system-error-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  flex: 0 0 56px;
+  padding: 0 32px;
+  background: transparent;
+}
+.system-error-header a { display: inline-flex; align-items: center; }
+.system-error-header img { display: block; width: 76px; max-height: 30px; object-fit: contain; object-position: left center; }
+.system-error-content {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 48px 24px;
+  background: transparent;
+}
+.system-error-message { width: min(820px, 100%); text-align: center; text-shadow: 0 1px 8px rgba(0,0,0,.3); }
+.system-error-message h1 { margin: 0 0 30px; font-size: 64px; font-weight: 600; line-height: 1.08; }
+.system-error-message > p:not(.system-error-code) { max-width: 780px; margin: 0 auto 24px; color: #eee; font-size: 24px; font-weight: 400; line-height: 1.35; }
+.system-error-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.system-error-actions a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 0 22px; border-radius: 4px; font-size: 16px; font-weight: 700; text-shadow: none; transition: background-color .16s ease, color .16s ease; }
+.system-error-home { background: #fff; color: #111; }
+.system-error-home:hover { background: #e5e5e5; }
+.system-error-help { background: rgba(109,109,110,.76); color: #fff; }
+.system-error-help:hover { background: rgba(109,109,110,.55); }
+/* The retry button, matched to the two links beside it. */
+.system-error-retry {
+  min-height: 44px; padding: 0 22px; border: 0; border-radius: 4px; cursor: pointer;
+  background: #e50914; color: #fff; font-size: 16px; font-weight: 700; font-family: inherit;
+  text-shadow: none; transition: background-color .16s ease;
+}
+.system-error-retry:hover { background: #f6121d; }
+.system-error-retry:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+/* The real failure reason, so a crash is diagnosable without opening devtools. */
+.system-error-reason {
+  max-width: 780px; margin: 0 auto 22px; padding: 10px 14px; border-radius: 4px;
+  background: rgba(0,0,0,.55); color: #ffd7d7; font-size: 14px; line-height: 1.45;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-align: left;
+  word-break: break-word; text-shadow: none;
+}
+.system-error-code { display: inline-flex; align-items: center; gap: 10px; margin: 54px 0 0; color: #fff; font-size: 28px; font-weight: 400; }
+.system-error-code span { border-left: 2px solid #e50914; padding-left: 14px; }
+@media (max-width: 600px) {
+  .system-error-header { flex-basis: 52px; padding: 0 20px; }
+  .system-error-header img { width: 68px; max-height: 27px; }
+  .system-error-content { padding: 32px 20px; }
+  .system-error-message h1 { margin-bottom: 20px; font-size: 38px; }
+  .system-error-message > p:not(.system-error-code) { margin-bottom: 22px; font-size: 18px; }
+  .system-error-actions { gap: 9px; }
+  .system-error-actions a { min-height: 42px; padding: 0 15px; font-size: 14px; }
+  .system-error-code { margin-top: 38px; font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .system-error-actions a { transition: none; }
+}

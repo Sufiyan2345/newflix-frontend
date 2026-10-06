@@ -1,0 +1,1092 @@
+/* ==========================================================================
+   MEDIA CENTER  —  media.netflix.com/en, rebuilt band for band.
+
+   Every number below is read off the LIVE page's computed styles (captured with
+   a CDP probe against a hydrated headless Chrome at 1440 and 1920 wide), not
+   eyeballed. The reference is a Next.js + MUI app that client-injects its
+   emotion sheet, so the tokens are transcribed rather than imported:
+
+     page bg          #161616      shell bg        #0f0f0f
+     ink              rgba(255,255,255,.9)         hairline  rgba(255,255,255,.2)
+     nav              80px tall, fixed, 32px left gutter, grey->transparent wash
+     nav control      13px/22.75 w600, pad 8px 12px, r4, caret 16px + 6.5px gap
+                      every control separated by 8px (.jss392 > * { margin: 0 4px })
+                      Apply  8px 15px + 1px solid rgba(255,255,255,.4) -> 64x41
+                      Log In 8px 12px, #e50914, hover rgb(178,7,16)   -> 97x41
+     hero band        430px tall, url(streams-bg.png), pad 128/16/48
+                      the asset is a 2880x2 strip: background-size 100% +
+                      repeat-y (that is what draws the colour columns)
+     hero headline    40px/50px w700, centred, max 543px
+     hero search      540x40, r4, 1px solid rgba(255,255,255,.2), 16px glyph
+     section gutter   24px, section margin 32px
+     section head     24px/30px w700
+     chip             13px w700, bg #4e4e4e, pad 8px 12px, r4, 41px tall
+     title grid       repeat(auto-fill, 256px), 24px column gap, 40px row gap,
+                      centred; card art 256x359 + 24px caption bar
+     key-art card     #000 panel, pad 32px 32px 0, N mark 13x22, name 28px/35px
+     latest news band #232323, pad 24px 0 36px 30px
+     news card        578x312, pad 0 36px, top-left crop, black->transparent
+                      left-to-right scrim, -1px 6px 10px rgba(0,0,0,.6) shadow
+     assets band      311px, url(company_assets_bg.png) + 270deg scrim, right-al
+     footer nav       #161616, pad 18px, three 616px columns, links 14px/21px
+
+   Everything is scoped to .mc-page / .mc-* so the page cannot restyle the rest
+   of the app, and the whole file is safe to import globally.
+   ========================================================================== */
+
+.mc-page {
+  position: relative;
+  min-height: 100vh;
+  /* The bar is fixed, so the shell reserves its 80px and the hero band pulls
+     itself back up under it with the negative margin below. That is what lets
+     the streams artwork run behind the bar without the copy ever starting
+     under it. */
+  padding-top: 80px;
+  background: #0f0f0f;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Netflix Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ---- the bar ------------------------------------------------------------ */
+
+.mc-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 80px at every desktop width — the reference's `.jss402 { height: 80px }` is
+     not inside a media query, and the wash below is calibrated to fill exactly
+     that band. The phone breakpoint further down is the only place it becomes
+     64px, which is also the only place `.mc-page` stops reserving 80px for it. */
+  height: 80px;
+  padding-left: 32px;
+  /* The reference paints a grey-to-transparent wash so the bar stays legible
+     over the hero artwork; it is a gradient, not a solid fill. */
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, #161616 100%);
+  /* The reference can clip because its MUI menus portal to <body>; this clone's
+     menus are ordinary in-flow children, so the bar has to let them out. */
+  overflow: visible;
+}
+.mc-nav.has-preference-open {
+  background: #232323;
+  background-image: none;
+}
+
+/* The lockup is the reference's `.jss406 > * { margin-right: 20px }` container
+   holding ONE flex anchor whose two children are the wordmark and the label
+   (.jss12 > span.jss15 + span.jss16). There is no rule and no divider between
+   them — the only spacing is the wordmark's own `margin: 0 9px`
+   (`.jss15 { margin-left: 1em; margin-right: 1em }` computing to 9px in the
+   bar's font context). That is what puts the wordmark's box at x=41 and the
+   label at x=160 inside a 229px anchor that starts at the bar's 32px pad. */
+.mc-brand {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.mc-brand-wordmark {
+  display: block;
+  width: 110px;
+  height: 30px;
+  margin: 0 9px;
+  object-fit: contain;
+}
+
+.mc-brand-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+/* Every control on the rail carries the reference's `.jss392 > * { margin: 0
+   4px }` — which is an 8px gap BETWEEN controls and, just as importantly, a 4px
+   inset at each end. That trailing 4px is why the reference's magnifier sits at
+   x=1356..1420 in a 1424px bar instead of flush to the edge. */
+.mc-nav-right {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+/* The reference's own rule, verbatim: this is what produces the uniform 8px
+   spacing across the rail and the 4px breather at its right edge. */
+.mc-nav-right > * { margin: 0 4px; }
+
+/* The reference's MUI controls deliberately do NOT use Netflix Sans: `.jss314`
+   pins the SYSTEM stack, which is why its labels measure 93 (English), 115
+   (Newsroom), 109 (Resources), 64 (Apply) and 97 (Press Log In) at 13px/600.
+   Rendering them in Netflix Sans instead shifts every one of those boxes by a
+   few px, so the rail is pinned to the same stack the reference uses. The
+   lockup and the hero keep Netflix Sans, exactly as `.jss406` does. */
+.mc-nav-btn,
+.mc-nav-apply,
+.mc-nav-login {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  /* MUI puts `min-width: 64px` on every Button. It is invisible on the wide
+     labels but it is exactly why the reference's Apply still measures 64x41
+     even though its own content only comes to ~60px — so it belongs here, on
+     all three, rather than as a magic number on the one button it shows up on. */
+  min-width: 64px;
+}
+
+/* The shared control (`.jss314`): 13px/600 on a 22.75px line, `padding: 8px
+   12px`, a `min-height` of 40px and a 2px TRANSPARENT border — so the box
+   resolves to 22.75 + 16 + 4 = 43px, which is the 43px the reference reports
+   for English / Newsroom / Resources. */
+.mc-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6.5px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22.75px;
+  white-space: nowrap;
+}
+.mc-nav-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.mc-nav-btn:active { background: transparent; }
+
+.mc-nav-caret {
+  flex: 0 0 auto;
+  transition: transform 140ms ease;
+}
+.mc-nav-caret.is-open { transform: rotate(180deg); }
+
+/* The flag rides the same 13px rail as its label; its 0.5em gap to "Pakistan"
+   comes from the button's flex gap, matching `.jss396 { margin-right: 0.5em }`. */
+.mc-nav-flag { line-height: 1; }
+
+/* Apply is the outlined control (jss311): transparent fill, a 1px hairline at
+   rgba(255,255,255,.4) and a 4px radius. Its pad is the SHARED `8px 12px`, not
+   a wider one — with the 1px border that is what resolves to the reference's
+   64x41 box, so the button is sized by the same rail as everything else. */
+.mc-nav-apply {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22.75px;
+  display: inline-flex;
+  align-items: center;
+}
+.mc-nav-apply:hover { background: rgba(255, 255, 255, 0.1); }
+.mc-nav-apply:active {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* "Press Log In" is jss490 — the one solid control: the shared `8px 12px` pad
+   over a transparent 1px border (so the box is 97x41, not 95x39), #e50914, and
+   the reference's own hover/active steps. */
+.mc-nav-login {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #e50914;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22.75px;
+  display: inline-flex;
+  align-items: center;
+}
+.mc-nav-login:hover { background: rgb(178, 7, 16); }
+.mc-nav-login:active { background: rgb(127, 5, 11); }
+
+/* The magnifier is its own 64x80 hit area, flush to the right edge (jss9/jss8:
+   `width: 64px; height: 80px` with no hover fill of its own). */
+.mc-nav-search {
+  width: 64px;
+  height: 80px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #fff;
+}
+
+.mc-nav-search { cursor: pointer; }
+.mc-nav-search:focus-visible,
+.mc-search-close:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
+
+/* The reference opens a full-height search surface over the nav controls while
+   keeping the Media Center lockup visible on the left. */
+.mc-search-overlay {
+  position: absolute;
+  inset: 0 0 0 clamp(270px, 17.4vw, 331px);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+  padding: 0 24px;
+  border: 0;
+  background: #232323;
+  color: #fff;
+  animation: mc-search-reveal 260ms cubic-bezier(.2, .75, .25, 1) both;
+  transform-origin: right center;
+}
+@keyframes mc-search-reveal {
+  from { opacity: 0; clip-path: inset(0 0 0 16%); }
+  to { opacity: 1; clip-path: inset(0); }
+}
+.mc-search-overlay > svg { flex: 0 0 auto; }
+.mc-search-overlay input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+}
+.mc-search-overlay input::placeholder { color: rgba(255, 255, 255, .55); }
+.mc-search-close {
+  display: inline-flex;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.mc-search-close:hover { opacity: .72; transform: scale(.94); }
+
+/* Dropdown shells, shared by the three nav menus and the month picker. */
+.mc-menu { position: relative; }
+.mc-language-panel,
+.mc-country-panel {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  z-index: 61;
+  width: 100vw;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  animation: mc-preference-enter 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.mc-language-panel { background: #161616; }
+.mc-language-panel .mc-preference-heading {
+  height: 100px;
+  padding: 0 64px;
+  background: #232323;
+}
+.mc-country-panel .mc-preference-heading {
+  height: 118px;
+  padding-bottom: 20px;
+  background: #232323;
+}
+.mc-preference-heading {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 134px;
+  padding: 0 64px 22px;
+  background: #232323;
+  text-align: center;
+}
+.mc-preference-heading h2 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 30px;
+}
+.mc-preference-close {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #fff;
+}
+.mc-preference-close span {
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 1;
+}
+.mc-preference-close:hover { color: rgba(255, 255, 255, 0.72); }
+.mc-language-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(5, 49px);
+  grid-auto-flow: column;
+  width: min(960px, calc(100% - 40px));
+  height: 248px;
+  margin: 20px auto 0;
+  padding: 0 0 3px;
+  box-sizing: border-box;
+  background: #161616;
+}
+.mc-language-options button {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+}
+.mc-language-options button:hover { text-decoration: underline; }
+.mc-language-options button.is-on { font-weight: 400; }
+.mc-language-check {
+  display: inline-flex;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.mc-country-content {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 215.5px;
+  padding: 48px 0 80px;
+  box-sizing: border-box;
+  overflow: visible;
+  background: #0f0f0f;
+}
+.mc-country-map-window {
+  position: absolute;
+  top: 6px;
+  right: max(26%, calc((100vw - 1200px) / 2));
+  width: 245px;
+  height: 215px;
+  overflow: hidden;
+  background: url('https://media.netflix.com/static/images/country-select-background.svg') center / contain no-repeat;
+  pointer-events: none;
+}
+.mc-country-picker {
+  position: relative;
+  z-index: 1;
+  width: 400px;
+  max-width: calc(100% - 40px);
+  padding-top: 13px;
+}
+.mc-country-picker p {
+  margin: 0 0 14px 4px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  line-height: 18px;
+}
+.mc-country-select-wrap {
+  position: relative;
+  width: 400px;
+  max-width: 100%;
+}
+.mc-country-select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: #161616;
+  color: #fff;
+  font-size: 13px;
+  text-align: left;
+}
+.mc-country-select:hover { border-color: rgba(255, 255, 255, 0.45); }
+.mc-country-select[aria-expanded="true"] {
+  border-color: #4b65ff;
+  box-shadow: 0 0 0 1px #4b65ff;
+}
+.mc-country-select > span:first-child {
+  flex: 0 0 auto;
+  margin-right: 8px;
+  font-size: 11px;
+}
+.mc-country-selected-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mc-country-caret {
+  flex: 0 0 auto;
+  margin-left: auto;
+  transition: transform 140ms ease;
+}
+.mc-country-caret.is-open { transform: rotate(180deg); }
+.mc-country-options-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #464646;
+  border-radius: 4px;
+  background: #222;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+  animation: mc-preference-enter 120ms ease-out both;
+}
+.mc-country-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px;
+  border-bottom: 1px solid #484848;
+  color: rgba(255, 255, 255, 0.9);
+}
+.mc-country-search svg { flex: 0 0 auto; }
+.mc-country-search input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+}
+.mc-country-search input::placeholder { color: rgba(255, 255, 255, 0.7); }
+.mc-country-options {
+  max-height: 220px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  scrollbar-color: #929292 #222;
+  scrollbar-width: thin;
+}
+.mc-country-options li { margin: 0; padding: 0; }
+.mc-country-options li button {
+  display: grid;
+  grid-template-columns: 24px 28px minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  text-align: left;
+}
+.mc-country-options li button:hover,
+.mc-country-options li button:focus-visible { background: #383838; outline: 0; }
+.mc-country-options li button.is-selected { background: #222; }
+.mc-country-option-check { font-size: 17px; line-height: 1; }
+.mc-country-option-code { font-size: 10px; }
+.mc-country-no-results {
+  padding: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+@keyframes mc-preference-enter {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mc-menu-list {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 176px;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  background: #232323;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  z-index: 70;
+  max-height: 320px;
+  overflow-y: auto;
+  transform-origin: top right;
+  animation: mc-menu-enter 160ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+.mc-menu-list.mc-month-list { transform-origin: top left; }
+@keyframes mc-menu-enter {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.mc-menu-list li button,
+.mc-menu-list li a {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+}
+.mc-menu-list li button:hover,
+.mc-menu-list li a:hover { background: rgba(255, 255, 255, 0.1); }
+.mc-menu-list li button.is-on { font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-menu-list,
+  .mc-language-panel,
+  .mc-country-panel { animation: none; }
+}
+
+/* ---- hero --------------------------------------------------------------- */
+
+.mc-hero {
+  position: relative;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 128px above the headline on the reference, measured from the TOP OF THE
+     PAGE — the shell already reserved the bar's 80px, so pulling the band back
+     by 80px and padding 128px lands the headline on the same line. */
+  margin-top: -80px;
+  padding: 128px 16px 48px;
+  background-color: #0f0f0f;
+  background-image: url('/media-center/streams-bg.png');
+  /* streams-bg.png is a 2880x2 STRIP — the artwork is only two pixels tall.
+     `cover` on a strip that shape scales it by 215x and shows ~9 of its 2880
+     columns, i.e. one flat colour (the strip's centre is black), which is why
+     this band used to paint solid. The reference stretches the strip to the
+     full width and tiles it down the band (jss37: `background-size: 100%`,
+     `background-repeat: repeat-y`), which is what draws the colour columns —
+     and what lets them run up behind the bar's wash. */
+  background-size: 100%;
+  background-repeat: repeat-y;
+}
+
+/* The reference's own wrapping box (jss42: 543px wide, 150px tall for three
+   40px/50px lines). A plain greedy wrap, deliberately WITHOUT `text-wrap:
+   balance` — balancing breaks the lines somewhere else than the reference. */
+.mc-hero-title {
+  max-width: 543px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 50px;
+  text-align: center;
+}
+
+.mc-hero-search {
+  display: flex;
+  align-items: center;
+  width: 540px;
+  max-width: 100%;
+  height: 40px;
+  margin-top: 32px;
+  padding-left: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: transparent;
+  letter-spacing: 0.08442px;
+}
+.mc-hero-search:focus-within { border-color: rgba(255, 255, 255, 0.6); }
+.mc-hero-search svg { flex: 0 0 auto; color: rgba(255, 255, 255, 0.9); }
+.mc-hero-search input {
+  flex: 1 1 auto;
+  height: 39px;
+  min-width: 0;
+  padding: 12px 12px 12px 8px;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  outline: none;
+}
+.mc-hero-search input::placeholder { color: rgba(255, 255, 255, 0.72); }
+
+/* ---- the catalogue block ------------------------------------------------ */
+
+.mc-body { background: #161616; }
+
+.mc-block { margin: 40px 0 32px; }
+
+.mc-block-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 24px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+/* The month is an in-line dropdown sitting on the sentence baseline. */
+.mc-month {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 130px;
+  height: 40px;
+  padding: 0 8px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  background: #161616;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 25px;
+  text-align: left;
+}
+.mc-month:hover { background: #1b1b1b; }
+.mc-month[aria-expanded="true"],
+.mc-month:focus-visible {
+  border-color: #4965ff;
+  box-shadow: 0 0 0 1px #4965ff;
+  outline: 0;
+}
+.mc-month-caret {
+  flex: 0 0 auto;
+  transition: transform 140ms ease;
+}
+.mc-month-caret.is-open { transform: rotate(180deg); }
+.mc-month-list {
+  top: calc(100% + 6px);
+  left: 0;
+  right: auto;
+  width: 130px;
+  min-width: 130px;
+  max-height: 200px;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 3px;
+  transform-origin: top left;
+}
+.mc-menu-list.mc-month-list li button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
+  height: 40px;
+  min-height: 40px;
+  padding: 6px 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  line-height: 19.5px;
+  text-align: center;
+}
+.mc-menu-list.mc-month-list li button.is-on { font-weight: 400; }
+.mc-month-check {
+  position: absolute;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+.mc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 24px 0;
+}
+
+.mc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 41px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: #4e4e4e;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 22.75px;
+}
+.mc-chip:hover { background: #5c5c5c; }
+.mc-chip.is-on { background: #e50914; }
+.mc-chip svg { flex: 0 0 auto; }
+
+.mc-divider {
+  height: 1px;
+  margin: 32px 0;
+  border: 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ---- the title grid ----------------------------------------------------- */
+
+.mc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 256px);
+  justify-content: center;
+  column-gap: 40px;
+  row-gap: 40px;
+}
+.mc-grid > .browse-skeleton-grid {
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(auto-fill, 256px);
+  justify-content: center;
+  column-gap: 40px;
+  row-gap: 40px;
+}
+.mc-grid > .browse-skeleton-grid .browse-skeleton-art { aspect-ratio: 2 / 3; }
+.mc-grid > .browse-skeleton-grid .browse-skeleton-card { flex: none; }
+
+.mc-month-empty {
+  margin: 0;
+  padding: 24px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.mc-card { display: flex; flex-direction: column; }
+
+.mc-card-link {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Art box: 256x359 for the boxshot, the same box for a key-art panel. */
+.mc-card-art {
+  position: relative;
+  width: 256px;
+  height: 359px;
+  overflow: hidden;
+  border-radius: 16px;
+  background-color: #0b0b0b;
+}
+.mc-card-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.mc-card-link:hover .mc-card-art img { transform: scale(1.04); }
+.mc-card-link:focus-visible .mc-card-art { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* A key-art card is a black plate with the N mark and the title set in it —
+   the reference ships no photograph for these at all. */
+.mc-card-art.is-keyart {
+  background: #000;
+  padding: 32px 32px 0;
+}
+.mc-card-art.is-keyart img {
+  width: 13px;
+  height: 22px;
+  object-fit: contain;
+  transform: none;
+}
+.mc-card-link:hover .mc-card-art.is-keyart img { transform: none; }
+.mc-card-name {
+  margin: 20px 0 0;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 35px;
+}
+
+.mc-card-date {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  margin: 4px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  line-height: 19.5px;
+}
+
+.mc-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+/* ---- the outlined button, used by every "Show more" / "Read more" -------- */
+
+.mc-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 41px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 22.75px;
+}
+.mc-btn-outline:hover { background: rgba(255, 255, 255, 0.1); }
+
+/* ---- latest news -------------------------------------------------------- */
+
+.mc-news {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 36px 30px;
+  background: #232323;
+}
+
+.mc-news-title {
+  margin: 0 0 27px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.mc-news-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 36px 18px 0;
+}
+
+/* The band scrolls horizontally once the three 578px panels and their dividers
+   stop fitting, which is how the reference behaves under ~1900px. */
+.mc-news-scroll { overflow-x: auto; overflow-y: hidden; }
+.mc-news-cell { display: flex; align-items: center; flex: 0 0 auto; }
+
+/* Each story is one 578x312 panel: the photograph under a black-to-transparent
+   left-to-right scrim, with the copy pinned to the left. */
+.mc-news-card {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  width: 578px;
+  height: 312px;
+  padding: 0 36px;
+  box-shadow: -1px 6px 10px rgba(0, 0, 0, 0.6);
+  background-image:
+    linear-gradient(90deg, #000 0%, rgba(5, 5, 5, 0.67) 44.01%, rgba(15, 15, 15, 0) 100%),
+    var(--mc-news-art);
+  background-size: cover;
+  background-position: left top;
+  background-repeat: no-repeat;
+}
+
+.mc-news-body { width: 100%; }
+
+.mc-news-region {
+  margin: 0 0 9px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.mc-news-headline {
+  max-width: 506px;
+  margin: 0 0 27px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+}
+
+.mc-news-rule {
+  flex: 0 0 1px;
+  height: 348px;
+  margin: 0 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mc-news-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+/* ---- company assets band ------------------------------------------------ */
+
+.mc-assets {
+  position: relative;
+  min-height: 311px;
+  background-image: url('/media-center/company_assets_bg.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* The copy sits on the right, so the scrim darkens from the RIGHT edge in —
+   270deg, exactly as the reference's own gradient does. */
+.mc-assets-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-height: 311px;
+  padding: 80px 190px;
+  text-align: right;
+  background-image: linear-gradient(
+    270deg,
+    #0f0f0f 15.47%,
+    rgba(15, 15, 15, 0.73) 49%,
+    rgba(15, 15, 15, 0.34) 75.16%
+  );
+}
+
+.mc-assets-title {
+  margin: 0 0 18px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 35px;
+}
+
+.mc-assets-copy {
+  max-width: none;
+  margin: 0 0 27px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  white-space: nowrap;
+}
+
+/* ---- footer nav --------------------------------------------------------- */
+
+.mc-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 18px;
+  background: #161616;
+}
+
+.mc-footer-col {
+  display: flex;
+  flex-direction: column;
+  width: 616px;
+  margin: 9px 0 36px;
+  padding: 0 0 0 40px;
+  list-style: none;
+}
+
+.mc-footer-col li { display: block; }
+
+.mc-footer-head {
+  margin: 0 0 9px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 12.5px;
+}
+
+.mc-footer-link {
+  display: block;
+  padding: 9px 0;
+  border: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  text-align: left;
+}
+.mc-footer-link:hover { text-decoration: underline; }
+
+.mc-footer-social {
+  display: flex;
+  align-items: center;
+  gap: 2.7px;
+  height: 47px;
+}
+.mc-footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.9);
+}
+.mc-footer-social a:hover { color: #fff; }
+
+/* ---- phone -------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .mc-page { padding-top: 64px; }
+  .mc-nav { height: 64px; padding-left: 16px; }
+  .mc-nav-right { display: flex; margin-left: auto; }
+  .mc-nav-right > :not(.mc-nav-search) { display: none; }
+  .mc-nav-search { width: 56px; height: 64px; }
+  .mc-search-overlay { inset: 0; gap: 12px; padding: 0 16px; }
+  .mc-hero { margin-top: -64px; padding: 104px 20px 40px; min-height: 0; }
+  .mc-hero-title { font-size: 28px; line-height: 36px; }
+  .mc-hero-search { width: 100%; }
+  .mc-block { margin: 24px 0; }
+  .mc-block-head { font-size: 20px; line-height: 26px; }
+  .mc-block-head { padding: 0 16px; }
+  .mc-chips { gap: 8px; margin: 16px 16px 0; }
+  .mc-divider { margin: 24px 0; }
+  .mc-grid { grid-template-columns: repeat(auto-fill, 160px); column-gap: 12px; row-gap: 24px; }
+  .mc-grid > .browse-skeleton-grid { grid-template-columns: repeat(auto-fill, 160px); column-gap: 12px; row-gap: 24px; }
+  .mc-card-art { width: 160px; height: 224px; }
+  .mc-card-art.is-keyart { padding: 18px 18px 0; }
+  .mc-card-name { font-size: 19px; line-height: 24px; margin-top: 12px; }
+  .mc-news { padding: 24px 0 24px 16px; }
+  .mc-news-track { justify-content: flex-start; gap: 12px; padding: 9px 16px 12px; }
+  .mc-news-card { width: 300px; height: 220px; padding: 0 20px; }
+  .mc-news-headline { font-size: 18px; line-height: 24px; margin-bottom: 16px; }
+  .mc-news-rule { display: none; }
+  .mc-assets-inner { padding: 48px 20px; }
+  .mc-assets-title { font-size: 22px; line-height: 28px; }
+  .mc-assets-copy { font-size: 16px; line-height: 24px; white-space: normal; }
+  .mc-footer { padding: 12px; }
+  .mc-footer-col { width: 100%; margin-bottom: 12px; padding-left: 0; }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .mc-assets-inner { padding-right: 60px; padding-left: 60px; }
+}

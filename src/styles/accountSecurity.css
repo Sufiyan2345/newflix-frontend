@@ -1,0 +1,130 @@
+.nx-security-page { min-height: 100vh; background: #fafafa; }
+.nx-security-header { border-top: 5px solid #ececec; }
+.nx-security-topbar { display: flex; align-items: center; justify-content: space-between; width: min(calc(100% - 64px), 1180px); height: 46px; margin: 0 auto; }
+.nx-security-logo-button { display: inline-flex; align-items: center; padding: 0; border: 0; background: none; cursor: pointer; }
+.nx-security-logo-button .nx-account-logo { width: 88px; }
+.nx-security-shell { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 40px; width: min(calc(100% - 64px), 1180px); margin: 0 auto; padding: 18px 0 48px; }
+.nx-security-sidebar { gap: 1px; padding-top: 0; }
+.nx-security-sidebar button { min-height: 34px; padding: 7px 8px; border-radius: 0; gap: 10px; color: #555; font-size: 13px; font-weight: 500; }
+.nx-security-sidebar button svg { flex: 0 0 auto; }
+.nx-security-sidebar button.is-current,
+.nx-security-sidebar button:hover { background: transparent; color: #111; font-weight: 700; }
+.nx-security-sidebar .nx-security-back { margin-bottom: 20px; color: #222; font-size: 12px; font-weight: 400; }
+.nx-security-content { min-width: 0; }
+.nx-security-warning { display: flex; align-items: flex-start; gap: 12px; min-height: 68px; margin: 0 0 12px; padding: 12px 14px; background: #ffe2ad; color: #111; }
+.nx-security-warning > svg { flex: 0 0 auto; margin-top: 3px; stroke-width: 2.5; }
+.nx-security-warning > span { display: flex; flex-direction: column; gap: 1px; }
+.nx-security-warning strong { font-size: 14px; line-height: 18px; }
+.nx-security-warning small { font-size: 12px; line-height: 17px; }
+.nx-security-warning small button { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+.nx-security-content > h1 { margin: 0; color: #111; font-size: 30px; font-weight: 700; line-height: 36px; }
+.nx-security-subtitle { margin: 0 0 12px; color: #555; font-size: 14px; line-height: 20px; }
+.nx-security-card { overflow: hidden; border: 1px solid #e3e3e3; border-radius: 6px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+.nx-security-row { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 54px; padding: 10px 16px; border: 0; border-bottom: 1px solid #ededed; background: #fff; color: #111; text-align: left; cursor: pointer; }
+.nx-security-row:last-child { border-bottom: 0; }
+.nx-security-row:hover { background: #fafafa; }
+.nx-security-row.has-detail { min-height: 68px; }
+.nx-security-row-icon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 18px; color: #555; }
+.nx-security-row-copy { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.nx-security-row-copy strong { font-size: 14px; line-height: 18px; }
+.nx-security-row-copy small { overflow: hidden; color: #777; font-size: 11px; line-height: 15px; text-overflow: ellipsis; white-space: nowrap; }
+.nx-security-row-copy .nx-security-row-status { color: #bd6670; }
+.nx-security-row-copy .nx-security-row-status.is-verified { color: #4b7c56; }
+.nx-security-row-badge { padding: 3px 6px; background: #dceaff; color: #2565a9; font-size: 10px; font-weight: 700; }
+.nx-security-row-chevron { flex: 0 0 auto; color: #666; }
+.nx-security-section-title { margin: 24px 0 10px; color: #555; font-size: 16px; font-weight: 500; line-height: 22px; }
+.nx-security-access-card .nx-security-row,
+.nx-security-access-card .nx-security-row.has-detail { min-height: 58px; }
+.nx-security-row:focus-visible { outline: 2px solid #666; outline-offset: -3px; z-index: 1; }
+.nx-security-delete { width: 100%; min-height: 38px; margin-top: 18px; border: 1px solid #bdbdbd; border-radius: 1px; background: #fff; color: #c23c43; font-size: 12px; font-weight: 700; cursor: pointer; }
+.nx-security-delete:hover { border-color: #e50914; }
+
+@media (max-width: 720px) {
+  .nx-security-topbar { width: calc(100% - 28px); height: 42px; }
+  .nx-security-logo-button .nx-account-logo { width: 76px; }
+  .nx-security-shell { display: flex; flex-direction: column; gap: 12px; width: calc(100% - 28px); padding-top: 12px; }
+  .nx-security-sidebar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+  .nx-security-sidebar .nx-security-back { grid-column: 1 / -1; justify-self: start; margin: 0 0 4px; }
+  .nx-security-sidebar button { flex-direction: column; gap: 4px; min-width: 0; padding: 8px 2px; font-size: 11px; }
+  .nx-security-sidebar .nx-security-back { flex-direction: row; }
+  .nx-security-warning strong { font-size: 13px; }
+  .nx-security-warning small { font-size: 11px; }
+  .nx-security-content > h1 { font-size: 26px; line-height: 32px; }
+  .nx-security-subtitle { font-size: 13px; }
+  .nx-security-row-copy strong { font-size: 13px; }
+  .nx-security-row-copy small { font-size: 10px; }
+}
+
+.nx-account-page:not(.nx-security-page) .nx-account-header { width: 100%; box-sizing: border-box; }
+.nx-account-page:not(.nx-security-page) .nx-account-topbar {
+  width: 100%; height: 54px; box-sizing: border-box;
+  padding: 0 clamp(20px, 2.5vw, 40px);
+}
+.nx-account-page:not(.nx-security-page) .nx-account-logo { width: clamp(84px, 7vw, 120px); }
+.nx-account-page:not(.nx-security-page) .nx-account-profile {
+  min-width: 44px; min-height: 44px; justify-content: center; padding: 8px; box-sizing: border-box;
+}
+.nx-account-page:not(.nx-security-page) .nx-account-profile img { width: 24px; height: 24px; }
+.nx-account-page:not(.nx-security-page) .nx-account-profile-menu { top: calc(100% + 2px); }
+.nx-account-page:not(.nx-security-page) .nx-account-subbar {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  width: min(calc(100% - 64px), 1180px); height: 46px; box-sizing: border-box;
+}
+.nx-account-page:not(.nx-security-page) .nx-account-subbar h1 { grid-column: 2; justify-self: center; }
+.nx-account-page:not(.nx-security-page) .nx-account-shell {
+  grid-template-columns: 220px minmax(0, 1fr); gap: 40px;
+  width: min(calc(100% - 64px), 1180px); box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+  .nx-account-page:not(.nx-security-page) .nx-account-topbar { height: 46px; padding: 0 14px; }
+  .nx-account-page:not(.nx-security-page) .nx-account-logo { width: 84px; }
+  .nx-account-page:not(.nx-security-page) .nx-account-subbar { width: calc(100% - 28px); height: 40px; }
+  .nx-account-page:not(.nx-security-page) .nx-account-shell {
+    display: block; width: calc(100% - 24px); padding-top: 18px;
+  }
+}
+
+.nx-security-topbar {
+  width: 100%; max-width: none; padding: 0 clamp(20px, 2.5vw, 40px); box-sizing: border-box;
+}
+.profiles-settings-header {
+  width: 100%; box-sizing: border-box; grid-template-columns: auto auto minmax(0, 1fr) auto;
+  padding-right: clamp(20px, 2.5vw, 40px); padding-left: clamp(20px, 2.5vw, 40px);
+}
+.profiles-settings-header > img { grid-column: 1; grid-row: 1; justify-self: start; }
+.profiles-settings-header > button:first-child { grid-column: 2; grid-row: 1; justify-self: start; }
+.profiles-settings-header > button:last-child { grid-column: 4; grid-row: 1; justify-self: end; }
+
+@media (max-width: 720px) {
+  .profiles-settings-header { padding-right: 16px; padding-left: 16px; }
+}
+
+body.js--contrast .ir-quarter .ir-quarter-year,
+body.js--contrast .ir-quarter .ir-quarter-link { color: #000; }
+
+.ir-events > .ir-title,
+.ir-kit > .ir-title { font-weight: 600; }
+.ir-event-date { font-weight: 700; }
+.ir-event-date-text { padding-right: 5px; }
+.ir-kit-card { box-shadow: 0 2px 10px rgba(0, 0, 0, .14); }
+.ir-kit-list li a { font-weight: 600; }
+.ir-video { aspect-ratio: 16 / 9; }
+.ir-video-frame { display: block; width: 100%; height: 100%; border: 0; }
+
+@font-face {
+  font-family: 'NetFlixSans Light';
+  src: url('https://s22.q4cdn.com/959853165/files/fonts/NetflixSans_W_Lt.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+.ir-nav-top {
+  padding: 30px 2px;
+  font-family: 'NetFlixSans Light', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 13px;
+}
+.ir-nav-list > li:first-child .ir-nav-top { padding-left: 0; }
+.ir-nav-list > li:last-child .ir-nav-top { padding-right: 0; }

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28.84 23" width="28.84" height="23" aria-hidden="true" focusable="false">
+  <title>Document</title>
+  <!-- The default document glyph the real site's .module_q4-icon-links puts in
+       front of every attachment link (q4-icons U+EECD). Drawn as three solid
+       strokes - a heavy left chevron, a thin slash and a heavy right chevron -
+       with ~1.9px of side bearing inside the 28.84px advance the icon font
+       reports, and in the same #a7272b the real :before rule sets. -->
+  <g fill="#a7272b">
+    <path d="M1.9 11.5 9.5 0h4.2L6.1 11.5 13.7 23H9.5Z" />
+    <path d="M18.2 11.5 11.4 23h2.4l6.8-11.5-2.4-11.5h-2.4Z" />
+    <path d="M26.94 11.5 19.34 0h-4.2l6.8 11.5-6.8 11.5h4.2Z" />
+  </g>
+</svg>
