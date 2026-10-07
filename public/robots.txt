@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /browse
+Disallow: /kids
+Disallow: /watch/
+Disallow: /title/
+Disallow: /profiles
+Disallow: /onboarding
+Disallow: /account
+Disallow: /my-list
+Disallow: /history
+Disallow: /search
+Disallow: /finish-signup
+Disallow: /signup
+Disallow: /login
+Disallow: /logout
+
+Sitemap: https://newflix-app.vercel.app/sitemap.xml
