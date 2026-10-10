@@ -2,11 +2,15 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "/frontend/public/sitemap.xml"
+      "destination": "/sitemap.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
     },
     {
       "source": "/(.*)",
-      "destination": "/frontend/index.html"
+      "destination": "/index.html"
     }
   ]
 }
