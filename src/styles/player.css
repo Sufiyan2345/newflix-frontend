@@ -220,21 +220,29 @@
 /* ============ PROFILES ============ */
 .profiles-page {
   min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-  background: radial-gradient(circle at top, rgba(229,9,20,.18), rgba(0,0,0,0) 42%), linear-gradient(180deg, #090909 0%, #111111 100%);
+  background: linear-gradient(rgba(0,0,0,.42), rgba(0,0,0,.48)), url('/sofa.jpg') center / cover no-repeat;
   padding: 48px 20px 80px;
 }
-.profiles-title { font-size: clamp(2.6rem, 4vw, 5rem); font-weight: 500; margin-bottom: 40px; letter-spacing: -0.06em; }
+.profiles-title { font-size: clamp(1.5rem, 2.4vw, 2.1rem); font-weight: 700; margin-bottom: 34px; letter-spacing: -0.04em; text-shadow: 0 2px 12px rgba(0,0,0,.45); }
 .profiles-grid { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; align-items: flex-end; }
 .profile-item { text-align: center; cursor: pointer; color: var(--sf-gray); transition: color .2s; position: relative; }
 .profile-item:hover { color: #fff; }
 .profile-item .avatar {
   width: 150px; height: 150px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: 700; color: #fff;
-  border: 4px solid transparent; transition: border-color .2s, transform .2s ease, box-shadow .2s ease; overflow: hidden;
+  border: 0; transition: transform .2s ease, box-shadow .2s ease; overflow: hidden;
   box-shadow: 0 18px 32px rgba(0,0,0,.35);
 }
-.profile-item:hover .avatar { border-color: #fff; transform: translateY(-2px); box-shadow: 0 22px 36px rgba(0,0,0,.45); }
+.profile-item:hover .avatar { transform: translateY(-2px); box-shadow: 0 22px 36px rgba(0,0,0,.45); }
 .profile-item.kids .avatar { font-size: 40px; }
 .profile-add .avatar { border: 2px dashed rgba(255,255,255,.35); color: rgba(255,255,255,.6); font-size: 60px; background: rgba(255,255,255,.04); }
+.profiles-manage-btn {
+  min-height: 44px; margin-top: 46px; padding: 0 24px; border: 1px solid rgba(255,255,255,.22); border-radius: 5px;
+  background: linear-gradient(180deg, rgba(75,75,75,.96), rgba(30,30,30,.96)); color: #fff; font-size: 14px; font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 8px 24px rgba(0,0,0,.35);
+  cursor: pointer; transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.profiles-manage-btn:hover { border-color: rgba(255,255,255,.5); background: linear-gradient(180deg, #555, #292929); box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 28px rgba(0,0,0,.42); transform: translateY(-1px); }
+.profiles-manage-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .profile-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; z-index: 5; }
 .profile-action {
   width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.6);

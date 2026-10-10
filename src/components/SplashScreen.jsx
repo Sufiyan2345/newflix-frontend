@@ -1,35 +1,39 @@
 import { useEffect, useState } from 'react';
-import useBranding from '../hooks/useBranding';
+import splashVideo from '../../netflix.mp4';
 
 export default function SplashScreen() {
-  const branding = useBranding();
+  const [reducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [exiting, setExiting] = useState(false);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(() => !reducedMotion);
 
   useEffect(() => {
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const exitDelay = reducedMotion ? 350 : 2350;
-    const removeDelay = reducedMotion ? 700 : 2850;
-    const exitTimer = window.setTimeout(() => setExiting(true), exitDelay);
-    const removeTimer = window.setTimeout(() => setVisible(false), removeDelay);
-    return () => {
-      window.clearTimeout(exitTimer);
-      window.clearTimeout(removeTimer);
-    };
-  }, []);
+    const fallbackTimer = window.setTimeout(
+      () => setExiting(true),
+      reducedMotion ? 350 : 8000
+    );
+    return () => window.clearTimeout(fallbackTimer);
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    if (!exiting) return undefined;
+    const removeTimer = window.setTimeout(() => setVisible(false), 700);
+    return () => window.clearTimeout(removeTimer);
+  }, [exiting]);
 
   if (!visible) return null;
 
   return (
     <div className={`brand-splash${exiting ? ' is-exiting' : ''}`} aria-hidden="true">
-      <div className="brand-splash-mark">
-        {Array.from(branding.siteName || 'Newflix').map((letter, index) => (
-          <span className="brand-splash-letter" key={`${letter}-${index}`} style={{ '--letter-index': index }}>
-            {letter === ' ' ? '\u00a0' : letter}
-          </span>
-        ))}
-      </div>
-      <span className="brand-splash-light" />
+      <video
+        className="brand-splash-video"
+        src={splashVideo}
+        autoPlay={!reducedMotion}
+        muted
+        playsInline
+        preload="auto"
+        onEnded={() => setExiting(true)}
+        onError={() => setExiting(true)}
+      />
     </div>
   );
 }

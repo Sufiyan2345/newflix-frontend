@@ -9,9 +9,6 @@
   .row-header { padding-left: 32px; padding-right: 32px; }
   .row-slider { margin-left: 32px; margin-right: 32px; }
   .hero-content { left: 32px; }
-  /* The maturity chip is a desktop-only part of the billboard chrome. */
-  .hero-foot { display: none; }
-  .hero-rating { display: none; }
   .tm-hero-content { left: 32px; right: 32px; }
   .tm-actions { padding: 20px 32px 4px; }
   .tm-body { padding: 20px 32px 40px; }
@@ -74,8 +71,8 @@
   }
   .nav-links.mobile-open .mobile-nav-icon { display: block; flex: 0 0 20px; color: #b8b8b8; }
   .nav-links.mobile-open .mobile-extra-link { display: flex; }
-  .nav-links.mobile-open .nav-pill.active { color: #fff; background: rgba(229,9,20,.12); border-color: rgba(229,9,20,.24); }
-  .nav-links.mobile-open .nav-pill.active .mobile-nav-icon { color: #f0444d; }
+  .nav-links.mobile-open .nav-pill.active { color: #fff; background: transparent; border-color: transparent; font-weight: 700; }
+  .nav-links.mobile-open .nav-pill.active .mobile-nav-icon { color: #fff; }
   .nav-right { gap: clamp(8px, .8vw, 12px); }
 }
 @media (max-width: 768px) {
@@ -94,8 +91,8 @@
   .nav-links.mobile-open { position: absolute; top: 60px; left: 0; right: 0; z-index: 120; display: flex; flex-direction: column; align-items: stretch; gap: 2px; max-height: calc(100dvh - 72px); overflow-y: auto; overscroll-behavior: contain; padding: 10px 14px 14px; background: rgba(10,10,10,.98); border-top: 1px solid rgba(255,255,255,.12); box-shadow: 0 16px 28px rgba(0,0,0,.5); }
   .nav-links.mobile-open .nav-pill { width: 100%; min-height: 50px; justify-content: flex-start; gap: 13px; padding: 0 12px; border-radius: 5px; font-size: 15px; text-align: left; }
   .nav-links.mobile-open .mobile-nav-icon { display: block; flex: 0 0 20px; color: #b8b8b8; }
-  .nav-links.mobile-open .nav-pill.active { color: #fff; background: rgba(229,9,20,.12); border-color: rgba(229,9,20,.24); }
-  .nav-links.mobile-open .nav-pill.active .mobile-nav-icon { color: #f0444d; }
+  .nav-links.mobile-open .nav-pill.active { color: #fff; background: transparent; border-color: transparent; font-weight: 700; }
+  .nav-links.mobile-open .nav-pill.active .mobile-nav-icon { color: #fff; }
   .mobile-extra-link { display: flex; }
   .mobile-bottom-nav { display: flex; }
   .kids-page { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
@@ -178,7 +175,7 @@
   .faq-item .faq-body { font-size: 15px; }
   .auth-card { padding: 32px 24px; margin: 40px 16px; }
   .profile-item .avatar { width: 100px; height: 100px; font-size: 40px; }
-  .profiles-title { font-size: 30px; }
+  .profiles-title { font-size: 24px; margin-bottom: 28px; }
   /* player sheets + overlays go edge-to-edge on phones (see player.css) */
   .pc-opt { width: calc(100% - 40px); margin-left: 20px; }
   .skip-btn, .next-ep-btn { padding: 9px 16px; font-size: 14px; }
@@ -198,8 +195,10 @@
   .hover-body { padding: 12px 10px 9px; }
   .tmdb-hero { height: 105vw; min-height: 300px; max-height: 500px; background-position: center top; }
   .tmdb-hero-body { left: 0; right: 0; bottom: 0; padding: 0 18px 20px; }
+  .tmdb-hero-audio { right: 12px; bottom: 12px; width: 36px; height: 36px; }
   .tmdb-logo { max-width: 62%; max-height: 88px; margin-bottom: 10px; }
-  .tmdb-modal-logo-slot { width: min(280px, 72%); height: 78px; margin-bottom: 10px; }
+  .tmdb-modal-logo-slot { width: min(280px, 72%); height: auto; max-height: 78px; margin-bottom: 5px; }
+  .tmdb-modal-logo-slot .tmdb-artwork-logo { max-height: 78px; }
   .tmdb-title { font-size: 30px; }
   .tmdb-controls { gap: 10px 12px; }
   .tmdb-meta-row { margin-left: 0; font-size: 13px; gap: 9px; }

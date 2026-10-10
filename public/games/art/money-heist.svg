@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="night" x2="0" y2="1"><stop stop-color="#101b31"/><stop offset=".56" stop-color="#562f3d"/><stop offset="1" stop-color="#d06a42"/></linearGradient>
+    <linearGradient id="beam" x2="1" y2="1"><stop stop-color="#ffc16e" stop-opacity=".55"/><stop offset="1" stop-color="#ffc16e" stop-opacity="0"/></linearGradient>
+  </defs>
+  <path fill="url(#night)" d="M0 0h640v360H0z"/>
+  <path fill="#171d2a" d="M0 48h190v312H0zm451-48h189v360H451z"/>
+  <path fill="#242b36" d="M51 100h538v260H51z"/><path fill="#121b29" d="M81 124h478v236H81z"/>
+  <path fill="url(#beam)" d="m0 0 520 0-190 255H0z"/>
+  <path fill="#c57a4e" d="M272 188h102v119H272z"/><path fill="#e1a168" d="M286 203h74v104h-74z"/>
+  <circle cx="323" cy="194" r="32" fill="#202733"/><path fill="#191f2b" d="M260 228q63-45 126 0l18 132H242z"/>
+  <circle cx="171" cy="231" r="25" fill="#c28b6b"/><path fill="#1a202c" d="M124 260q47-39 94 0l16 100H108z"/>
+  <circle cx="459" cy="231" r="25" fill="#d09b73"/><path fill="#151c29" d="M410 260q49-39 98 0l16 100H394z"/>
+  <path stroke="#f1b777" stroke-width="3" d="M324 0v92m-23-45h46"/>
+  <path fill="#ffbd68" d="M315 92h18v36h-18z"/><circle cx="324" cy="91" r="15" fill="#ffca75" opacity=".55"/>
+  <path fill="#0c1421" d="M0 328h640v32H0z"/>
+</svg>

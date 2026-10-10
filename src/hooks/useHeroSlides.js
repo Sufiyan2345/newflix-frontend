@@ -17,7 +17,7 @@ import { isTmdbImage } from '../utils/imageUrl';
 // Re-rolling per visit keeps banners fresh without admitting old titles or
 // locally uploaded artwork.
 export const MAX_HERO_SLIDES = 10;
-export const HERO_INTERVAL_MS = 7000;
+export const HERO_INTERVAL_MS = 25000;
 export const HERO_SLIDE_EVENT = 'streamflix-featured-slide';
 export const HERO_MIN_RELEASE_YEAR = 2023;
 
@@ -132,14 +132,14 @@ export default function useHeroSlides(pool, {
 
   // Auto-rotate from one stable clock. Recreating the timer on every index
   // change made the Movies / TV hero feel uneven when React re-rendered it.
-  // Hover pauses only the artwork drift; it must not stop banner rotation.
+  // Hover pauses only the artwork drift; banner rotation keeps running.
   useEffect(() => {
-    if (count < 2 || paused) return undefined;
+    if (count < 2) return undefined;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1 >= count ? 0 : prev + 1));
     }, intervalMs);
     return () => clearInterval(timer);
-  }, [count, intervalMs, paused]);
+  }, [count, intervalMs]);
 
   // Dot clicks inside <HeroBanner> land here — validated against the visible
   // slide count. (HeroBanner prefers the `onSlideSelect` prop and only falls

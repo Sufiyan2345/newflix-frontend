@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="sunset" x2="0" y2="1"><stop stop-color="#4b4d82"/><stop offset=".46" stop-color="#e27675"/><stop offset="1" stop-color="#f3bd83"/></linearGradient>
+    <radialGradient id="sun"><stop stop-color="#fff0b0"/><stop offset="1" stop-color="#ffc77e" stop-opacity="0"/></radialGradient>
+    <linearGradient id="pool" x2="0" y2="1"><stop stop-color="#54b1b5"/><stop offset="1" stop-color="#164a64"/></linearGradient>
+  </defs>
+  <path fill="url(#sunset)" d="M0 0h640v360H0z"/><circle cx="322" cy="164" r="130" fill="url(#sun)"/><circle cx="322" cy="164" r="43" fill="#ffe1a0"/>
+  <path fill="#28334b" d="M0 193h78V83h12v110h90v-64h12v64h266V82h12v111h90V97h12v96h68v167H0z"/>
+  <path fill="url(#pool)" d="M0 239q151-43 314 0t326-3v124H0z"/>
+  <path stroke="#a7e0d8" stroke-width="3" opacity=".65" d="M0 286q144-31 290 0t350-2m-640 41q147-30 290 0t350-2"/>
+  <path fill="#242b43" d="M179 215q0-43 31-43t31 43v73h-62zm187 0q0-43 31-43t31 43v73h-62z"/>
+  <circle cx="210" cy="161" r="20" fill="#d99a82"/><circle cx="397" cy="161" r="20" fill="#edb18b"/>
+  <path stroke="#f5cc9a" stroke-width="4" d="M238 225q58-36 110 0"/>
+  <path fill="#ffdaaa" d="M296 224h47v11h-47z"/><path fill="#30475a" d="M0 338h640v22H0z"/>
+  <path fill="#17243a" d="M0 0h36v360H0zm604 0h36v360h-36z"/>
+</svg>

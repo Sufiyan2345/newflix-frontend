@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import PageLoadingSkeleton from '../components/PageLoadingSkeleton';
 import Row from '../components/Row';
@@ -17,6 +17,8 @@ function useDebounced(value, delay = 400) {
   }, [value, delay]);
   return v;
 }
+
+const titleName = (item) => item?.title || item?.name || '';
 
 function SearchResultGrid({ items }) {
   const [hover, setHover] = useState(null);
@@ -52,6 +54,7 @@ function SearchResultGrid({ items }) {
 
 export default function SearchPage() {
   const t = useSiteTranslation();
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const q = params.get('q') || '';
   const dq = useDebounced(q);
@@ -59,6 +62,9 @@ export default function SearchPage() {
   const [source, setSource] = useState('tmdb'); // where results came from
   const [suggestions, setSuggestions] = useState([]);
   const [suggestSource, setSuggestSource] = useState('catalogue');
+  const [relatedTitle, setRelatedTitle] = useState(null);
+  const [relatedItems, setRelatedItems] = useState([]);
+  const [exploreTitles, setExploreTitles] = useState([]);
   const [tmdbDetail, setTmdbDetail] = useState(null);
 
   useEffect(() => {
@@ -68,22 +74,72 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
-    if (!dq) { setItems([]); return; }
+    if (!dq) {
+      setItems([]);
+      setRelatedTitle(null);
+      setRelatedItems([]);
+      setExploreTitles([]);
+      return undefined;
+    }
     setItems(null);
+    setRelatedTitle(null);
+    setRelatedItems([]);
+    setExploreTitles([]);
     let cancelled = false;
-    // Search TMDB first (all movies + series, exact names), fall back to the local catalogue.
-    API.get(`/tmdb/search?q=${encodeURIComponent(dq)}`)
-      .then(({ data }) => {
-        if (cancelled) return;
-        if (data.items?.length) { setItems(data.items); setSource('tmdb'); }
-        else return API.get(`/titles/search?q=${encodeURIComponent(dq)}`);
-      })
-      .then((res) => {
-        if (cancelled || !res) return;
-        setItems(res.data.items || []);
+
+    const normalizeTitle = (title) => String(title || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+
+    Promise.all([
+      API.get(`/tmdb/search?q=${encodeURIComponent(dq)}`).catch(() => ({ data: { items: [] } })),
+      API.get(`/titles/search?q=${encodeURIComponent(dq)}`).catch(() => ({ data: { items: [] } })),
+    ]).then(([tmdbResponse, catalogueResponse]) => {
+      if (cancelled) return;
+      const tmdbItems = tmdbResponse.data.items || [];
+      const catalogueItems = catalogueResponse.data.items || [];
+      if (tmdbItems.length) {
+        setItems(tmdbItems);
+        setSource('tmdb');
+      } else {
+        setItems(catalogueItems);
         setSource('catalogue');
-      })
-      .catch(() => { if (!cancelled) setItems([]); });
+      }
+
+      const exactMatch = tmdbItems.find((item) => normalizeTitle(titleName(item)) === normalizeTitle(dq));
+      if (!exactMatch) return;
+
+      const [, type, id] = String(exactMatch._id || '').split('-');
+      if (!['movie', 'tv'].includes(type) || !/^\d+$/.test(id || '')) return;
+
+      setRelatedTitle({
+        item: exactMatch,
+        available: catalogueItems.some((item) => normalizeTitle(titleName(item)) === normalizeTitle(titleName(exactMatch))),
+      });
+
+      API.get(`/tmdb/detail/${type}/${id}`)
+        .then(({ data }) => {
+          if (cancelled) return;
+          const recommendations = data.item?.recommendations || [];
+          setRelatedItems(recommendations);
+          const alternatives = tmdbItems.filter((item) => item._id !== exactMatch._id);
+          const titleSuggestions = [...alternatives, ...recommendations]
+            .filter((item, index, all) => item._id !== exactMatch._id
+              && all.findIndex((candidate) => candidate._id === item._id) === index)
+            .slice(0, 10);
+          setExploreTitles(titleSuggestions);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          const alternatives = tmdbItems.filter((item) => item._id !== exactMatch._id).slice(0, 10);
+          setExploreTitles(alternatives);
+        });
+    }).catch(() => {
+      if (!cancelled) setItems([]);
+    });
     return () => { cancelled = true; };
   }, [dq]);
 
@@ -102,16 +158,45 @@ export default function SearchPage() {
       .catch(() => {});
   }, [items]);
 
-  const heading = t(q ? 'Movies & TV' : 'Search Newflix');
-
   return (
     <div style={{ minHeight: '100vh' }}>
       <Navbar />
       <div className="grid-page search-page">
-        <h2>{heading}</h2>
+        {!q && <h2>{t('Search Newflix')}</h2>}
         {items === null && <PageLoadingSkeleton variant="grid" cardCount={6} />}
         {items && items.length > 0 && (
-          <SearchResultGrid items={items} />
+          <>
+            {relatedTitle && (relatedItems.length > 0 || exploreTitles.length > 0) && (
+              <section className="search-related" aria-label="Related titles">
+                {exploreTitles.length > 0 && (
+                  <div className="search-more-explore">
+                    <span className="search-more-label">More to explore:</span>
+                    {exploreTitles.map((item) => (
+                      <button
+                        key={item._id}
+                        type="button"
+                        className="search-more-link"
+                        onClick={() => navigate(`/search?q=${encodeURIComponent(titleName(item))}`)}
+                      >
+                        {titleName(item)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {relatedItems.length > 0 && (
+                  <>
+                    <h2 className="search-related-heading">
+                      {relatedTitle.available
+                        ? `More like “${titleName(relatedTitle.item)}”`
+                        : `We don't have “${titleName(relatedTitle.item)}” but you might like:`}
+                    </h2>
+                    <Row title="" items={relatedItems} />
+                  </>
+                )}
+              </section>
+            )}
+            <SearchResultGrid items={items} />
+          </>
         )}
         {items && items.length === 0 && dq && (
           <>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="water" x2="0" y2="1"><stop stop-color="#15a9c2"/><stop offset=".6" stop-color="#12617e"/><stop offset="1" stop-color="#132f50"/></linearGradient>
+    <radialGradient id="beam"><stop stop-color="#ffdb82" stop-opacity=".88"/><stop offset="1" stop-color="#ffe18d" stop-opacity="0"/></radialGradient>
+    <linearGradient id="steel" x2="0" y2="1"><stop stop-color="#d6e8e6"/><stop offset="1" stop-color="#627d83"/></linearGradient>
+  </defs>
+  <path fill="url(#water)" d="M0 0h640v360H0z"/>
+  <circle cx="330" cy="104" r="176" fill="url(#beam)"/>
+  <path fill="#13465a" d="M0 271q117-44 220-3t194-4 226 0v96H0z"/>
+  <path fill="#0d3449" d="M0 316q116-34 232 0t206-2 202-5v51H0z"/>
+  <path fill="#efb54c" d="M195 108h245v137H195z"/><path fill="#fff0c7" d="M217 126h201v82H217z"/>
+  <path fill="#c24f35" d="M174 242h290v17H174z"/><path fill="url(#steel)" d="M187 259h264v49H187z"/>
+  <path fill="#273d49" d="M207 276h79v32h-79zm116 0h104v32H323z"/>
+  <path fill="#fbcc70" d="M291 180h58v64h-58z"/><path fill="#fff2ca" d="M283 168q37-29 75 0l-7 16h-60z"/>
+  <path stroke="#fff0c8" stroke-width="5" d="M311 121v-32m18 34 14-29m-49 29-14-27"/>
+  <circle cx="99" cy="100" r="13" fill="#b2f0e6" opacity=".7"/><circle cx="520" cy="152" r="8" fill="#b2f0e6" opacity=".65"/><circle cx="136" cy="214" r="6" fill="#b2f0e6" opacity=".7"/>
+  <path fill="#f0a950" d="m74 278 22-15 21 15-21 15z"/><path fill="#a9d7c2" d="m513 278 20-15 21 15-21 15z"/>
+</svg>

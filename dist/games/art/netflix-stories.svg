@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="city" x2="0" y2="1"><stop stop-color="#171d37"/><stop offset=".55" stop-color="#684362"/><stop offset="1" stop-color="#e38972"/></linearGradient>
+    <radialGradient id="dusk"><stop stop-color="#ffca8d" stop-opacity=".75"/><stop offset="1" stop-color="#ffb080" stop-opacity="0"/></radialGradient>
+  </defs>
+  <path fill="url(#city)" d="M0 0h640v360H0z"/><circle cx="335" cy="189" r="160" fill="url(#dusk)"/>
+  <path fill="#1a2037" d="M0 158h94v202H0zm76-59h94v261H76zm92 91h82v170h-82zm278-81h87v251h-87zm76 47h118v204H522z"/>
+  <path fill="#ffd28d" opacity=".72" d="M101 123h10v17h-10zm25 0h10v17h-10zm-25 34h10v17h-10zm299-31h10v18h-10zm24 0h10v18h-10zM550 179h10v17h-10zm26 0h10v17h-10z"/>
+  <path fill="#172035" d="M0 280q162-50 320 0t320-5v85H0z"/>
+  <path fill="#263047" d="M120 238q0-47 35-47t35 47v75h-70zm319-7q0-54 38-54t38 54v84h-76z"/>
+  <circle cx="155" cy="183" r="21" fill="#d99879"/><circle cx="477" cy="169" r="22" fill="#e2ad86"/>
+  <path stroke="#f1b98b" stroke-width="4" d="M193 277q128-78 252-4"/>
+  <path fill="#f5d6a5" d="m318 245 17 20-17 20-17-20z"/><path fill="#fae4bb" d="M310 326h20v34h-20z"/>
+  <path fill="#171c30" d="M0 0h58v360H0zm582 0h58v360h-58z"/>
+</svg>

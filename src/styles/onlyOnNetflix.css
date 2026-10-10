@@ -70,19 +70,19 @@
      page centered at that width on the very wide CSS viewports created by browser
      zoom-out. The fixed blurred backdrop remains viewport-wide behind it. */
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 1920px;
   margin-inline: auto;
   min-height: 100vh;
+  min-height: 100svh;
   /* Keep the blurred fixed collage visible behind the full page, including the
      footer; the body supplies the same dark fallback under the backdrop. */
   background: transparent;
   color: #fff;
   padding: 0 var(--oon-gutter);
-  /* The reference's own footer wrapper carries 96px of floor under the language
-     picker (its content ends 8484, the document 8580), so the page ends with the
-     same breathing room instead of cutting off flush.[cite: 9] */
-  padding-bottom: 93px;
+  padding-bottom: 0;
   overflow-x: hidden;
   isolation: isolate;
 }
@@ -476,7 +476,7 @@
 @media (max-width: 599px) { .oon-hero-copy .oon-hero-price { margin: 12px auto 0; } }
 
 /* ============ TITLE RAILS ============ */
-.oon-column { padding: 0 var(--oon-inset); margin-top: var(--oon-rail-top, 40px); }
+.oon-column { flex: 1 0 auto; padding: 0 var(--oon-inset); margin-top: var(--oon-rail-top, 40px); }
 .oon-rail { margin: 0 0 32px; }
 .oon-rail.is-last { margin-bottom: 0; }
 .oon-rail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 3px; }

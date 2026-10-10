@@ -1,11 +1,12 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API } from '../api';
 import { isTmdbInList, isTmdbLiked, toggleTmdbLike, toggleTmdbList } from '../utils/tmdbList';
 import { useAuth } from '../context/AuthContext';
-import { IconClose, IconPlay, IconPlus, IconCheck, IconThumbUp, IconChevronDown } from './Icons';
+import { IconClose, IconPlay, IconPlus, IconCheck, IconThumbUp, IconChevronDown, IconVolume, IconMuted } from './Icons';
 import { CardArt, TmdbArtworkLogo } from './Row';
 import { hiRes } from '../utils/imageUrl';
+import { loadYouTubePlayerApi } from '../utils/youtubePlayer';
 
 const fmtDur = (min) => {
   if (!min) return '';
@@ -17,6 +18,17 @@ const fmtDur = (min) => {
 const parseTmdbId = (id = '') => {
   const m = /^tmdb-(movie|tv)-(\d+)$/.exec(id);
   return m ? { type: m[1], tmdbId: m[2] } : null;
+};
+
+const getYouTubeTrailerKey = (url) => {
+  try {
+    const trailer = new URL(url);
+    if (!/(^|\.)youtube(?:-nocookie)?\.com$/i.test(trailer.hostname)
+      || !trailer.pathname.startsWith('/embed/')) return '';
+    return trailer.pathname.split('/')[2] || '';
+  } catch {
+    return '';
+  }
 };
 
 const resumeRoute = (item) => item?.watchRoute || null;
@@ -92,7 +104,10 @@ export default function TmdbDetailModal({ item, onClose }) {
   const [visibleRecommendations, setVisibleRecommendations] = useState(9);
   const [episodes, setEpisodes] = useState([]);
   const [epLoading, setEpLoading] = useState(false);
-  const [trailerOpen, setTrailerOpen] = useState(false);
+  const trailerHostRef = useRef(null);
+  const trailerPlayerRef = useRef(null);
+  const [trailerPlaying, setTrailerPlaying] = useState(false);
+  const [trailerMuted, setTrailerMuted] = useState(true);
   const [liked, setLiked] = useState(() => isTmdbLiked(activeProfile?._id, item?._id));
   const [language, setLanguage] = useState('');
   const [toast, setToast] = useState('');
@@ -156,12 +171,80 @@ export default function TmdbDetailModal({ item, onClose }) {
   // Load the full detail for the active title
   useEffect(() => {
     if (!coords) { setError('This title is not available.'); return; }
-    setData(null); setError(''); setSeasonIdx(0); setEpisodes([]); setTrailerOpen(false); setEpisodesOpen(false);
+    setData(null); setError(''); setSeasonIdx(0); setEpisodes([]); setEpisodesOpen(false);
     setVisibleRecommendations(9);
     API.get(`/tmdb/detail/${coords.type}/${coords.tmdbId}`)
       .then(({ data: d }) => setData(d.item))
       .catch(() => setError('Could not load details. Is the backend running?'));
   }, [active?._id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const trailerKey = data?._id === active?._id
+    ? getYouTubeTrailerKey(data?.trailerUrl || '')
+    : '';
+  useEffect(() => {
+    if (!trailerKey || !trailerHostRef.current) return undefined;
+    let cancelled = false;
+    setTrailerPlaying(false);
+    setTrailerMuted(true);
+
+    loadYouTubePlayerApi()
+      .then((youtube) => {
+        if (cancelled || !trailerHostRef.current) return;
+        const playerMount = document.createElement('div');
+        trailerHostRef.current.replaceChildren(playerMount);
+        trailerPlayerRef.current = new youtube.Player(playerMount, {
+          videoId: trailerKey,
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            loop: 1,
+            modestbranding: 1,
+            origin: window.location.origin,
+            playsinline: 1,
+            playlist: trailerKey,
+            rel: 0,
+            vq: 'hd2160',
+          },
+          events: {
+            onReady: (event) => {
+              event.target.mute();
+              setTrailerMuted(true);
+              event.target.setPlaybackQuality('hd2160');
+              event.target.playVideo();
+            },
+            onStateChange: (event) => {
+              if (cancelled) return;
+              if (event.data === youtube.PlayerState.PLAYING) {
+                setTrailerPlaying(true);
+              } else if (
+                event.data === youtube.PlayerState.PAUSED
+                || event.data === youtube.PlayerState.ENDED
+                || event.data === youtube.PlayerState.CUED
+              ) {
+                event.target.playVideo();
+              }
+            },
+            onError: () => {
+              if (!cancelled) setTrailerPlaying(false);
+            },
+          },
+        });
+      })
+      .catch((error) => {
+        if (!cancelled) console.error('Modal background trailer unavailable:', error);
+      });
+
+    return () => {
+      cancelled = true;
+      setTrailerPlaying(false);
+      if (trailerPlayerRef.current) {
+        trailerPlayerRef.current.destroy();
+        trailerPlayerRef.current = null;
+      }
+    };
+  }, [active?._id, trailerKey]);
 
   // Load episodes whenever a series season is selected
   useEffect(() => {
@@ -233,6 +316,10 @@ export default function TmdbDetailModal({ item, onClose }) {
           <div className="tmdb-hero" style={{ backgroundImage: `url(${hiRes(active.bannerUrl || active.posterUrl)})` }}>
             <div className="tmdb-hero-shade" />
             <div className="tmdb-hero-body">
+              <div className="tmdb-hero-brandtag">
+                <img src="/Netflix.png" alt="" aria-hidden="true" />
+                <span>{coords?.type === 'tv' ? 'SERIES' : 'FILM'}</span>
+              </div>
               <TmdbArtworkLogo item={active} variant="modal" />
             </div>
             <div className="sf-spinner" style={{ position: 'absolute', left: '50%', top: '50%' }} />
@@ -242,8 +329,37 @@ export default function TmdbDetailModal({ item, onClose }) {
         {data && (
           <div className="tmdb-scroll">
             <div className="tmdb-hero" style={{ backgroundImage: `url(${hiRes(data.bannerUrl || data.posterUrl)})` }}>
+              {trailerKey && (
+                <div
+                  ref={trailerHostRef}
+                  className={`tmdb-hero-trailer${trailerPlaying ? ' is-playing' : ''}`}
+                  aria-hidden="true"
+                />
+              )}
               <div className="tmdb-hero-shade" />
+              {trailerKey && (
+                <button
+                  type="button"
+                  className="tmdb-hero-audio"
+                  aria-label={trailerMuted ? 'Unmute trailer' : 'Mute trailer'}
+                  aria-pressed={!trailerMuted}
+                  title={trailerMuted ? 'Unmute trailer' : 'Mute trailer'}
+                  onClick={() => {
+                    const player = trailerPlayerRef.current;
+                    if (!player) return;
+                    if (trailerMuted) player.unMute();
+                    else player.mute();
+                    setTrailerMuted(!trailerMuted);
+                  }}
+                >
+                  {trailerMuted ? <IconMuted size={18} /> : <IconVolume size={18} />}
+                </button>
+              )}
               <div className="tmdb-hero-body">
+                <div className="tmdb-hero-brandtag">
+                  <img src="/Netflix.png" alt="" aria-hidden="true" />
+                  <span>{isSeries ? 'SERIES' : 'FILM'}</span>
+                </div>
                 <TmdbArtworkLogo item={hero} variant="modal" />
                 {resumeContext && <div className="tmdb-resume-context">{resumeContext}</div>}
                 {data.tagline && <p className="tmdb-tagline">{data.tagline}</p>}
@@ -278,17 +394,6 @@ export default function TmdbDetailModal({ item, onClose }) {
                   >
                     <IconPlay size={22} /> {storedResumeRoute ? 'Resume' : 'Play'}
                   </button>
-                  {/* The trailer stays available, just no longer hijacks Play. */}
-                  {!isSeries && data.trailerUrl && (
-                    <button
-                      className="tmdb-list-btn"
-                      title="Watch trailer"
-                      aria-label={`Play the trailer for ${data.title}`}
-                      onClick={() => setTrailerOpen(true)}
-                    >
-                      <IconPlay size={20} />
-                    </button>
-                  )}
                   <button
                     className={`tmdb-list-btn ${inList ? 'on' : ''} ${actionPulse === 'list' ? 'pulse' : ''}`}
                     title={inList ? 'Remove from My List' : 'Add to My List'}
@@ -460,20 +565,6 @@ export default function TmdbDetailModal({ item, onClose }) {
 
       {toast && <div className="tmdb-toast" role="status">{toast}</div>}
 
-      {trailerOpen && data?.trailerUrl && (
-        <div className="trailer-ov" onClick={() => setTrailerOpen(false)}>
-          <div className="trailer-box" onClick={(e) => e.stopPropagation()}>
-            <button className="trailer-close" onClick={() => setTrailerOpen(false)} title="Close">✕</button>
-            <iframe
-              src={data.trailerUrl}
-              title={`${data.title} trailer`}
-              allowFullScreen
-              allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }

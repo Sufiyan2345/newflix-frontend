@@ -71,21 +71,31 @@ const Ribbon = ({ item, bottom = false, top10 = false }) => {
 // TMDB has titles with no artwork at all (obscure/older films — e.g. "Tom Stone").
 // Netflix prints the title on a dark branded tile instead of a broken image — do
 // the same, and swap to that tile if the image URL 404s at runtime.
-export function CardArt({ src, alt, className = '', eager = false }) {
-  const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [src]);
-  if (!src || failed) {
-    return <div className="card-art-placeholder" aria-hidden="true" />;
+export function CardArt({ src, fallbackSrc = '', alt, title, className = '', eager = false }) {
+  const [failedSources, setFailedSources] = useState([]);
+  useEffect(() => setFailedSources([]), [src, fallbackSrc]);
+  const currentSrc = src && !failedSources.includes(src)
+    ? src
+    : fallbackSrc && !failedSources.includes(fallbackSrc)
+      ? fallbackSrc
+      : '';
+  if (!currentSrc) {
+    const fallbackTitle = title || alt || 'Artwork unavailable';
+    return (
+      <div className="card-art-placeholder" role="img" aria-label={fallbackTitle}>
+        <span>{fallbackTitle}</span>
+      </div>
+    );
   }
   return (
     <img
-      src={cardImage(src)}
+      src={cardImage(currentSrc)}
       alt={alt}
       className={className}
       loading={eager ? 'eager' : 'lazy'}
       fetchPriority={eager ? 'high' : 'auto'}
       decoding={eager ? 'sync' : 'async'}
-      onError={() => setFailed(true)}
+      onError={() => setFailedSources((sources) => [...sources, currentSrc])}
     />
   );
 }
@@ -290,6 +300,7 @@ export function TitleCard({ item, top10Index = null, progress = null, eager = fa
   const src = top10Index !== null || usePosterArtwork
     ? (item.posterUrl || item.bannerUrl)
     : (item.bannerUrl || item.posterUrl);
+  const fallbackSrc = src === item.posterUrl ? item.bannerUrl : item.posterUrl;
   const chip = cornerChip(item);
 
   const open = () => {
@@ -310,9 +321,14 @@ export function TitleCard({ item, top10Index = null, progress = null, eager = fa
     return (
       <div className="card-top10">
         <Top10Rank rank={top10Index + 1} />
-        <div className="card top10-card" onClick={open} onMouseEnter={(e) => onHover?.(item, e.currentTarget)}>
+        <div
+          className="card top10-card"
+          onClick={open}
+          onMouseEnter={(e) => onHover?.(item, e.currentTarget)}
+          onMouseMove={(e) => onHover?.(item, e.currentTarget, undefined, true)}
+        >
           <div className="card-art">
-            <CardArt src={src} alt={item.title} title={item.title} eager={eager} />
+            <CardArt src={src} fallbackSrc={fallbackSrc} alt={item.title} title={item.title} eager={eager} />
             <img className="card-brand-badge" src="/Netflix.png" alt="Netflix" />
             <Ribbon item={item} top10 />
           </div>
@@ -322,10 +338,16 @@ export function TitleCard({ item, top10Index = null, progress = null, eager = fa
   }
 
   return (
-    <div className="card" onClick={open} onMouseEnter={(e) => onHover?.(item, e.currentTarget)}>
+    <div
+      className="card"
+      onClick={open}
+      onMouseEnter={(e) => onHover?.(item, e.currentTarget)}
+      onMouseMove={(e) => onHover?.(item, e.currentTarget, undefined, true)}
+    >
       <div className="card-art">
         <CardArt
           src={src}
+          fallbackSrc={fallbackSrc}
           alt={item.title}
           className={usePosterArtwork ? 'card-art-original-poster' : ''}
           eager={eager}
@@ -344,7 +366,7 @@ export function TitleCard({ item, top10Index = null, progress = null, eager = fa
 // grid.css) plus the TMDB metadata printed underneath the artwork, so a category
 // page (Horror, Comedies, Korean Dramas…) reads like Netflix's genre browse grid
 // instead of an unlabelled wall of images.
-export function GridCard({ item }) {
+export function GridCard({ item, showArtworkLogo = true }) {
   const nav = useNavigate();
   const isMobile = useIsMobile();
   const isTmdb = String(item._id || '').startsWith('tmdb-');
@@ -368,7 +390,7 @@ export function GridCard({ item }) {
       <div className="card-art">
         <CardArt src={item.posterUrl || item.bannerUrl} alt={item.title} title={item.title} />
         <img className="card-brand-badge" src="/Netflix.png" alt="Netflix" />
-        {isTmdb && <TmdbArtworkLogo item={item} />}
+        {isTmdb && showArtworkLogo && <TmdbArtworkLogo item={item} />}
         {chip && <span className="card-chip">{chip}</span>}
       </div>
       <div className="grid-card-caption">
@@ -985,6 +1007,9 @@ export default function Row({ title, items, top10 = false, cw = false, eager = f
   const scrollAnimationRef = useRef(null);
   const scrollTargetPageRef = useRef(0);
   const closeTimer = useRef(null);
+  const hoverSuppressed = useRef(false);
+  const railIsScrolling = useRef(false);
+  const railScrollTimer = useRef(null);
   const [hover, setHover] = useState(null); // { item, rect }
   const [arrowScrolling, setArrowScrolling] = useState(false);
   const [railPage, setRailPage] = useState({ current: 0, count: 1 });
@@ -1004,7 +1029,28 @@ export default function Row({ title, items, top10 = false, cw = false, eager = f
 
   useEffect(() => () => {
     if (scrollAnimationRef.current !== null) cancelAnimationFrame(scrollAnimationRef.current);
+    window.clearTimeout(railScrollTimer.current);
   }, []);
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider || cw) return undefined;
+    const onRailScroll = () => {
+      hoverSuppressed.current = true;
+      railIsScrolling.current = true;
+      window.clearTimeout(closeTimer.current);
+      window.clearTimeout(railScrollTimer.current);
+      setHover(null);
+      railScrollTimer.current = window.setTimeout(() => {
+        railIsScrolling.current = false;
+      }, 140);
+    };
+    slider.addEventListener('scroll', onRailScroll, { passive: true });
+    return () => {
+      slider.removeEventListener('scroll', onRailScroll);
+      window.clearTimeout(railScrollTimer.current);
+    };
+  }, [cw, items]);
 
   useEffect(() => {
     const slider = sliderRef.current;
@@ -1108,10 +1154,16 @@ export default function Row({ title, items, top10 = false, cw = false, eager = f
 
   if (!items || items.length === 0) return null;
 
-  const onHover = (item, element, index) => {
+  const onHover = (item, element, index, pointerMoved = false) => {
     // No hover preview on a phone — the tap opens <MobileTitleSheet> instead, and
     // a finger firing mouseenter would pop a desktop card over the rails.
     if (window.matchMedia?.(`(max-width: ${MOBILE_MAX_WIDTH}px)`).matches) return;
+    if (railIsScrolling.current) return;
+    if (pointerMoved && !hoverSuppressed.current) return;
+    if (hoverSuppressed.current) {
+      if (!pointerMoved) return;
+      hoverSuppressed.current = false;
+    }
     if (closeTimer.current) clearTimeout(closeTimer.current);
     if (element) setHover({ item, rect: expandedCardRect(element, cardHoverScale()), index });
     else if (hover?.item?._id === item._id) {
@@ -1213,7 +1265,7 @@ export default function Row({ title, items, top10 = false, cw = false, eager = f
                   top10Index={top10 ? i : null}
                   progress={item._resume || null}
                   eager={eager && i < 6}
-                  onHover={(hoveredItem, element) => onHover(hoveredItem, element, i)}
+                  onHover={(hoveredItem, element, _cardIndex, pointerMoved) => onHover(hoveredItem, element, i, pointerMoved)}
                 />
               </div>
             )

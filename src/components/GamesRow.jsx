@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 
 const GAMES = [
-  { id: '81680940', title: 'Cozy Grove: Camp Spirit', image: '/games/pexels-7915438.jpg', position: 'center 43%' },
-  { id: '81621577', title: 'Country Friends', image: '/games/pexels-7862609.jpg', position: 'center 48%' },
-  { id: '81616381', title: 'SpongeBob: Get Cooking', image: '/games/pexels-442576.jpg', position: 'center 44%' },
-  { id: '81554162', title: 'Spiritfarer', image: '/games/pexels-7915439.jpg', position: 'center 56%' },
-  { id: '81763213', title: 'The Ultimatum: Choices', image: '/games/pexels-7915437.jpg', position: 'center 40%' },
-  { id: '81605827', title: 'Netflix Stories', image: '/games/pexels-7862620.jpg', position: 'center 43%' },
-  { id: '81738613', title: 'Money Heist: Ultimate Choice', image: '/games/gaming-photo-test.jpg', position: 'center 46%' },
-  { id: '81685715', title: 'Too Hot to Handle 2', image: '/games/pexels-7862610.jpg', position: 'center 42%' },
+  { id: '81680940', title: 'Cozy Grove: Camp Spirit', image: '/games/art/cozy-grove.svg' },
+  { id: '81621577', title: 'Country Friends', image: '/games/art/country-friends.svg' },
+  { id: '81616381', title: 'SpongeBob: Get Cooking', image: '/games/art/spongebob-cooking.svg' },
+  { id: '81554162', title: 'Spiritfarer', image: '/games/art/spiritfarer.svg' },
+  { id: '81763213', title: 'The Ultimatum: Choices', image: '/games/art/ultimatum.svg' },
+  { id: '81605827', title: 'Netflix Stories', image: '/games/art/netflix-stories.svg' },
+  { id: '81738613', title: 'Money Heist: Ultimate Choice', image: '/games/art/money-heist.svg' },
+  { id: '81685715', title: 'Too Hot to Handle 2', image: '/games/art/too-hot.svg' },
 ];
 
 export default function GamesRow() {
@@ -66,7 +66,7 @@ export default function GamesRow() {
             key={game.id}
           >
             <span className="game-card-art" aria-hidden="true">
-              <img src={game.image} alt="" loading="lazy" style={{ objectPosition: game.position }} />
+              <img src={game.image} alt="" loading="lazy" />
               <span className="game-card-shade" />
               <span className="game-card-mark">{game.title}</span>
               <span className="game-card-open" aria-hidden="true">↗</span>

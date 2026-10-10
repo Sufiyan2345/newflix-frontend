@@ -15,48 +15,14 @@
   pointer-events: none;
 }
 .brand-splash.is-exiting { opacity: 0; visibility: hidden; }
-.brand-splash-mark {
-  display: flex;
-  justify-content: center;
-  color: #e50914;
-  font-family: 'Bebas Neue', 'Arial Narrow', sans-serif;
-  font-size: 78px;
-  font-weight: 400;
-  line-height: 1;
-  text-transform: uppercase;
-  text-shadow: 0 3px 24px rgba(229, 9, 20, .22);
-  perspective: 500px;
-}
-.brand-splash-letter {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(28px) rotateX(-70deg);
-  filter: blur(7px);
-  animation: brand-letter-arrive .72s cubic-bezier(.18, .78, .24, 1) forwards;
-  animation-delay: calc(var(--letter-index) * 85ms);
-}
-.brand-splash-light {
-  width: min(260px, 70vw);
-  height: 2px;
-  margin: 18px auto 0;
-  background: #e50914;
-  box-shadow: 0 0 18px rgba(229, 9, 20, .55);
-  transform: scaleX(0);
-  transform-origin: center;
-  animation: brand-light-grow .6s ease-out .45s forwards;
-}
-@keyframes brand-letter-arrive {
-  to { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
-}
-@keyframes brand-light-grow {
-  to { transform: scaleX(1); }
-}
-@media (max-width: 600px) {
-  .brand-splash-mark { font-size: 56px; }
+.brand-splash-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(1.35);
 }
 @media (prefers-reduced-motion: reduce) {
   .brand-splash, .brand-splash.is-exiting { transition-duration: .15s; }
-  .brand-splash-letter, .brand-splash-light { animation-duration: .01ms; animation-delay: 0ms; }
-  .brand-splash-letter { opacity: 1; transform: none; filter: none; }
-  .brand-splash-light { transform: scaleX(1); }
 }

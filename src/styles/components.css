@@ -89,10 +89,10 @@
 .mobile-nav-icon { display: none; }
 
 .nav-links { position: relative; display: flex; flex: 0 0 auto; gap: 7px; align-items: center; margin-left: 6px; }
-.nav-pill { position: relative; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 500; color: #e5e5e5; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; transition: color .18s ease, transform .12s ease; white-space: nowrap; opacity: .9; }
-.nav-pill:hover { color: #fff; opacity: 1; }
+.nav-pill { position: relative; display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 500; color: #e5e5e5; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; transition: color .22s ease, font-weight .22s ease, opacity .22s ease, transform .12s ease; white-space: nowrap; opacity: .9; }
+.nav-pill:hover { color: #e5e5e5; opacity: 1; }
 .nav-pill.active { color: #fff; font-weight: 700; opacity: 1; }
-.nav-indicator { position: absolute; top: 0; left: 0; z-index: 1; width: 0; height: 3px; border-radius: 2px; background: var(--sf-red); opacity: 0; pointer-events: none; transform: translate3d(0, 0, 0); transition: transform .42s cubic-bezier(.22,.8,.25,1), width .42s cubic-bezier(.22,.8,.25,1), opacity .12s ease; will-change: transform, width; }
+.nav-indicator { display: none; }
 .nav-links.mobile-open .nav-indicator { display: none; }
 .nav-pill:active { transform: scale(.97); }
 .nav-pill:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
@@ -102,9 +102,15 @@
 }
 
 .nav-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.kids-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 10px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: rgba(255,255,255,.86); font-size: 13px; font-weight: 700; letter-spacing: .02em; cursor: pointer; transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .12s ease; }
-.kids-link:hover, .kids-link.active { color: #fff; background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.28); }
-.kids-link:active { transform: scale(.97); }
+.nav-dvd-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 6px; border: 0; border-radius: 0; background: transparent; color: #fff; font-size: 13px; font-weight: 500; letter-spacing: .04em; line-height: 1; text-decoration: none; transition: font-weight .18s ease; }
+.nav-dvd-link:hover { color: #fff; background: transparent; }
+.nav-dvd-link.active { font-weight: 700; }
+.nav-dvd-link:active { transform: none; }
+.nav-dvd-link:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.kids-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 6px; border: 0; border-radius: 0; background: transparent; color: #fff; font-size: 13px; font-weight: 500; letter-spacing: .02em; cursor: pointer; transition: font-weight .18s ease; }
+.kids-link:hover { color: #fff; background: transparent; }
+.kids-link.active { font-weight: 700; }
+.kids-link:active { transform: none; }
 .kids-link:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 /* Stays lit while the kid catalogue is open, matching the .nav-pill.active rule. */
 .nav-icon-btn { flex: 0 0 38px; width: 38px; height: 38px; background: transparent; border: 1px solid transparent; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; padding: 0; position: relative; opacity: .95; cursor: pointer; transition: color .18s ease, background-color .18s ease, border-color .18s ease, transform .12s ease; }
@@ -223,7 +229,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-shell::after { animation: none; opacity: .68; }
 }
-.hero { position: relative; height: clamp(560px, 55vw, 840px); width: 100%; overflow: hidden; background: #000; isolation: isolate; }
+.hero { position: relative; height: clamp(560px, 55vw, 840px); width: 100%; overflow: hidden; background: #000; isolation: isolate; container-type: size; }
 .hero-slides { position: absolute; inset: 0; }
 /* Every featured slide stays mounted and stacked; only the active one is visible.
    Crossfading an already-decoded layer (instead of swapping one background) is
@@ -247,6 +253,20 @@
   animation: heroDrift 26s ease-in-out infinite alternate; animation-play-state: paused;
   will-change: transform;
 }
+.hero-trailer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 177.78cqh);
+  height: max(100%, 56.25cqw);
+  border: 0;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.1);
+  transition: opacity .8s ease;
+  pointer-events: none;
+}
+.hero-trailer.loaded { opacity: 1; }
+.hero-trailer iframe { display: block; width: 100%; height: 100%; border: 0; }
 /* Only the on-screen slide drifts — the frozen ones cost no GPU time. */
 .hero-slide.active .hero-img { animation-play-state: running; }
 @keyframes heroDrift {
@@ -281,10 +301,10 @@
   margin-bottom: clamp(28px, calc(20px + 0.35vw), 32px);
   transform: translateY(clamp(8px, 1.2vw, 20px));
 }
-.hero-brandtag-n { display: block; height: clamp(28px, 2.4vw, 38px); width: auto; pointer-events: none; user-select: none; filter: drop-shadow(0 2px 5px rgba(0,0,0,.6)); }
+.hero-brandtag-n { display: block; height: clamp(26px, 2.2vw, 34px); width: auto; pointer-events: none; user-select: none; filter: drop-shadow(0 2px 5px rgba(0,0,0,.6)); }
 .hero-brandtag span {
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  font-size: clamp(14px, 1vw, 17px);
+  font-size: clamp(13px, .9vw, 15px);
   font-weight: 900;
   line-height: 1;
   letter-spacing: 3px;
@@ -373,13 +393,59 @@
 .hero-reaction-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .hero-reaction-btn.active svg { animation: hero-reaction-pop .28s cubic-bezier(.2, .8, .2, 1); }
 @keyframes hero-reaction-pop { 50% { transform: scale(1.18); } }
-/* Maturity chip: flush against the right edge, its own baseline on the button
-   row (the copy block sits on `bottom: 30%`, and so does the chip's bottom edge
-   — in the reference both are vertically centred on the same line). */
-.hero-foot { position: absolute; right: 0; bottom: 37%; height: 36px; z-index: 6; display: flex; align-items: center; }
-/* Right padding is deliberately small: the box is flush to the viewport edge, so a
-   wide trailing pad read as a half-rendered chip that ran off the screen. */
-.hero-rating { background: rgba(51,51,51,.62); border-left: 3px solid #dcdcdc; color: #fff; font-size: 15.5px; font-weight: 600; letter-spacing: .3px; line-height: 1; padding: 10px 18px 10px 13px; }
+/* Stack the maturity badge directly above the right-aligned Emmy label. */
+.hero-maturity {
+  position: absolute;
+  right: 0;
+  bottom: calc(4.5% + 30px);
+  z-index: 6;
+  display: flex;
+  justify-content: flex-end;
+}
+.hero-audio-toggle {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 12px);
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 50%;
+  background: rgba(20,20,20,.62);
+  color: #fff;
+  box-shadow: 0 2px 14px rgba(0,0,0,.28);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color .2s ease, border-color .2s ease, transform .2s ease, opacity .2s ease;
+  backdrop-filter: blur(10px);
+}
+.hero-audio-toggle:hover:not(:disabled) {
+  border-color: #fff;
+  background: rgba(55,55,55,.88);
+  transform: translateY(-50%) scale(1.08);
+}
+.hero-audio-toggle:active:not(:disabled) { transform: translateY(-50%) scale(.94); }
+.hero-audio-toggle:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.hero-audio-toggle:disabled { cursor: default; opacity: .55; }
+.hero-rating {
+  display: inline-flex;
+  min-width: 72px;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  border-left: 4px solid #e50914;
+  background: rgba(20, 20, 20, .78);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .75);
+}
 .hero-badges { position: absolute; right: 2.2%; bottom: 4.5%; z-index: 6; display: flex; flex-direction: row; align-items: center; justify-content: flex-end; gap: clamp(14px, 1.5vw, 24px); max-width: 58%; }
 .hero-badge { display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 0; border-radius: 0; background: transparent; color: #fff; font-size: clamp(13px, .98vw, 16px); font-weight: 700; line-height: 1.15; white-space: nowrap; text-shadow: 0 1px 4px rgba(0,0,0,.95); }
 .hero-badge img { display: block; flex: 0 0 auto; width: clamp(22px, 1.7vw, 28px); height: clamp(22px, 1.7vw, 28px); object-fit: contain; }
@@ -401,15 +467,15 @@
     max-width: min(760px, 56%);
   }
   .hero-brandtag { gap: 12px; margin-bottom: 16px; }
-  .hero-brandtag-n { height: clamp(36px, 3vw, 48px); }
-  .hero-brandtag span { font-size: clamp(17px, 1.35vw, 22px); letter-spacing: 3.5px; }
+  .hero-brandtag-n { height: clamp(32px, 2.7vw, 42px); }
+  .hero-brandtag span { font-size: clamp(15px, 1.15vw, 19px); letter-spacing: 3.5px; }
   .hero-content.has-title-art .hero-brandtag {
     margin-bottom: 19px;
     transform: none;
   }
   .hero-logo {
-    max-height: clamp(126px, 13vw, 210px);
-    max-width: min(100%, 780px);
+    max-height: clamp(112px, 11.5vw, 190px);
+    max-width: min(100%, 700px);
     margin-bottom: 18px;
   }
   .hero-title-text {
@@ -436,7 +502,6 @@
   }
   .hero-actions .btn-white { min-width: 158px; }
   .hero-actions .btn-gray { min-width: 176px; }
-  .hero-foot { right: 0; bottom: 5%; }
   .hero-follow { margin-top: 18px; transform: none; }
 }
 
@@ -451,6 +516,8 @@
 @media (max-width: 768px) {
   .hero-shell { border-radius: 12px; }
   .home-primary-rows { gap: 24px; margin-top: 22px; }
+  .hero-maturity { right: 0; bottom: calc(5% + 24px); }
+  .hero-rating { min-width: 62px; min-height: 40px; padding: 7px 12px; font-size: 16px; }
   .hero-badges { right: 8px; bottom: 5%; max-width: 88%; gap: 7px; }
   .hero-badge { min-height: 24px; gap: 5px; padding: 2px 3px; font-size: clamp(10px, 3vw, 13px); }
   .hero-badge img { width: 18px; height: 18px; }

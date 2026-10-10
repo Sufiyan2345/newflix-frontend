@@ -418,7 +418,7 @@ export default function Profiles() {
         </div>
       )}
 
-      <button className="btn-gray" style={{ marginTop: 50 }} onClick={() => (manage ? nav('/browse') : setManage(true))}>
+      <button className="profiles-manage-btn" onClick={() => (manage ? nav('/browse') : setManage(true))}>
         {manage ? 'Done' : 'Manage Profiles'}
       </button>
     </div>

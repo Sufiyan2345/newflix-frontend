@@ -93,12 +93,9 @@
   }
   .navbar .brand-logo { height: 26px; }
   .profile-avatar { width: 38px; height: 38px; }
-  /* Netflix's phone header is logo · search · bell · avatar. The genre grid and
-     the friends rail are desktop chrome — the app reaches genres through Browse
-     — so they are dropped rather than crowding a 360px bar. The hamburger STAYS:
-     it is the only route to Kids and "Browse by Languages". */
-  .nav-right .social-toggle,
-  .nav-right .nav-pop-apps { display: none; }
+  /* The friends rail is desktop chrome — the app reaches genres through Browse.
+     The hamburger STAYS: it is the only route to Kids and "Browse by Languages". */
+  .nav-right .social-toggle { display: none; }
   /* The search field takes the whole bar, like the app: tapping the magnifier
      slides a full-width input in under the header. */
   .nav-right { gap: 6px; }
@@ -470,12 +467,40 @@
      the overlapping first rail on short phones as well as tall devices. */
   .hero { height: clamp(500px, 76svh, 640px); }
   .hero-img { object-position: center 20%; }
-  .hero-content { bottom: calc(var(--sf-row-overlap, 150px) + 22px); }
+  .hero-content {
+    left: 16px;
+    right: 16px;
+    bottom: calc(var(--sf-row-overlap, 150px) + 22px);
+    width: auto;
+    max-width: none;
+  }
   .hero-brandtag { gap: 9px; margin-bottom: 14px; }
   .hero-content.has-title-art .hero-brandtag { margin-bottom: 18px; transform: translateY(6px); }
   .hero-brandtag-n { height: 26px; }
   .hero-brandtag span { font-size: 12px; letter-spacing: 2.4px; margin-right: -2.4px; }
-  .hero-logo { max-height: clamp(68px, 18vw, 112px); max-width: min(100%, 460px); margin-bottom: 12px; }
+  .hero-badges {
+    left: 12px;
+    right: 12px;
+    bottom: 5%;
+    width: auto;
+    max-width: none;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+  .hero-badge {
+    min-width: 0;
+    min-height: 24px;
+    gap: 5px;
+    padding: 2px 3px;
+    font-size: clamp(10px, 3vw, 12px);
+    white-space: normal;
+  }
+  .hero-logo {
+    max-height: clamp(52px, 16vw, 76px);
+    max-width: min(100%, 340px);
+    margin-bottom: 10px;
+  }
   .hero-title-text { margin-bottom: 12px; line-height: 1; }
   .hero-description {
     max-width: 38ch;
@@ -497,7 +522,9 @@
   /* The rail edges are the page gutter, so a card can finish flush with the
      screen edge the way it does in the app. */
   .row-slider { margin-left: 0; margin-right: 0; padding-left: 16px; padding-right: 16px; }
-  .row-header { padding-left: 16px; padding-right: 16px; }
+  .row-header { align-items: center; padding-left: 16px; padding-right: 16px; }
+  .row-title { flex: 1 1 auto; min-width: 0; font-size: clamp(16px, 4.4vw, 18px); }
+  .row-header-actions, .row-page-indicators { display: none; }
 
   /* Two-up 2:3 posters, the Netflix phone browse grid. */
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }

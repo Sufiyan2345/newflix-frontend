@@ -19,10 +19,10 @@
      landscape-on-a-portrait-tile mismatch. */
   height: var(--hover-card-h, auto);
   background: #181818; border-radius: 4px; overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,.8), 0 2px 8px rgba(0,0,0,.55);
-  animation: hoverIn .2s ease-out; cursor: pointer;
+  box-shadow: 0 12px 32px rgba(0,0,0,.68), 0 3px 10px rgba(0,0,0,.42);
+  animation: hoverIn .28s cubic-bezier(.2,.8,.2,1); cursor: pointer;
 }
-@keyframes hoverIn { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+@keyframes hoverIn { from { opacity: 0; transform: scale(.985) translateY(3px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
 /* Chevron under the card. A real <button> — it opens the title, the same as the info
    ring button — so the reset list matters: no inherited border/background, and

@@ -58,10 +58,10 @@
 /* ============ CARDS (design reference: chip top-right, ribbon bottom) ============ */
 /* Size comes from --sf-card-w / --sf-card-h (core.css) so the rail, the row
    overlap under the billboard and the mobile breakpoint can never drift apart. */
-.card { position: relative; flex: 0 0 auto; width: var(--sf-card-w, 240px); border-radius: 16px; cursor: pointer; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
-.card-art { position: relative; border-radius: 16px; overflow: hidden; }
-.card-art > img { width: 100%; height: var(--sf-card-h, 135px); object-fit: cover; border-radius: 16px; display: block; background: #222; }
-.card > img { width: var(--sf-card-w, 240px); height: var(--sf-card-h, 135px); object-fit: cover; border-radius: 16px; display: block; background: #222; }
+.card { position: relative; flex: 0 0 auto; width: var(--sf-card-w, 240px); border-radius: 6px; cursor: pointer; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+.card-art { position: relative; border-radius: 6px; overflow: hidden; }
+.card-art > img { width: 100%; height: var(--sf-card-h, 135px); object-fit: cover; border-radius: 6px; display: block; background: #222; }
+.card > img { width: var(--sf-card-w, 240px); height: var(--sf-card-h, 135px); object-fit: cover; border-radius: 6px; display: block; background: #222; }
 
 /* No-artwork placeholder — TMDB has titles with neither backdrop nor poster.
    Print the title on a dark branded tile instead of showing a broken image. */
@@ -172,9 +172,11 @@
   right: auto;
   bottom: auto;
   width: min(360px, 58%);
-  height: 105px;
-  margin-bottom: 14px;
+  height: auto;
+  max-height: 105px;
+  margin-bottom: 5px;
 }
+.tmdb-modal-logo-slot .tmdb-artwork-logo { max-height: 105px; }
 /* ===== Top 10 rail (outlined ranks overlapped by portrait posters) =====
   The numeral is inline <svg> (see Top10Rank in Row.jsx): `textLength` pins its width, so it
   cannot drift with font loading. Poster and rank share the same responsive variables, so
@@ -217,8 +219,8 @@
   margin-top: calc(var(--t10-h) * .02);
   margin-left: var(--t10-overlap);
 }
-.card.top10-card .card-art { width: var(--t10-w); height: var(--t10-h); border-radius: 0; }
-.card.top10-card .card-art > img:first-child { width: var(--t10-w); height: var(--t10-h); object-fit: cover; border-radius: 0; }
+.card.top10-card .card-art { width: var(--t10-w); height: var(--t10-h); border-radius: 6px; }
+.card.top10-card .card-art > img:first-child { width: var(--t10-w); height: var(--t10-h); object-fit: cover; border-radius: 6px; }
 .card.top10-card .card-title-mini { width: var(--t10-w); }
 /* "Recently added" / "New Season" as a small centered chip on Top 10 posters */
 .card.top10-card .card-ribbon {
@@ -243,7 +245,7 @@
   position: relative;
   flex: 0 0 auto;
   cursor: pointer;
-  border-radius: 16px;
+  border-radius: 6px;
   transition: width .48s cubic-bezier(.22, .61, .36, 1), z-index 0s;
 }
 .cw-lead { width: var(--cw-lw); }
@@ -252,7 +254,7 @@
   position: relative;
   width: 100%;
   height: var(--cw-h);
-  border-radius: 16px;
+  border-radius: 6px;
   overflow: hidden;
   background: #222;
   transition: box-shadow .2s;
@@ -392,9 +394,9 @@
 
 /* ============ MORE LIKE THIS (3-up grid inside the title modal) ============ */
 .mlt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.mlt-card { background: #2f2f2f; border-radius: 16px; overflow: hidden; cursor: pointer; transition: transform .2s ease; }
+.mlt-card { background: #2f2f2f; border-radius: 6px; overflow: hidden; cursor: pointer; transition: transform .2s ease; }
 .mlt-card:hover { transform: translateY(-2px); }
-.mlt-art { position: relative; overflow: hidden; border-radius: 16px; }
+.mlt-art { position: relative; overflow: hidden; border-radius: 6px; }
 .mlt-art > img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: #222; }
 .mlt-body { min-height: 150px; padding: 14px 16px 18px; }
 .mlt-meta { display: flex; align-items: center; gap: 10px; font-size: 13px; margin-bottom: 10px; color: #ddd; }
@@ -526,12 +528,22 @@
 
 /* 16:9 hero (the modal is 850px wide, so this lands on Netflix's ~478px panel),
    with the backdrop cover-cropped and clipped to the frame's top corners. */
-.tmdb-hero { position: relative; aspect-ratio: 16 / 9; max-height: 480px; min-height: 280px; background-size: cover; background-position: center; background-repeat: no-repeat; overflow: hidden; }
+.tmdb-hero { position: relative; aspect-ratio: 16 / 9; max-height: 480px; min-height: 280px; background-size: cover; background-position: center; background-repeat: no-repeat; overflow: hidden; container-type: size; }
+.tmdb-hero-brandtag { display: flex; align-items: center; gap: 6px; width: fit-content; height: 22px; margin: 0 0 5px; pointer-events: none; }
+.tmdb-hero-brandtag img { display: block; width: auto; height: 22px; filter: drop-shadow(0 1px 4px rgba(0,0,0,.75)); }
+.tmdb-hero-brandtag span { color: #fff; font-size: 10px; font-weight: 900; letter-spacing: 1.8px; line-height: 1; text-shadow: 0 1px 5px rgba(0,0,0,.85); }
+.tmdb-hero-trailer { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; pointer-events: none; transition: opacity .55s ease; }
+.tmdb-hero-trailer.is-playing { opacity: 1; }
+.tmdb-hero-trailer iframe { display: block; width: 100%; height: 100%; border: 0; pointer-events: none; }
+.tmdb-hero-trailer::after { position: absolute; z-index: 1; inset: 0; content: ''; pointer-events: none; background: linear-gradient(to bottom, rgba(0,0,0,.92), transparent 19%), linear-gradient(to top, rgba(0,0,0,.7), transparent 18%); }
+.tmdb-hero-audio { position: absolute; z-index: 5; right: 20px; bottom: 20px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.52); border-radius: 50%; background: rgba(20,20,20,.58); color: #fff; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 3px 12px rgba(0,0,0,.35); transition: background .18s ease, border-color .18s ease, transform .18s ease; }
+.tmdb-hero-audio:hover { background: rgba(20,20,20,.88); border-color: #fff; transform: scale(1.06); }
+.tmdb-hero-audio:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 /* Bottom scrim so the logo and controls always read against the art, plus a
    faint top vignette behind the close button. Solid #181818 at the very floor
    hands straight off to the modal body with no seam. */
-.tmdb-hero-shade { position: absolute; inset: 0; background: linear-gradient(to top, #181818 0%, rgba(24,24,24,.92) 8%, rgba(24,24,24,.4) 28%, rgba(24,24,24,0) 58%), linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,0) 22%); }
-.tmdb-hero-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 48px 30px; }
+.tmdb-hero-shade { position: absolute; z-index: 1; inset: 0; background: linear-gradient(to top, #181818 0%, rgba(24,24,24,.92) 8%, rgba(24,24,24,.4) 28%, rgba(24,24,24,0) 58%), linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,0) 22%); pointer-events: none; }
+.tmdb-hero-body { position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; padding: 0 48px 30px; }
 /* The transparent title logo Netflix paints on the backdrop, with a text
    fallback when TMDB ships no logo. */
 .tmdb-logo { display: block; max-width: min(360px, 52%); max-height: 130px; width: auto; height: auto; object-fit: contain; object-position: left bottom; margin: 0 0 14px; filter: drop-shadow(0 2px 10px rgba(0,0,0,.75)); }
@@ -546,6 +558,7 @@
    line — that shared baseline is the modal's signature. */
 .tmdb-controls { display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap; }
 .tmdb-actions { display: flex; gap: 10px; align-items: center; }
+.tmdb-actions .play-action { min-width: 140px; min-height: 44px; }
 .tmdb-list-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(109,109,110,.7); border: 2px solid rgba(255,255,255,.45); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s, transform .2s; }
 .tmdb-list-btn:hover, .tmdb-list-btn.on { border-color: #fff; background: rgba(255,255,255,.18); transform: scale(1.05); }
 .tmdb-like-btn.on { background: #fff; color: #111; }

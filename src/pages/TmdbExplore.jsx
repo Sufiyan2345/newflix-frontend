@@ -49,7 +49,12 @@ const getPreset = (presetKey) => {
   return FALLBACK;
 };
 
-const YEARS = ['2026', '2025', '2024', '2023'];
+const FIRST_BROWSE_YEAR = 1874;
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from(
+  { length: CURRENT_YEAR - FIRST_BROWSE_YEAR + 1 },
+  (_, index) => String(CURRENT_YEAR - index),
+);
 const yearLabel = (year) => year;
 
 const SORTS = [
@@ -255,7 +260,13 @@ export default function TmdbExplore({ presetKey = '' }) {
         {!loading && !error && items.length > 0 && (
           <>
             <div className="grid">
-              {items.map((t) => <GridCard key={t._id} item={t} />)}
+              {items.map((t) => (
+                <GridCard
+                  key={t._id}
+                  item={t}
+                  showArtworkLogo={presetKey !== 'tmdb-languages'}
+                />
+              ))}
             </div>
             <p className="grid-count">{items.length} of {data.totalResults} titles</p>
             {data.page < data.totalPages && (

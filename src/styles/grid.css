@@ -3,8 +3,8 @@
 .grid-page h2 { font-size: 26px; margin-bottom: 24px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px 14px; }
 .grid .card { width: 100%; }
-.grid .card-art { width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; }
-.grid .card-art > img, .grid .card > img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 16px; }
+.grid .card-art { width: 100%; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; }
+.grid .card-art > img, .grid .card > img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 6px; }
 .grid .card-title-mini { padding: 8px 2px 0; font-size: 13px; }
 .search-result-grid-wrap { position: relative; }
 .search-result-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px 8px; }
@@ -13,14 +13,30 @@
 .search-page { padding-top: calc(var(--nav-h) + 44px); }
 .search-page h2 { font-size: 30px; margin: 0 0 18px; }
 .search-page .search-source { display: none; }
-.search-page .search-result-grid .card-art { border-radius: 16px; }
+.search-page .search-result-grid .card-art { border-radius: 6px; }
+.search-related { margin-top: 38px; }
+.search-more-explore { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 0; margin: 0 0 44px; color: #858585; font-size: 14px; line-height: 1.7; }
+.search-more-label { flex: 0 0 auto; margin-right: 14px; color: #777; }
+.search-more-link { max-width: 100%; padding: 0 9px; border: 0; border-right: 1px solid #555; background: none; color: #ddd; font: inherit; text-align: left; cursor: pointer; }
+.search-more-link:last-child { border-right: 0; }
+.search-more-link:hover, .search-more-link:focus-visible { color: #fff; text-decoration: underline; }
+.search-page .search-related-heading { margin: 0 0 22px; color: #f2f2f2; font-size: clamp(21px, 2.2vw, 30px); font-weight: 500; line-height: 1.3; }
+.search-related .row-header { display: none; }
+.search-related .row { margin: 0; }
+.search-related .row-slider { margin-top: 0; }
 /* The Netflix search grid stacks down on smaller screens. */
 @media (max-width: 950px) { .search-result-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .search-result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .search-related { margin-top: 30px; }
+  .search-more-explore { margin-bottom: 30px; font-size: 13px; }
+  .search-more-link { padding-inline: 7px; }
+  .search-page .search-related-heading { margin-bottom: 16px; }
+}
 
 /* Compact Netflix-style My List tiles: landscape artwork with the title beneath. */
 .my-list-card { min-width: 0; cursor: pointer; }
-.my-list-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 16px; background: #242424; }
+.my-list-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px; background: #242424; }
 .my-list-art > img:first-child { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .28s cubic-bezier(.2, .8, .2, 1), filter .28s ease; }
 .my-list-card:hover .my-list-art > img:first-child { transform: scale(1.025); filter: brightness(.88); }
 .my-list-art .card-brand-badge { position: absolute; top: 5px; left: 6px; width: auto; height: 16px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,.7)); }
@@ -358,7 +374,7 @@
 .genre-showcase-arrow:disabled { opacity: 0; pointer-events: none; }
 .genre-showcase-arrow.left { left: 0; border-radius: 0 4px 4px 0; }
 .genre-showcase-arrow.right { right: 0; border-radius: 4px 0 0 4px; }
-.genre-showcase-card { position: relative; flex: 0 0 270px; min-width: 0; aspect-ratio: 1.7 / 1; overflow: hidden; padding: 0; border: 0; border-radius: 16px; background: #252525; cursor: pointer; scroll-snap-align: start; }
+.genre-showcase-card { position: relative; flex: 0 0 270px; min-width: 0; aspect-ratio: 1.7 / 1; overflow: hidden; padding: 0; border: 0; border-radius: 6px; background: #252525; cursor: pointer; scroll-snap-align: start; }
 .genre-showcase-card img { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(.72); transition: transform .3s cubic-bezier(.2, .8, .2, 1), filter .3s ease; }
 .genre-showcase-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 35%, rgba(0,0,0,.58)); }
 .genre-showcase-card span { position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; padding: 10px; color: #fff; font-size: clamp(18px, 2vw, 30px); font-weight: 400; text-align: center; }
@@ -370,7 +386,7 @@
    like a random slice of the image. Each card also prints its TMDB title, type,
    year and match score under the artwork. */
 .grid .grid-card .card-art { aspect-ratio: 2 / 3; background: #181818; }
-.grid .grid-card .card-art > img:first-child { height: 100%; border-radius: 16px; }
+.grid .grid-card .card-art > img:first-child { height: 100%; border-radius: 6px; }
 .grid .grid-card { transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
 .grid .grid-card:hover { transform: scale(1.025); }
 .grid-card-caption { padding: 8px 2px 0; }

@@ -1,12 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconPlay, IconInfo, IconThumbDown, IconThumbUp } from './Icons';
+import { IconPlay, IconInfo, IconMuted, IconVolume, IconThumbDown, IconThumbUp } from './Icons';
 import { HERO_INTERVAL_MS, HERO_SLIDE_EVENT, MAX_HERO_SLIDES } from '../hooks/useHeroSlides';
 import { hiRes, isTmdbImage } from '../utils/imageUrl';
 import { matchPercent } from '../utils/matchPercent';
 import { API } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { isTmdbDisliked, isTmdbLiked, toggleTmdbDislike, toggleTmdbLike } from '../utils/tmdbList';
+import { loadYouTubePlayerApi } from '../utils/youtubePlayer';
+
+const HERO_RATING_MAP = {
+  'TV-Y': 'ALL',
+  'TV-Y7': '7+',
+  'TV-PG': '7+',
+  'TVPG': '7+',
+  PG: '7+',
+  'TV-14': '13+',
+  TV14: '13+',
+  'PG-13': '13+',
+  PG13: '13+',
+  'TV-MA': '18+',
+  TVMA: '18+',
+  R: '18+',
+  'NC-17': '18+',
+};
+const normalizeHeroRating = (value) => {
+  const rating = String(value || '').trim().toUpperCase();
+  if (['ALL', '7+', '13+', '16+', '18+'].includes(rating)) return rating;
+  return HERO_RATING_MAP[rating] || '13+';
+};
 
 // Netflix billboard, matched to the design reference screenshot:
 //   • the artwork runs full-bleed at its NATIVE resolution (see utils/imageUrl)
@@ -58,6 +80,12 @@ export default function HeroBanner({
   const [tmdbArtwork, setTmdbArtwork] = useState({});
   const [tmdbDetails, setTmdbDetails] = useState({});
   const [failedTitleArtwork, setFailedTitleArtwork] = useState('');
+  const [trailerIndex, setTrailerIndex] = useState(0);
+  const [playingTrailer, setPlayingTrailer] = useState(false);
+  const playerHostRef = useRef(null);
+  const playerInstance = useRef(null);
+  const audioMutedRef = useRef(true);
+  const [audioMuted, setAudioMuted] = useState(true);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
 
@@ -94,9 +122,25 @@ export default function HeroBanner({
       requestedArtwork.current.add(key);
       API.get(`/tmdb/title-media/${type}/${id}`, { softFail: true })
         .then(({ data }) => {
+          const trailerKeys = [...new Set((data?.videos || [])
+            .filter((video) => video?.key)
+            .sort((a, b) => {
+              const rank = (video) => (
+                video.type === 'Trailer' ? 0
+                  : video.type === 'Teaser' ? 1
+                    : video.type === 'Clip' ? 2
+                      : 3
+              );
+              return rank(a) - rank(b) || Number(b.official) - Number(a.official);
+            })
+            .map((video) => video.key))];
           setTmdbArtwork((artwork) => ({
             ...artwork,
-            [key]: { logoUrl: data?.logoUrl || '', backdropUrl: data?.backdropUrl || '' },
+            [key]: {
+              logoUrl: data?.logoUrl || '',
+              backdropUrl: data?.backdropUrl || '',
+              trailerKeys,
+            },
           }));
         })
         .catch(() => {});
@@ -121,7 +165,80 @@ export default function HeroBanner({
 
   useEffect(() => {
     setFailedTitleArtwork('');
+    setTrailerIndex(0);
+    setPlayingTrailer(false);
+    audioMutedRef.current = true;
+    setAudioMuted(true);
   }, [slide?._id]);
+
+  const activeSlideId = String(slides[activeIndex]?._id || '');
+  const trailerKeys = tmdbArtwork[activeSlideId]?.trailerKeys || [];
+  const activeTrailerKey = trailerKeys[trailerIndex] || '';
+
+  useEffect(() => {
+    if (!activeTrailerKey || !playerHostRef.current) return undefined;
+    let cancelled = false;
+    setPlayingTrailer(false);
+
+    loadYouTubePlayerApi()
+      .then((youtube) => {
+        if (cancelled || !playerHostRef.current) return;
+        const playerMount = document.createElement('div');
+        playerHostRef.current.replaceChildren(playerMount);
+        playerInstance.current = new youtube.Player(playerMount, {
+          videoId: activeTrailerKey,
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            disablekb: 1,
+            fs: 0,
+            loop: 1,
+            modestbranding: 1,
+            origin: window.location.origin,
+            playsinline: 1,
+            playlist: activeTrailerKey,
+            rel: 0,
+            vq: 'hd1080',
+          },
+          events: {
+            onReady: (event) => {
+              if (audioMutedRef.current) event.target.mute();
+              else event.target.unMute();
+              event.target.setPlaybackQuality('hd1080');
+              event.target.playVideo();
+            },
+            onStateChange: (event) => {
+              setPlayingTrailer(event.data === youtube.PlayerState.PLAYING);
+            },
+            onError: () => {
+              setPlayingTrailer(false);
+              setTrailerIndex((current) => current + 1);
+            },
+          },
+        });
+      })
+      .catch((error) => {
+        if (!cancelled) console.error('Hero trailer player unavailable:', error);
+      });
+
+    return () => {
+      cancelled = true;
+      if (playerInstance.current) {
+        playerInstance.current.destroy();
+        playerInstance.current = null;
+      }
+    };
+  }, [activeSlideId, activeTrailerKey]);
+
+  const toggleTrailerAudio = () => {
+    const player = playerInstance.current;
+    if (!player || !playingTrailer) return;
+    const nextMuted = !audioMutedRef.current;
+    audioMutedRef.current = nextMuted;
+    setAudioMuted(nextMuted);
+    if (nextMuted) player.mute();
+    else player.unMute();
+  };
 
   useEffect(() => {
     const itemId = String(slide?._id || '');
@@ -147,7 +264,7 @@ export default function HeroBanner({
   const genre = (detail.genres || slide.genres || []).find((value) => typeof value === 'string' && value.trim());
   const seasonCount = Number(detail.seasonsCount || slide.seasonsCount || 0);
   const runtime = Number(detail.durationMinutes || slide.durationMinutes || 0);
-  const contentRating = detail.ageRating || (slide.ageRating !== '13+' ? slide.ageRating : '');
+  const contentRating = normalizeHeroRating(detail.ageRating || slide.ageRating);
   const durationLabel = isSeries
     ? (seasonCount ? `${seasonCount} Season${seasonCount === 1 ? '' : 's'}` : '')
     : runtime
@@ -157,7 +274,6 @@ export default function HeroBanner({
     genre,
     releaseYear ? String(releaseYear) : '',
     durationLabel,
-    contentRating,
   ].filter(Boolean);
   const rank = Number(ranks[String(slide._id || '')] || ranks[String(slide.id || '')] || 0);
   const rankType = isSeries ? 'TV Shows' : 'Movies';
@@ -244,6 +360,13 @@ export default function HeroBanner({
                   loading={slideIndex === activeIndex ? 'eager' : 'lazy'}
                   fetchPriority={slideIndex === activeIndex ? 'high' : 'low'}
                 />
+                {slideIndex === activeIndex && activeTrailerKey && (
+                  <div
+                    ref={playerHostRef}
+                    className={`hero-trailer${playingTrailer ? ' loaded' : ''}`}
+                    aria-hidden="true"
+                  />
+                )}
               </div>
             );
           })}
@@ -345,6 +468,20 @@ export default function HeroBanner({
             <img src="/award.png" alt="" aria-hidden="true" />
             <span>Emmy Award Winning</span>
           </div>
+        </div>
+        <div className="hero-maturity" aria-label={`Maturity rating: ${contentRating}`}>
+          <button
+            type="button"
+            className="hero-audio-toggle"
+            aria-label={audioMuted ? 'Turn trailer sound on' : 'Turn trailer sound off'}
+            aria-pressed={!audioMuted}
+            title={audioMuted ? 'Turn sound on' : 'Turn sound off'}
+            disabled={!playingTrailer}
+            onClick={toggleTrailerAudio}
+          >
+            {audioMuted ? <IconMuted size={20} /> : <IconVolume size={20} />}
+          </button>
+          <span className="hero-rating">{contentRating}</span>
         </div>
       </div>
 

@@ -5,7 +5,7 @@ import useBranding from '../hooks/useBranding';
 import { API } from '../api';
 import { useSiteTranslation } from '../utils/siteTranslation';
 import {
-  IconSearch, IconUsers, IconApps, IconBell, IconCaret, IconClose, IconAudio,
+  IconSearch, IconUsers, IconBell, IconCaret, IconClose, IconAudio,
   IconHomeLine, IconTvLine, IconFilmLine, IconSparklesLine, IconBookmarkLine,
   IconGlobeLine, IconActivityLine, IconSettings, IconTransferLine, IconLogoutLine,
 } from './Icons';
@@ -38,9 +38,6 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
-  const [appsOpen, setAppsOpen] = useState(false);
-  const [genres, setGenres] = useState([]);
-  const [genresReady, setGenresReady] = useState(false);
   const [notifs, setNotifs] = useState({ items: [], unread: 0 });
   const urlQ = new URLSearchParams(loc.search).get('q') || '';
   // The box mirrors the URL on the results page: it comes pre-filled and open
@@ -63,29 +60,11 @@ export default function Navbar() {
     if (searchOpen && searchRef.current) searchRef.current.focus();
   }, [searchOpen]);
 
-  // The apps grid lists the real genre catalogue. If the admin hasn't created any
-  // local genres yet, fall back to the 16 live TMDB categories — the exact same
-  // slugs the Explore page filters by — so "Horror", "Comedies", "Korean Dramas"…
-  // are always one click away instead of an empty menu.
-  useEffect(() => {
-    if (!appsOpen || genres.length) return;
-    API.get('/genres')
-      .then(({ data }) => {
-        const local = (data.items || []).map((g) => ({ _id: g._id, name: g.name, slug: g.slug }));
-        if (local.length) { setGenres(local); setGenresReady(true); return null; }
-        return API.get('/tmdb/genre-cards')
-          .then(({ data: d }) => { setGenres(d.items || []); setGenresReady(true); })
-          .catch(() => setGenresReady(true));
-      })
-      .catch(() => setGenresReady(true));
-  }, [appsOpen, genres.length]);
-
   // Close every floating panel on route change; the search box stays open on /search.
   useEffect(() => {
     setMenuOpen(false);
     setMobileMenuOpen(false);
     setBellOpen(false);
-    setAppsOpen(false);
     setSearchOpen(loc.pathname === '/search');
   }, [loc.pathname]);
 
@@ -229,35 +208,20 @@ export default function Navbar() {
           aria-label="Kids content" aria-current={isActive('/kids') ? 'page' : undefined}
           onClick={() => nav('/kids')}>{t('Kids').toLocaleUpperCase()}</button>
 
-        {/* nav-pop-apps is the hook styles/mobile.css uses to drop the genre
-            grid from the phone header — the app reaches genres through Browse. */}
-        <div className="nav-pop nav-pop-apps">
-          <button type="button" className="nav-icon-btn" aria-label={t('Browse genres')} title={t('Browse genres')}
-            aria-expanded={appsOpen}
-            onClick={() => { setAppsOpen((s) => !s); setBellOpen(false); setMenuOpen(false); }}>
-            <IconApps size={22} />
-          </button>
-          {appsOpen && (
-            <div className="notif-panel apps-panel" onMouseLeave={() => setAppsOpen(false)}>
-              <div className="panel-head">{t('Browse genres')}</div>
-              <div className="apps-grid">
-                <Link to="/browse/movies" className="apps-link">Movies</Link>
-                <Link to="/browse/series" className="apps-link">{t('TV Series')}</Link>
-                <Link to="/browse/new" className="apps-link">{t('New & Popular')}</Link>
-                <Link to="/my-list" className="apps-link">{t('My List')}</Link>
-                {genres.map((g) => (
-                  <Link key={g._id || g.slug} to={`/browse/tmdb-genre-${g.slug}`} className="apps-link">{g.name}</Link>
-                ))}
-              </div>
-              {genresReady && genres.length === 0 && <div className="notif-item">{t('No genres created yet.')}</div>}
-            </div>
-          )}
-        </div>
+        <Link
+          to="/browse/movies"
+          className={`nav-dvd-link${isActive('/browse/movies') ? ' active' : ''}`}
+          aria-label="DVD movie catalogue"
+          aria-current={isActive('/browse/movies') ? 'page' : undefined}
+          title="Browse movies"
+        >
+          DVD
+        </Link>
 
         <div className="nav-pop">
           <button type="button" data-tour="bell" className="nav-icon-btn" aria-label={t('Notifications')} title={t('Notifications')}
             aria-expanded={bellOpen}
-            onClick={() => { setBellOpen((s) => !s); setAppsOpen(false); setMenuOpen(false); }}>
+            onClick={() => { setBellOpen((s) => !s); setMenuOpen(false); }}>
             <IconBell size={22} />
             {notifs.unread > 0 && <span className="bell-badge">{notifs.unread}</span>}
           </button>
@@ -281,13 +245,12 @@ export default function Navbar() {
           )}
         </div>
         <div data-tour="profile" className="profile-menu" role="button" tabIndex={0} title={`Open ${activeProfile?.name || 'profile'} menu`} aria-label={`Open ${activeProfile?.name || 'profile'} menu`} aria-expanded={menuOpen}
-          onClick={() => { setMenuOpen((s) => !s); setBellOpen(false); setAppsOpen(false); }}
+          onClick={() => { setMenuOpen((s) => !s); setBellOpen(false); }}
           onKeyDown={(event) => {
             if (event.key === 'Enter' || event.key === ' ') {
               event.preventDefault();
               setMenuOpen((s) => !s);
               setBellOpen(false);
-              setAppsOpen(false);
             }
           }}>
           <div className="profile-avatar" style={{ background: activeProfile?.avatarColor || '#E50914' }}>

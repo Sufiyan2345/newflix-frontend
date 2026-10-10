@@ -368,4 +368,3 @@ export default function Landing({ resume = false }) {
     </div>
   );
 }
-

@@ -77,11 +77,13 @@ export default function Onboarding() {
   const [step, setStep] = useState(0); // 0..9, see map in header comment
   const [recoveryPhone, setRecoveryPhone] = useState('');
   const [phoneCountry, setPhoneCountry] = useState('PK'); // all-countries picker
+  const [recoveryMethod, setRecoveryMethod] = useState('phone');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [resendIn, setResendIn] = useState(0);
   const [devices, setDevices] = useState([]);
   const [mainProfile, setMainProfile] = useState(firstName === 'there' ? '' : firstName);
+  const profileDisplayName = mainProfile.trim() || firstName;
   const [extraProfiles, setExtraProfiles] = useState(['', '', '', '']);
   const [kidsProfiles, setKidsProfiles] = useState([false, false, false, false]);
   const [dob, setDob] = useState({ day: '', month: '', year: '' });
@@ -193,7 +195,7 @@ export default function Onboarding() {
   const hasKids = kidsProfiles.some(Boolean);
   const go = (s) => { setError(''); setStep(s); window.scrollTo(0, 0); };
 
-  // ---- recovery-phone SMS OTP (real, stored against the account) ----
+  // ---- recovery phone/email OTP (verified and stored against the account) ----
   // Country picker supports every country; the number is normalised to E.164.
   const fullPhone = (() => {
     const digits = recoveryPhone.replace(/\D/g, '').replace(/^0/, '');
@@ -214,7 +216,11 @@ export default function Onboarding() {
   const sendOtp = async () => {
     setError(''); setBusy(true);
     try {
-      await API.post('/user/phone/send-otp', { phone: fullPhone });
+      if (recoveryMethod === 'email') {
+        await API.post('/user/email/send-recovery-otp');
+      } else {
+        await API.post('/user/phone/send-otp', { phone: fullPhone });
+      }
       setOtpSent(true);
       setResendIn(30);
     } catch (err) {
@@ -225,8 +231,13 @@ export default function Onboarding() {
   const verifyOtp = async () => {
     setError(''); setBusy(true);
     try {
-      await API.post('/user/phone/verify-otp', { phone: fullPhone, otp });
-      await save({ step: 1, recoveryPhone: fullPhone }, 3);
+      if (recoveryMethod === 'email') {
+        await API.post('/user/email/verify-recovery-otp', { otp });
+        await save({ step: 1 }, 3);
+      } else {
+        await API.post('/user/phone/verify-otp', { phone: fullPhone, otp });
+        await save({ step: 1, recoveryPhone: fullPhone }, 3);
+      }
     } catch (err) {
       setError(err.response?.data?.message
         || 'Verification failed. Please try again.');
@@ -369,32 +380,58 @@ export default function Onboarding() {
       {/* ===== Welcome to Netflix! + password recovery phone (real SMS OTP) ===== */}
       {step === 2 && (
         <main className="nx-ob2-col">
-          <h1>Welcome to Netflix!</h1>
+          <h1>Welcome to Newflix!</h1>
           <p className="nx-ob2-p">You've started your membership, and we've emailed the details to {email}.</p>
           <p className="nx-ob2-p">Remember you can cancel online at any time in the Account section.</p>
           <div className="nx-ob2-recovery">
             <p className="nx-ob2-rec-title">Set up password recovery</p>
-            <p>Your phone number will be used to help you access and recover your account. Message and data rates may apply.</p>
-            {!otpSent ? (
-              <div className="nx-ob2-phone">
-                <select
-                  className="nx-ob2-phone-cc-select"
-                  value={phoneCountry}
-                  onChange={(e) => setPhoneCountry(e.target.value)}
-                  aria-label="Country"
+            <p>{recoveryMethod === 'email'
+              ? 'We’ll verify your account email so you can use it to recover your account.'
+              : 'Your phone number will be used to help you access and recover your account. Message and data rates may apply.'}</p>
+            {!otpSent && (
+              <div className="nx-ob2-recovery-method" role="group" aria-label="Recovery method">
+                <button
+                  type="button"
+                  className={recoveryMethod === 'phone' ? 'selected' : ''}
+                  aria-pressed={recoveryMethod === 'phone'}
+                  onClick={() => { setRecoveryMethod('phone'); setOtp(''); setError(''); }}
                 >
-                  {countryOptions.map(({ country: code, code: callingCode }) => (
-                    <option key={code} value={code}>{flagFor(code)} {callingCode}</option>
-                  ))}
-                </select>
-                <div className="nx-ob2-phone-field">
-                  <label>Mobile phone number</label>
-                  <input type="tel" value={recoveryPhone} onChange={(e) => setRecoveryPhone(e.target.value.replace(/\D/g, ''))} inputMode="numeric" autoComplete="tel" placeholder="Mobile number" />
-                </div>
+                  Text message
+                </button>
+                <button
+                  type="button"
+                  className={recoveryMethod === 'email' ? 'selected' : ''}
+                  aria-pressed={recoveryMethod === 'email'}
+                  onClick={() => { setRecoveryMethod('email'); setOtp(''); setError(''); }}
+                >
+                  Email
+                </button>
               </div>
+            )}
+            {!otpSent ? (
+              recoveryMethod === 'email' ? (
+                <div className="nx-ob2-recovery-email">{email}</div>
+              ) : (
+                <div className="nx-ob2-phone">
+                  <select
+                    className="nx-ob2-phone-cc-select"
+                    value={phoneCountry}
+                    onChange={(e) => setPhoneCountry(e.target.value)}
+                    aria-label="Country"
+                  >
+                    {countryOptions.map(({ country: code, code: callingCode }) => (
+                      <option key={code} value={code}>{flagFor(code)} {callingCode}</option>
+                    ))}
+                  </select>
+                  <div className="nx-ob2-phone-field">
+                    <label>Mobile phone number</label>
+                    <input type="tel" value={recoveryPhone} onChange={(e) => setRecoveryPhone(e.target.value.replace(/\D/g, ''))} inputMode="numeric" autoComplete="tel" placeholder="Mobile number" />
+                  </div>
+                </div>
+              )
             ) : (
               <>
-                <p className="nx-ob2-otp-sent">Code sent to {fullPhone}. Enter the 6 digits below.</p>
+                <p className="nx-ob2-otp-sent">Code sent to {recoveryMethod === 'email' ? email : fullPhone}. Enter the 6 digits below.</p>
                 <input
                   className="nx-ob2-otp-input"
                   inputMode="numeric"
@@ -403,14 +440,14 @@ export default function Onboarding() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                 />
-                <button type="button" className="nx-ob2-resend" disabled={resendIn > 0} onClick={sendOtp}>
+                <button type="button" className="nx-ob2-resend" disabled={resendIn > 0 || busy} onClick={sendOtp}>
                   {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
                 </button>
               </>
             )}
           </div>
           {!otpSent ? (
-            <button className="nx-ob2-next nx-ob2-next-wide" disabled={busy || !phoneValid} onClick={sendOtp}>
+            <button className="nx-ob2-next nx-ob2-next-wide" disabled={busy || (recoveryMethod === 'phone' && !phoneValid) || (recoveryMethod === 'email' && !email)} onClick={sendOtp}>
               <ButtonLabel loading={busy}>Send verification code</ButtonLabel>
             </button>
           ) : (
@@ -451,7 +488,7 @@ export default function Onboarding() {
         <main className="nx-ob2-split">
           <div className="nx-ob2-left">
             <span className="nx-ob2-stepnum">Step {hasKids ? 3 : 2} of 6</span>
-            <h1>{hasKids ? 'Will there be any kids watching?' : 'Who will be watching Netflix?'}</h1>
+            <h1>{hasKids ? 'Will there be any kids watching?' : 'Who will be watching Newflix?'}</h1>
             <p className="nx-ob2-p">
               {hasKids
                 ? 'Kids can have their own space to watch kid-friendly TV shows and movies with the comfort of parental controls.'
@@ -505,7 +542,7 @@ export default function Onboarding() {
         <main className="nx-ob2-split">
           <div className="nx-ob2-left">
             <span className="nx-ob2-stepnum">Step 4 of 6</span>
-            <h1>{firstName}, let's add details to your profile.</h1>
+            <h1>{profileDisplayName}, let's add details to your profile.</h1>
             <p className="nx-ob2-p">We just need some information for advert personalisation, maturity settings and other purposes consistent with Netflix's privacy statement.</p>
           </div>
           <div className="nx-ob2-right">
@@ -564,7 +601,7 @@ export default function Onboarding() {
         <main className="nx-ob2-split nx-ob2-split-tall">
           <div className="nx-ob2-left">
             <span className="nx-ob2-stepnum">Step 6 of 6</span>
-            <h1>{firstName}, select 3 you like.</h1>
+            <h1>{profileDisplayName}, select 3 you like.</h1>
             <p className="nx-ob2-p">This helps us to find TV programmes and films you'll love. <b>Select the ones you like.</b></p>
           </div>
           <div className="nx-ob2-right nx-ob2-picks-right">

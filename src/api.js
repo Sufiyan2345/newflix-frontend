@@ -4,7 +4,8 @@ import axios from 'axios';
 // the axios instance. The speed test needs fetch, not axios: it measures a
 // STREAMING response, and axios would buffer the whole body before resolving —
 // which would time the buffer, not the transfer.
-const apiOrigin = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '');
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '');
+const apiOrigin = configuredApiUrl?.replace(/\/api$/i, '');
 export const API_BASE = apiOrigin ? `${apiOrigin}/api` : '/api';
 
 export const API = axios.create({ baseURL: API_BASE, withCredentials: true });
