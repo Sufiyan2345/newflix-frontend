@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, Navigate, useParams } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams, useLocation } from 'react-router-dom';
 import TmdbExplore from './pages/TmdbExplore';
 import MailPage from './pages/MailPage';
 import { useAuth } from './context/AuthContext';
@@ -41,6 +41,15 @@ import SplashScreen from './components/SplashScreen';
 import CookiePreferencesModal from './components/CookiePreferencesModal';
 import PageLoadingSkeleton from './components/PageLoadingSkeleton';
 import { applyLanguageToDocument, getLanguage } from './utils/footerLinks';
+import { applySeoToDocument } from './utils/seo';
+
+function SeoMetadata() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    applySeoToDocument(pathname);
+  }, [pathname]);
+  return null;
+}
 
 function Protected({ children, requireProfile = true, allowOnboarding = false }) {
   const { user, activeProfile, loading } = useAuth();
@@ -96,6 +105,7 @@ export default function App() {
 
   return (
     <>
+      <SeoMetadata />
       <Routes>
         <Route path="/" element={<RootRoute />} />
         <Route path="/login" element={<Login />} />

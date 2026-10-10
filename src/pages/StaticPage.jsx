@@ -1009,13 +1009,6 @@ export default function StaticPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     setOverride(null);
-    // /p/faq draws its heading from CONTENT['what-is-netflix'] rather than from
-    // its own entry, so the tab has to follow the heading. Left as built.title it
-    // read "Frequently Asked Questions" above a page whose H1 said "What is
-    // Netflix?" - and "StreamFlix" is not the brand this site uses either, so it
-    // is matched to the masthead instead.
-    const title = override?.title || (slug === 'faq' ? CONTENT['what-is-netflix']?.title : built?.title) || slug;
-    document.title = `${title} | Newflix`;
     API.get('/settings')
       .then(({ data }) => {
         const sp = (data.settings?.staticPages || []).find((p) => p.slug === slug);
@@ -1387,4 +1380,3 @@ export default function StaticPage() {
     </div>
   );
 }
-

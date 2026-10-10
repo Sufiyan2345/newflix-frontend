@@ -337,11 +337,6 @@ export default function InvestorRelations() {
     return () => document.body.classList.remove('js--contrast');
   }, [contrast]);
 
-  // Document title, matching the other static pages.
-  useEffect(() => {
-    document.title = 'Investor Relations | StreamFlix';
-  }, []);
-
   // The real pane--header is position:fixed and hangs a soft gradient skirt
   // under the bar once content has passed beneath it. The clone pins with
   // position:sticky, so it just needs to know whether the page has scrolled off
@@ -775,4 +770,3 @@ export default function InvestorRelations() {
     </div>
   );
 }
-
