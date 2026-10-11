@@ -334,7 +334,7 @@ function ChangePasswordView({ user, avatar, nav, logout }) {
   );
 }
 
-function DevicesView({ user, avatar, nav, logout, profileMenuOpen, setProfileMenuOpen }) {
+function DevicesView({ user, avatar, profileName, nav, logout, profileMenuOpen, setProfileMenuOpen }) {
   const downloadLimit = ({ mobile: 1, basic: 1, standard: 2, premium: 6 })[user?.signupPlan] || 1;
   const [accessOpen, setAccessOpen] = useState(false);
   const selectedDevices = Array.isArray(user?.onboarding?.devices) ? user.onboarding.devices : [];
@@ -441,10 +441,19 @@ function DevicesView({ user, avatar, nav, logout, profileMenuOpen, setProfileMen
                           <span className="nx-access-device-copy">
                             <span className="nx-access-device-title">{currentDeviceName}</span>
                           </span>
-                          <span className="nx-access-current-badge">CURRENT DEVICE</span>
+                          <button
+                            type="button"
+                            className="nx-access-device-signout"
+                            onClick={async () => { await logout(); nav('/logout'); }}
+                          >
+                            Sign Out
+                          </button>
                         </div>
                         <div className="nx-access-device-details">
-                          <div className="nx-access-device-detail-row"><IconPersonAccessLine size={15} /><span>No profile activity to show</span></div>
+                          <div className="nx-access-device-detail-row nx-access-device-profile-row">
+                            <img src={avatar} alt="" />
+                            <span>{profileName || 'Profile'} <small>Current profile</small></span>
+                          </div>
                           <div className="nx-access-device-detail-row"><IconClock size={15} /><span>{lastActive}</span></div>
                         </div>
                       </section>
@@ -459,7 +468,10 @@ function DevicesView({ user, avatar, nav, logout, profileMenuOpen, setProfileMen
                             <span className="nx-access-current-badge is-selected">SELECTED DEVICE</span>
                           </div>
                           <div className="nx-access-device-details">
-                            <div className="nx-access-device-detail-row"><IconPersonAccessLine size={15} /><span>Selected during account setup</span></div>
+                            <div className="nx-access-device-detail-row nx-access-device-profile-row">
+                              <img src={avatar} alt="" />
+                              <span>{profileName || 'Profile'} <small>Selected during account setup</small></span>
+                            </div>
                             <div className="nx-access-device-detail-row"><IconInfo size={15} /><span>Not an active sign-in</span></div>
                           </div>
                         </section>
@@ -623,21 +635,30 @@ function AccountProfilesView({ profiles, activeProfile, avatar, nav, loadMe, sel
       <h1 className="nx-profiles-heading">Profiles</h1>
       <p className="nx-profiles-subtitle">Parental Controls and Permissions</p>
       <section className="nx-security-card nx-profiles-permissions" aria-label="Parental controls and profile transfer">
-        <ProfileSettingsRow icon={<IconWarningTriangleLine size={19} />} title="Adjust parental controls" detail="Set maturity ratings, block titles" onClick={() => { if (profiles.length) nav(`/account?section=profile-settings&profileId=${profiles[0]._id}&dialog=parental`); }} />
-        <ProfileSettingsRow icon={<IconTransferLine size={19} />} title="Transfer a profile" detail="Copy a profile to another account" onClick={() => nav('/profiles?settings=1')} />
+        <ProfileSettingsRow icon={<img className="nx-profile-pref-image" src="/secure-svg.svg" alt="" aria-hidden="true" />} title="Adjust parental controls" detail="Set age ratings, block titles" onClick={() => { if (profiles.length) nav(`/account?section=profile-settings&profileId=${profiles[0]._id}&dialog=parental`); }} />
+        <ProfileSettingsRow icon={<img className="nx-profile-pref-image" src="/account-svg.svg" alt="" aria-hidden="true" />} title="Transfer a profile" detail="Copy a profile to another account" onClick={() => nav('/profiles?settings=1')} />
       </section>
 
       <h2 className="nx-profiles-list-title">Profile Settings</h2>
       <section className="nx-security-card nx-profiles-list" aria-label="Profiles">
         {profiles.map((profile) => (
-          <button type="button" className="nx-profiles-list-row" key={profile._id} onClick={() => nav(`/account?section=profile-settings&profileId=${profile._id}`)}>
-            <span className="nx-profiles-avatar" style={{ backgroundColor: profile.avatarColor || '#e50914' }}>
-              <img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" />
-            </span>
-            <strong>{profile.name}</strong>
-            <span className="nx-profiles-you">{profile._id === activeProfile?._id ? 'Your Profile' : profile.isKidsProfile ? 'Kids Profile' : ''}</span>
-            <IconChevronRight size={18} />
-          </button>
+          <div className="nx-profiles-list-row" key={profile._id}>
+            <button type="button" className="nx-profiles-list-main" onClick={() => nav(`/account?section=profile-settings&profileId=${profile._id}`)}>
+              <span className="nx-profiles-avatar" style={{ backgroundColor: profile.avatarColor || '#e50914' }}>
+                <img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" />
+              </span>
+              <strong>{profile.name}</strong>
+              {profile.isKidsProfile && <small className="nx-profiles-kids-label">Kids profile</small>}
+            </button>
+            {profile._id === activeProfile?._id && (
+              <button type="button" className="nx-profiles-view-profile" onClick={() => { selectProfile(profile); nav('/browse'); }}>
+                View profile
+              </button>
+            )}
+            <button type="button" className="nx-profiles-row-open" aria-label={`Manage ${profile.name}`} onClick={() => nav(`/account?section=profile-settings&profileId=${profile._id}`)}>
+              <IconChevronRight size={18} />
+            </button>
+          </div>
         ))}
         {profiles.length < 5 && !adding && <button type="button" className="nx-profiles-add" onClick={() => { setError(''); setAdding(true); }}>Add Profile</button>}
         {adding && (
@@ -650,6 +671,7 @@ function AccountProfilesView({ profiles, activeProfile, avatar, nav, loadMe, sel
         )}
         {error && !adding && <p className="nx-profile-form-error" role="alert">{error}</p>}
       </section>
+      <p className="nx-profiles-list-note">Add up to 5 profiles for anyone who lives with you.</p>
     </ProfileAccountShell>
   );
 }
@@ -658,13 +680,32 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   const { user } = useAuth();
   const [dialog, setDialog] = useState(initialDialog || null);
   const [name, setName] = useState(profile.name);
+  const [profileAvatar, setProfileAvatar] = useState(profile.avatarUrl || '/Netflix-avatar-1.png');
+  const [profileEmail, setProfileEmail] = useState(profile.profileEmail || '');
+  const [profileEmailInput, setProfileEmailInput] = useState(profile.profileEmail || '');
+  const [profileEmailMarketingOptOut, setProfileEmailMarketingOptOut] = useState(Boolean(profile.profileEmailMarketingOptOut));
+  const [profileEmailCode, setProfileEmailCode] = useState('');
+  const [profileEmailStep, setProfileEmailStep] = useState('edit');
+  const [profileEmailNotice, setProfileEmailNotice] = useState('');
   const [language, setLanguage] = useState(profile.language || 'en');
   const [maturity, setMaturity] = useState(profile.maturityLimit || '18+');
+  const [kidsProfile, setKidsProfile] = useState(Boolean(profile.isKidsProfile));
+  const [restrictedTitles, setRestrictedTitles] = useState(profile.restrictedTitles || []);
+  const [restrictedTitleQuery, setRestrictedTitleQuery] = useState('');
+  const [titleSearchResults, setTitleSearchResults] = useState([]);
+  const [titleSearchError, setTitleSearchError] = useState('');
   const [autoplayNext, setAutoplayNext] = useState(profile.autoplayNext !== false);
+  const [notificationPreferences, setNotificationPreferences] = useState(() => ({
+    email: profile.notificationPreferences?.email !== false,
+    text: profile.notificationPreferences?.text !== false,
+    push: profile.notificationPreferences?.push !== false,
+  }));
   const [subtitleScale, setSubtitleScale] = useState(() => localStorage.getItem(`sf_subtitle_scale_${profile._id}`) || '100');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const avatarInputRef = useRef(null);
   const [lockStep, setLockStep] = useState('overview');
   const [lockAction, setLockAction] = useState('set');
   const [lockPassword, setLockPassword] = useState('');
@@ -676,6 +717,31 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   const [lockNotice, setLockNotice] = useState('');
   const isYourProfile = profile._id === activeProfile?._id;
   const maskedEmail = user?.email?.replace(/^(.)([^@]*)(@.*)$/, (_match, first, rest, domain) => `${first}${'•'.repeat(Math.max(3, rest.length))}${domain}`) || 'your verified account email';
+
+  useEffect(() => {
+    const query = restrictedTitleQuery.trim();
+    if (dialog !== 'parental' || query.length < 2) {
+      setTitleSearchResults([]);
+      setTitleSearchError('');
+      return undefined;
+    }
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const { data } = await API.get('/tmdb/search', { params: { q: query }, softFail: true });
+        if (!cancelled) {
+          setTitleSearchResults((data.items || []).slice(0, 6));
+          setTitleSearchError('');
+        }
+      } catch {
+        if (!cancelled) setTitleSearchError('Title search is temporarily unavailable. You can still add the title by pressing Enter.');
+      }
+    }, 250);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [dialog, restrictedTitleQuery]);
 
   const beginLockAction = (action) => {
     setLockAction(action);
@@ -788,10 +854,103 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   const openDialog = (key) => {
     setError('');
     setName(profile.name);
+    setProfileAvatar(profile.avatarUrl || '/Netflix-avatar-1.png');
+    setProfileEmailInput(profile.profileEmail || '');
+    setProfileEmailMarketingOptOut(Boolean(profile.profileEmailMarketingOptOut));
+    setProfileEmailCode('');
+    setProfileEmailStep('edit');
+    setProfileEmailNotice('');
     setLanguage(profile.language || 'en');
     setMaturity(profile.maturityLimit || '18+');
+    setKidsProfile(Boolean(profile.isKidsProfile));
+    setRestrictedTitles(profile.restrictedTitles || []);
+    setRestrictedTitleQuery('');
+    setTitleSearchResults([]);
+    setTitleSearchError('');
     setAutoplayNext(profile.autoplayNext !== false);
+    setNotificationPreferences({
+      email: profile.notificationPreferences?.email !== false,
+      text: profile.notificationPreferences?.text !== false,
+      push: profile.notificationPreferences?.push !== false,
+    });
     setDialog(key);
+  };
+
+  const uploadProfileAvatar = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+      setError('Choose a PNG, JPG, WEBP, or GIF image.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Choose an image smaller than 5 MB.');
+      return;
+    }
+    setAvatarUploading(true);
+    setError('');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data } = await API.post('/upload/profile-image', formData);
+      setProfileAvatar(data.url);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not upload this image. Please try again.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
+
+  const sendProfileEmailCode = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    setProfileEmailNotice('');
+    try {
+      const { data } = await API.post(`/user/profiles/${profile._id}/email/send-otp`, { email: profileEmailInput.trim() });
+      setProfileEmailInput(data.email || profileEmailInput.trim());
+      setProfileEmailCode('');
+      setProfileEmailStep('verify');
+      setProfileEmailNotice(data.message || 'Verification code sent. It expires in 10 minutes.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not send the verification code. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const verifyProfileEmailCode = async (event) => {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    try {
+      await API.post(`/user/profiles/${profile._id}/email/verify-otp`, {
+        email: profileEmailInput.trim(),
+        otp: profileEmailCode,
+        marketingOptOut: profileEmailMarketingOptOut,
+      });
+      setProfileEmail(profileEmailInput.trim().toLowerCase());
+      await loadMe();
+      setDialog('personal');
+      setProfileEmailStep('edit');
+      setProfileEmailCode('');
+      setProfileEmailNotice('');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not verify the email address. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openProfileEmail = () => {
+    setError('');
+    setProfileEmailInput(profileEmail);
+    setProfileEmailMarketingOptOut(Boolean(profile.profileEmailMarketingOptOut));
+    setProfileEmailCode('');
+    setProfileEmailStep('edit');
+    setProfileEmailNotice('');
+    setDialog('profile-email');
   };
 
   const savePreference = async (event) => {
@@ -799,15 +958,50 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     setBusy(true);
     setError('');
     try {
-      if (dialog === 'personal') await API.put(`/user/profiles/${profile._id}`, { name: name.trim() });
+      if (dialog === 'personal') {
+        await API.put(`/user/profiles/${profile._id}`, { name: name.trim(), avatarUrl: profileAvatar });
+      }
       if (dialog === 'language') await API.put(`/user/profiles/${profile._id}`, { language });
       if (dialog === 'parental') await API.put(`/user/profiles/${profile._id}`, { maturityLimit: maturity });
       if (dialog === 'playback') await API.put(`/user/profiles/${profile._id}`, { autoplayNext });
+      if (dialog === 'notifications') await API.put(`/user/profiles/${profile._id}`, { notificationPreferences });
       if (dialog === 'subtitles') localStorage.setItem(`sf_subtitle_scale_${profile._id}`, subtitleScale);
       if (dialog !== 'subtitles') await loadMe();
+      if (dialog === 'personal' && isYourProfile) {
+        selectProfile({ ...profile, name: name.trim(), avatarUrl: profileAvatar });
+      }
       setDialog(null);
     } catch (err) {
       setError(err.response?.data?.message || 'Could not save this preference. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addRestrictedTitle = (value) => {
+    const title = String(value || '').trim();
+    if (!title) return;
+    setRestrictedTitles((current) => current.some((item) => item.toLocaleLowerCase() === title.toLocaleLowerCase())
+      ? current
+      : [...current, title]);
+    setRestrictedTitleQuery('');
+    setTitleSearchResults([]);
+    setTitleSearchError('');
+  };
+
+  const saveParentalControls = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      await API.put(`/user/profiles/${profile._id}`, {
+        maturityLimit: kidsProfile ? '7+' : maturity,
+        isKidsProfile: kidsProfile,
+        restrictedTitles,
+      });
+      await loadMe();
+      setDialog(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not save parental controls. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -840,11 +1034,13 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   };
 
   const dialogTitle = {
-    personal: 'Edit personal and contact info',
+    personal: 'Edit Profile',
+    'profile-email': profileEmailStep === 'edit' ? 'Add profile email' : 'Verify your email',
     language: 'Languages',
     parental: 'Adjust parental controls',
     playback: 'Playback settings',
     subtitles: 'Subtitle appearance',
+    notifications: 'Notification settings',
   }[dialog];
 
   return (
@@ -876,6 +1072,78 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
                     <button type="button" onClick={() => { setLockStep('overview'); setLockError(''); }} disabled={busy}>Cancel</button>
                   </div>
                 </form>
+              ) : dialog === 'parental' ? (
+                <div className="nx-profile-settings-view nx-parental-control-view">
+                  <button type="button" className="nx-profile-settings-back" onClick={() => setDialog(null)} aria-label="Back to profile preferences"><IconChevronLeft size={19} /></button>
+                  <div className="nx-profile-settings-body nx-parental-control-body">
+                    <h1>Adjust parental controls</h1>
+                    <section className="nx-parental-section nx-parental-rating">
+                      <h2>Profile Age Rating</h2>
+                      <p>Only show titles rated {kidsProfile ? '7+ and below' : `${maturity} and below`} for {profile.name}. <a href="/p/help-center">Learn more about ratings</a></p>
+                      <div className="nx-parental-rating-slider">
+                        <input
+                          type="range"
+                          min="0"
+                          max={PROFILE_MATURITY_OPTIONS.length - 1}
+                          step="1"
+                          value={PROFILE_MATURITY_OPTIONS.findIndex((item) => item.value === maturity)}
+                          aria-label="Maximum profile age rating"
+                          disabled={kidsProfile}
+                          onChange={(event) => setMaturity(PROFILE_MATURITY_OPTIONS[Number(event.target.value)].value)}
+                        />
+                        <div className="nx-parental-rating-ticks" aria-hidden="true">
+                          {PROFILE_MATURITY_OPTIONS.map((item) => <span key={item.value} className={item.value === maturity ? 'is-selected' : ''}>{item.value === 'ALL' ? 'All' : item.value}</span>)}
+                        </div>
+                      </div>
+                    </section>
+                    <section className="nx-parental-section nx-parental-kids">
+                      <h2>Kids Profile</h2>
+                      <label><input type="checkbox" checked={kidsProfile} onChange={(event) => setKidsProfile(event.target.checked)} /> <span>Display the Kids experience with titles just for children.</span></label>
+                    </section>
+                    <section className="nx-parental-section nx-parental-title-restrictions">
+                      <h2>Title Restrictions</h2>
+                      <p>Don&apos;t show specific titles for this profile regardless of age rating.</p>
+                      <div className="nx-parental-title-search">
+                        <input
+                          type="search"
+                          value={restrictedTitleQuery}
+                          onChange={(event) => setRestrictedTitleQuery(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') {
+                              event.preventDefault();
+                              addRestrictedTitle(restrictedTitleQuery);
+                            }
+                          }}
+                          placeholder="Enter series or film name"
+                          aria-label="Search for a title to restrict"
+                        />
+                        {titleSearchResults.length > 0 && (
+                          <div className="nx-parental-title-results" role="listbox" aria-label="Title search results">
+                            {titleSearchResults.map((item) => (
+                              <button type="button" role="option" aria-selected="false" key={item._id} onClick={() => addRestrictedTitle(item.title || item.name)}>
+                                {item.title || item.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {titleSearchError && <p className="nx-parental-search-error" role="status">{titleSearchError}</p>}
+                      <ul className="nx-parental-restricted-list">
+                        {restrictedTitles.map((title) => (
+                          <li key={title}>
+                            <span>{title}</span>
+                            <button type="button" aria-label={`Remove ${title} from title restrictions`} onClick={() => setRestrictedTitles((current) => current.filter((item) => item !== title))}>×</button>
+                          </li>
+                        ))}
+                      </ul>
+                    </section>
+                    {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
+                    <div className="nx-parental-actions">
+                      <button type="button" onClick={() => setDialog(null)} disabled={busy}>Cancel</button>
+                      <button type="button" onClick={saveParentalControls} disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <>
                   <h1>{profile.profileLockEnabled ? 'Manage Profile Lock' : 'Create a Profile Lock'}</h1>
@@ -911,7 +1179,21 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
             <div className="nx-profile-settings-body">
               <h1>Manage profile and preferences</h1>
               <section className="nx-security-card nx-profile-preferences-card" aria-label="Profile and preferences">
-                <ProfileSettingsRow icon={<IconUsers size={18} />} title={profile.name} detail="Edit personal and contact info" onClick={() => openDialog('personal')} />
+                <div className="nx-profile-pref-row nx-profile-edit-row">
+                  <button type="button" className="nx-profile-edit-avatar" onClick={() => openDialog('personal')} aria-label={`Edit ${profile.name}'s profile image`}>
+                    <img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" />
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m15 5 4 4M4 20l4.2-.8L19 8.4a2.8 2.8 0 0 0-4-4L4.8 15.8 4 20Z" />
+                      </svg>
+                    </span>
+                  </button>
+                  <button type="button" className="nx-profile-edit-copy" onClick={() => openDialog('personal')}>
+                    <strong>{profile.name}</strong>
+                    <small>Edit personal and contact info</small>
+                  </button>
+                  <IconChevronRight size={18} />
+                </div>
                 <ProfileSettingsRow icon={<IconLockLine size={18} />} title="Profile Lock" detail={profile.profileLockEnabled ? 'Profile Lock is on' : 'Require a PIN to access this profile'} onClick={() => { setLockStep('overview'); setDialog('lock'); setLockError(''); }} />
               </section>
               <h2 className="nx-profile-preferences-title">Preferences</h2>
@@ -921,6 +1203,7 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
                 <ProfileSettingsRow icon={<IconSettings size={18} />} title="Subtitle appearance" detail="Customize the way subtitles appear" onClick={() => openDialog('subtitles')} />
                 <ProfileSettingsRow icon={<IconCheck size={18} />} title="Playback settings" detail="Set autoplay and video quality" onClick={() => openDialog('playback')} />
                 <ProfileSettingsRow icon={<IconInfo size={18} />} title="Viewing activity" detail="Manage viewing history and ratings" onClick={openHistory} />
+                <ProfileSettingsRow icon={<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></svg>} title="Notification settings" detail="Manage notifications for email, text, push" onClick={() => openDialog('notifications')} />
                 <ProfileSettingsRow icon={<IconShieldCheckLine size={18} />} title="Privacy and data settings" detail="Manage use of personal info" onClick={() => nav('/p/privacy')} />
                 <ProfileSettingsRow icon={<IconTransferLine size={18} />} title="Profile transfer" detail="Copy this profile to another account" onClick={() => nav('/profiles?settings=1')} />
               </section>
@@ -979,18 +1262,101 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
         </div>
       )}
 
-      {dialog && dialog !== 'lock' && (
+      {dialog && dialog !== 'lock' && dialog !== 'parental' && (
         <div className="nx-profile-dialog-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget && !busy) setDialog(null); }}>
-          <form className="nx-profile-dialog" onSubmit={savePreference} aria-labelledby="nx-profile-dialog-title">
+          <form
+            className={`nx-profile-dialog${dialog === 'personal' ? ' nx-profile-edit-dialog' : ''}${dialog === 'profile-email' ? ' nx-profile-email-dialog' : ''}`}
+            onSubmit={dialog === 'profile-email' ? (profileEmailStep === 'edit' ? sendProfileEmailCode : verifyProfileEmailCode) : savePreference}
+            aria-labelledby="nx-profile-dialog-title"
+          >
             <button type="button" className="nx-profile-dialog-close" onClick={() => setDialog(null)} disabled={busy} aria-label="Close">×</button>
+            {dialog === 'profile-email' && (
+              <button type="button" className="nx-profile-email-back" onClick={() => { setError(''); setDialog('personal'); }} disabled={busy} aria-label="Back to edit profile">
+                <IconChevronLeft size={21} />
+              </button>
+            )}
             <h2 id="nx-profile-dialog-title">{dialogTitle}</h2>
-            {dialog === 'personal' && <label>Profile name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} required autoFocus /></label>}
+            {dialog === 'personal' && (
+              <>
+                <input ref={avatarInputRef} className="nx-profile-avatar-file-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={uploadProfileAvatar} aria-label="Choose a profile image" />
+                <div className="nx-profile-edit-fields">
+                  <button type="button" className="nx-profile-edit-photo" onClick={() => avatarInputRef.current?.click()} disabled={busy || avatarUploading} aria-label={avatarUploading ? 'Uploading profile image' : 'Edit profile image'}>
+                    <img src={profileAvatar} alt="" />
+                    <span aria-hidden="true">
+                      {avatarUploading ? <i /> : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 5 4 4M4 20l4.2-.8L19 8.4a2.8 2.8 0 0 0-4-4L4.8 15.8 4 20Z" /></svg>}
+                    </span>
+                  </button>
+                  <label>Profile name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={40} required autoFocus /></label>
+                </div>
+                {!profile.isKidsProfile && (
+                  <>
+                    <h3 className="nx-profile-edit-section-title">Contact Info</h3>
+                    <button type="button" className="nx-profile-email-option" onClick={openProfileEmail}>
+                      <IconMailLine size={19} />
+                      <span><strong>Email</strong><small>{profileEmail || 'Add profile email'}</small></span>
+                      <IconChevronRight size={18} />
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+            {dialog === 'profile-email' && profileEmailStep === 'edit' && (
+              <>
+                <p className="nx-profile-email-for">For {profile.name} <span aria-hidden="true">☺</span></p>
+                <p className="nx-profile-email-description">You&apos;ll be able to sign in to Newflix with your email. We&apos;ll also let you know about suggestions for what to watch, new features, special offers and surveys.</p>
+                <label className="nx-profile-email-address">
+                  <span className="nx-visually-hidden">Email address</span>
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="Email address"
+                    value={profileEmailInput}
+                    onChange={(event) => setProfileEmailInput(event.target.value)}
+                    maxLength={254}
+                    required
+                    autoFocus
+                  />
+                </label>
+                <label className="nx-profile-email-optout">
+                  <input type="checkbox" checked={profileEmailMarketingOptOut} onChange={(event) => setProfileEmailMarketingOptOut(event.target.checked)} />
+                  <span>Please do not email me Newflix special offers.</span>
+                </label>
+                <p className="nx-profile-email-consent">I am at least 18 years old and I agree this information will be used for purposes consistent with the Newflix <a href="/p/privacy" target="_blank" rel="noreferrer">Privacy Statement</a>.</p>
+              </>
+            )}
+            {dialog === 'profile-email' && profileEmailStep === 'verify' && (
+              <>
+                <p className="nx-profile-email-description">Enter the 6-digit code sent to <strong>{profileEmailInput}</strong>. The code expires in 10 minutes.</p>
+                <ProfileCodeFields count={6} value={profileEmailCode} onChange={setProfileEmailCode} label="Profile email verification code" />
+                <button type="button" className="nx-profile-email-resend" onClick={sendProfileEmailCode} disabled={busy}>Resend code</button>
+              </>
+            )}
             {dialog === 'language' && <label>Display and audio language<select value={language} onChange={(event) => setLanguage(event.target.value)}>{PROFILE_LANGUAGES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>}
             {dialog === 'parental' && <label>Allowed maturity rating<select value={maturity} onChange={(event) => setMaturity(event.target.value)}>{PROFILE_MATURITY_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select><small>Titles above this rating will be restricted for this profile.</small></label>}
             {dialog === 'playback' && <label className="nx-profile-dialog-check"><input type="checkbox" checked={autoplayNext} onChange={(event) => setAutoplayNext(event.target.checked)} /> Autoplay next episode in a series on all devices</label>}
+            {dialog === 'notifications' && (
+              <div className="nx-profile-notification-options">
+                <p>Choose how you&apos;d like to receive profile notifications.</p>
+                {[
+                  ['email', 'Email'],
+                  ['text', 'Text message'],
+                  ['push', 'Push notifications'],
+                ].map(([channel, label]) => (
+                  <label className="nx-profile-dialog-check" key={channel}>
+                    <input
+                      type="checkbox"
+                      checked={notificationPreferences[channel]}
+                      onChange={(event) => setNotificationPreferences((current) => ({ ...current, [channel]: event.target.checked }))}
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            )}
             {dialog === 'subtitles' && <label>Subtitle text size<select value={subtitleScale} onChange={(event) => setSubtitleScale(event.target.value)}><option value="75">Small</option><option value="100">Medium</option><option value="125">Large</option></select><small>This display preference is saved for this profile on this device.</small></label>}
+            {profileEmailNotice && dialog === 'profile-email' && <p className="nx-profile-email-notice" role="status">{profileEmailNotice}</p>}
             {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
-            {dialog !== 'lock' && <div className="nx-profile-dialog-actions"><button type="button" onClick={() => setDialog(null)} disabled={busy}>Cancel</button><button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save'}</button></div>}
+            {dialog !== 'lock' && <div className={`nx-profile-dialog-actions${dialog === 'personal' ? ' is-profile-edit-actions' : ''}${dialog === 'profile-email' ? ' is-profile-email-actions' : ''}`}><button type="button" onClick={() => { setError(''); if (dialog === 'profile-email' && profileEmailStep === 'verify') setProfileEmailStep('edit'); else setDialog(dialog === 'profile-email' ? 'personal' : null); }} disabled={busy || avatarUploading}>Cancel</button><button type="submit" disabled={busy || avatarUploading || (dialog === 'profile-email' && profileEmailStep === 'verify' && profileEmailCode.length !== 6)}>{busy ? (profileEmailStep === 'verify' && dialog === 'profile-email' ? 'Verifying…' : 'Sending…') : dialog === 'profile-email' ? (profileEmailStep === 'edit' ? 'Add email' : 'Verify email') : 'Save'}</button></div>}
           </form>
         </div>
       )}
@@ -1041,7 +1407,7 @@ export default function Account() {
   if (section === 'manage-membership') return <ManageMembershipView user={user} nav={nav} logout={logout} />;
   if (section === 'security') return <SecurityView user={user} avatar={avatar} nav={nav} logout={logout} profileMenuOpen={profileMenuOpen} setProfileMenuOpen={setProfileMenuOpen} />;
   if (section === 'change-password') return <ChangePasswordView user={user} avatar={avatar} nav={nav} logout={logout} />;
-  if (section === 'devices') return <DevicesView user={user} avatar={avatar} nav={nav} logout={logout} profileMenuOpen={profileMenuOpen} setProfileMenuOpen={setProfileMenuOpen} />;
+  if (section === 'devices') return <DevicesView user={user} avatar={avatar} profileName={activeProfile?.name || profiles?.[0]?.name} nav={nav} logout={logout} profileMenuOpen={profileMenuOpen} setProfileMenuOpen={setProfileMenuOpen} />;
   if (section === 'profiles' || section === 'profile-settings') return <AccountProfilesView profiles={profiles || []} activeProfile={activeProfile} avatar={avatar} nav={nav} loadMe={loadMe} selectProfile={selectProfile} profileId={profileId} initialDialog={params.get('dialog')} />;
 
   return (
@@ -1064,15 +1430,11 @@ export default function Account() {
             )}
           </div>
         </div>
-        <div className="nx-account-subbar">
-          <button type="button" className="nx-account-back" onClick={() => nav('/browse')}><IconChevronLeft size={14} /> <span>Back to Netflix</span></button>
-          <h1>{section === 'membership' ? 'Membership' : 'Account'}</h1>
-          <span aria-hidden="true" />
-        </div>
       </header>
 
       <div className="nx-account-shell">
         <aside className="nx-account-sidebar" aria-label="Account sections">
+          <button className="nx-security-back" type="button" onClick={() => nav('/browse')}><IconChevronLeft size={14} /> Back to Netflix</button>
           <button className={section === 'overview' ? 'is-current' : ''} type="button" onClick={() => nav('/account')}><IconInfo size={17} /> Overview</button>
           <button className={section === 'membership' ? 'is-current' : ''} type="button" onClick={() => nav('/account?section=membership')}><IconCheck size={17} /> Membership</button>
           <button className={section === 'security' ? 'is-current' : ''} type="button" onClick={() => nav('/account?section=security')}><IconShieldCheckLine size={17} /> Security</button>
