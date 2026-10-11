@@ -39,6 +39,143 @@
 .nx-security-delete { width: 100%; min-height: 38px; margin-top: 18px; border: 1px solid #bdbdbd; border-radius: 1px; background: #fff; color: #c23c43; font-size: 12px; font-weight: 700; cursor: pointer; }
 .nx-security-delete:hover { border-color: #e50914; }
 
+.nx-devices-page { display: flex; flex-direction: column; background: #fbfcfc; }
+.nx-devices-page .nx-security-header { border-top-width: 0; }
+.nx-devices-page .nx-security-topbar { height: 54px; }
+.nx-devices-page .nx-security-logo-button .nx-account-logo { width: 96px; }
+.nx-devices-shell { flex: 1; grid-template-columns: 270px minmax(0, 1fr); gap: 44px; width: min(calc(100% - 64px), 1240px); padding-top: 25px; padding-bottom: 56px; }
+.nx-devices-shell .nx-security-sidebar { gap: 2px; }
+.nx-devices-shell .nx-security-sidebar button { min-height: 39px; font-size: 14px; }
+.nx-devices-shell .nx-security-sidebar .nx-security-back { margin-bottom: 19px; }
+.nx-devices-content { max-width: 742px; animation: nx-devices-enter .32s cubic-bezier(.2,.75,.25,1) both; }
+.nx-devices-content > h1 { font-size: 36px; line-height: 42px; }
+.nx-devices-content .nx-security-subtitle { margin-bottom: 14px; font-size: 16px; }
+.nx-devices-card { display: flex; align-items: center; gap: 20px; min-height: 92px; box-sizing: border-box; padding: 16px 20px; border: 1px solid #dedfdf; border-radius: 7px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.035); color: #15191d; font: inherit; text-align: left; cursor: pointer; transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+.nx-devices-card:hover { transform: translateY(-1px); border-color: #bfc3c6; box-shadow: 0 5px 18px rgba(15,23,42,.08); }
+.nx-devices-card-icon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 20px; color: #343a40; }
+.nx-devices-card-copy { display: flex; flex: 1; flex-direction: column; gap: 5px; min-width: 0; }
+.nx-devices-card-copy strong { font-size: 16px; font-weight: 600; line-height: 20px; }
+.nx-devices-card-copy small { color: #626970; font-size: 13px; line-height: 18px; }
+.nx-devices-chevron { flex: 0 0 auto; color: #343a40; }
+.nx-devices-section-title { margin: 29px 0 12px; color: #4b5156; font-size: 16px; font-weight: 500; line-height: 21px; }
+.nx-devices-footer { flex: 0 0 auto; box-sizing: border-box; min-height: 178px; padding: 61px clamp(24px, 3.2vw, 44px) 18px; border-top: 1px solid #e2e5e5; background: #fbfcfc; color: #262a2e; }
+.nx-devices-footer p { margin: 0 0 21px; font-size: 14px; }
+.nx-devices-footer a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.nx-devices-footer nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 22px; max-width: 970px; }
+.nx-devices-footer nav a { color: #565c61; font-size: 12px; }
+@keyframes nx-devices-enter { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+
+.nx-profiles-account-page { background: #fff; }
+.nx-profiles-account-page .nx-security-header { border-bottom-color: #eee; }
+.nx-profiles-account-page .nx-security-topbar { width: min(calc(100% - 80px), 1400px); height: 58px; }
+.nx-profiles-account-page .nx-security-logo-button .nx-account-logo { width: 108px; }
+.nx-profiles-shell { grid-template-columns: 280px minmax(0, 1fr); gap: 48px; width: min(calc(100% - 80px), 1400px); padding-top: 34px; }
+.nx-profiles-shell .nx-security-sidebar { gap: 3px; }
+.nx-profiles-shell .nx-security-sidebar button { min-height: 42px; font-size: 15px; }
+.nx-profiles-shell .nx-security-sidebar .nx-security-back { margin-bottom: 27px; }
+.nx-profiles-content { max-width: 800px; }
+.nx-profiles-heading { margin: 0 0 5px; color: #14171a; font-size: 40px; font-weight: 700; line-height: 1.15; }
+.nx-profiles-subtitle { margin: 0 0 18px; color: #50565b; font-size: 18px; }
+.nx-profiles-permissions { margin-bottom: 37px; }
+.nx-profiles-permissions .nx-profile-pref-row { min-height: 88px; padding: 15px 22px; }
+.nx-profile-pref-row { display: flex; align-items: center; gap: 15px; width: 100%; min-height: 68px; box-sizing: border-box; padding: 12px 17px; border: 0; border-bottom: 1px solid #eee; background: #fff; color: #171a1d; text-align: left; cursor: pointer; transition: background .16s ease; }
+.nx-profile-pref-row:last-child { border-bottom: 0; }
+.nx-profile-pref-row:hover { background: #f7f8f8; }
+.nx-profile-pref-row > svg:last-child { flex: 0 0 auto; color: #656b70; }
+.nx-profile-pref-icon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 22px; color: #41474c; }
+.nx-profile-pref-copy { display: flex; flex: 1; flex-direction: column; gap: 3px; min-width: 0; }
+.nx-profile-pref-copy strong { color: #181c20; font-size: 17px; font-weight: 600; line-height: 22px; }
+.nx-profile-pref-copy small { color: #626970; font-size: 13px; line-height: 18px; }
+.nx-profiles-list-title { margin: 0 0 12px; color: #50565b; font-size: 17px; font-weight: 500; }
+.nx-profiles-list { overflow: hidden; }
+.nx-profiles-list-row { display: flex; align-items: center; gap: 13px; width: 100%; min-height: 69px; box-sizing: border-box; padding: 10px 14px; border: 0; border-bottom: 1px solid #eee; background: #fff; color: #171a1d; text-align: left; cursor: pointer; transition: background .16s ease; }
+.nx-profiles-list-row:hover { background: #f7f8f8; }
+.nx-profiles-list-row > strong { flex: 1; font-size: 16px; font-weight: 600; }
+.nx-profiles-avatar { display: inline-flex; align-items: center; justify-content: center; width: 41px; height: 41px; overflow: hidden; flex: 0 0 41px; border-radius: 5px; }
+.nx-profiles-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.nx-profiles-you { padding: 6px 8px; border-radius: 4px; background: #d8efff; color: #354e60; font-size: 12px; }
+.nx-profiles-list-row > svg { flex: 0 0 auto; color: #63696e; }
+.nx-profiles-add { width: calc(100% - 24px); min-height: 42px; margin: 10px 12px 0; border: 0; border-radius: 4px; background: #e8e9ea; color: #16191c; font-size: 16px; font-weight: 600; cursor: pointer; }
+.nx-profiles-add:hover { background: #dfe1e2; }
+.nx-profiles-add-form { padding: 17px; border-top: 1px solid #e9e9e9; }
+.nx-profiles-add-form label, .nx-profile-dialog label { display: flex; flex-direction: column; gap: 7px; color: #2b3034; font-size: 13px; font-weight: 600; }
+.nx-profiles-add-form input, .nx-profile-dialog input:not([type="checkbox"]), .nx-profile-dialog select { min-height: 42px; box-sizing: border-box; padding: 8px 11px; border: 1px solid #9ea3a6; border-radius: 3px; background: #fff; color: #171a1d; font: inherit; font-size: 14px; }
+.nx-profiles-add-form > div { display: flex; justify-content: flex-end; gap: 9px; margin-top: 14px; }
+.nx-profiles-add-form > div button, .nx-profile-dialog-actions button { min-height: 38px; padding: 8px 15px; border: 1px solid #b6b9bb; border-radius: 3px; background: #fff; color: #22272b; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.nx-profiles-add-form > div button[type="submit"], .nx-profile-dialog-actions button:last-child { border-color: #111; background: #111; color: #fff; }
+.nx-profile-form-error { margin: 10px 0 0; color: #b4232c; font-size: 12px; line-height: 1.5; }
+.nx-profile-settings-view { display: grid; grid-template-columns: 29px minmax(0, 1fr); gap: 17px; align-items: start; animation: nx-devices-enter .28s ease both; }
+.nx-profile-settings-back { display: inline-flex; align-items: center; justify-content: center; width: 29px; height: 34px; margin-top: 3px; padding: 0; border: 0; background: transparent; color: #202428; cursor: pointer; }
+.nx-profile-settings-body { min-width: 0; }
+.nx-profile-settings-body > h1 { margin: 0 0 23px; color: #2b3034; font-size: 23px; font-weight: 650; line-height: 1.25; }
+.nx-profile-preferences-card { overflow: hidden; }
+.nx-profile-preferences-card .nx-profile-pref-row { min-height: 59px; gap: 12px; padding: 9px 12px; }
+.nx-profile-preferences-card .nx-profile-pref-copy strong { font-size: 13px; line-height: 17px; }
+.nx-profile-preferences-card .nx-profile-pref-copy small { font-size: 10px; line-height: 14px; }
+.nx-profile-preferences-title { margin: 22px 0 8px; color: #555b60; font-size: 13px; font-weight: 500; }
+.nx-profile-delete { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 38px; margin-top: 17px; border: 1px solid #d0d2d4; border-radius: 3px; background: #f1f1f1; color: #a12e35; font-size: 12px; font-weight: 700; cursor: pointer; }
+.nx-profile-delete:hover { background: #ffecec; border-color: #d9a6a9; }
+.nx-profile-dialog-backdrop { position: fixed; inset: 0; z-index: 1200; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 20px; background: rgba(16,20,24,.48); animation: nx-modal-backdrop-in .16s ease both; }
+.nx-profile-dialog { position: relative; width: min(480px, 100%); box-sizing: border-box; padding: 34px 30px 25px; border: 1px solid #dedfe0; border-radius: 6px; background: #fff; color: #171a1d; box-shadow: 0 18px 50px rgba(0,0,0,.25); animation: nx-modal-enter .2s cubic-bezier(.2,.75,.25,1) both; }
+.nx-profile-dialog-close { position: absolute; top: 10px; right: 13px; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; color: #25292d; font: 300 30px/28px Arial,sans-serif; cursor: pointer; }
+.nx-profile-dialog h2 { margin: 0 0 22px; color: #171a1d; font-size: 23px; line-height: 1.25; }
+.nx-profile-dialog label { margin-bottom: 14px; }
+.nx-profile-dialog label > small { color: #686e73; font-size: 11px; font-weight: 400; line-height: 1.45; }
+.nx-profile-dialog-check { display: flex !important; flex-direction: row !important; align-items: center; }
+.nx-profile-dialog-check input { width: 17px; height: 17px; }
+.nx-profile-dialog-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 24px; }
+.nx-profile-dialog-actions button:disabled, .nx-profiles-add-form button:disabled { opacity: .6; cursor: wait; }
+.nx-profile-dialog-actions button.is-danger { border-color: #a12e35; background: #a12e35; }
+.nx-profile-delete-dialog > p { margin: 0 0 18px; color: #4f565b; font-size: 13px; line-height: 1.55; }
+.nx-profile-detail-page { min-height: 100vh; background: #fff; }
+.nx-profile-detail-page .nx-security-header { border-top-width: 3px; border-top-color: #e5e5e5; }
+.nx-profile-detail-page .nx-security-topbar { width: min(calc(100% - 32px), 1180px); height: 38px; }
+.nx-profile-detail-page .nx-security-logo-button .nx-account-logo { width: 78px; }
+.nx-profile-detail-page .nx-account-profile { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; min-height: 34px; gap: 5px; padding: 3px; }
+.nx-profile-detail-page .nx-account-profile img { width: 25px; height: 25px; border-radius: 3px; object-fit: cover; }
+.nx-profile-detail-main { width: min(calc(100% - 40px), 850px); margin: 18px auto 40px; }
+.nx-profile-detail-main.is-lock-view { width: min(calc(100% - 64px), 1200px); margin-top: 24px; }
+.nx-profile-detail-main .nx-profile-settings-view { grid-template-columns: 27px minmax(0, 770px); gap: 15px; }
+.nx-profile-detail-main .nx-profile-settings-back { margin-top: 1px; }
+.nx-profile-detail-main .nx-profile-settings-body > h1 { margin: 0 0 21px; font-size: 22px; line-height: 28px; }
+.nx-profile-detail-main .nx-profile-preferences-card .nx-profile-pref-row { min-height: 53px; }
+.nx-profile-detail-main .nx-profile-preferences-title { margin-top: 18px; }
+.nx-profile-detail-main .nx-profile-delete { margin-top: 15px; }
+
+.nx-access-devices-view { display: grid; grid-template-columns: 30px minmax(0, 570px); gap: 16px; align-items: start; animation: nx-devices-enter .28s ease both; }
+.nx-access-back { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 34px; margin-top: 23px; padding: 0; border: 0; background: transparent; color: #16191c; cursor: pointer; }
+.nx-access-back:hover { color: #555; }
+.nx-access-devices-inner { min-width: 0; }
+.nx-access-devices-inner > h1 { margin: 0 0 7px; color: #25292d; font-size: 28px; font-weight: 650; line-height: 35px; }
+.nx-access-intro { margin: 0; color: #50565b; font-size: 14px; line-height: 1.55; }
+.nx-access-device-list { display: flex; flex-direction: column; gap: 11px; margin-top: 27px; }
+.nx-access-device { overflow: hidden; border: 1px solid #d8dadd; border-radius: 7px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.035); }
+.nx-access-device-head { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 92px; padding: 14px 18px; border: 0; background: #fff; color: #22272b; text-align: left; cursor: pointer; }
+.nx-access-device-head:hover { background: #fbfbfb; }
+.nx-access-device-head > svg:last-child { flex: 0 0 auto; transition: transform .18s ease; }
+.nx-access-device-head > svg:last-child.is-open { transform: rotate(180deg); }
+.nx-access-device-symbol { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 20px; color: #4b5157; }
+.nx-access-device-symbol img { width: 20px; height: 20px; object-fit: contain; }
+.nx-access-device-copy { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; }
+.nx-access-device-title { color: #25292d; font-size: 15px; font-weight: 600; line-height: 20px; }
+.nx-access-device-activity { display: inline-flex; align-items: center; gap: 7px; color: #757b80; font-size: 11px; line-height: 16px; }
+.nx-access-device-activity svg { flex: 0 0 auto; }
+.nx-access-current-badge { display: inline-block; padding: 3px 6px; background: #dceafb; color: #334b61; font-size: 8px; font-weight: 700; line-height: 1; }
+.nx-access-current-badge.is-selected { background: #eef0f2; color: #596168; }
+.nx-access-device-details { padding: 12px 18px 15px 50px; border-top: 1px solid #eceeef; animation: nx-device-details-in .18s ease both; }
+.nx-access-device-details p { margin: 8px 0 0; color: #5c6267; font-size: 12px; line-height: 1.5; }
+.nx-access-device-activity-details { display: flex; align-items: center; gap: 10px; color: #50565b; font-size: 13px; line-height: 20px; }
+.nx-access-device-activity-details svg { flex: 0 0 auto; }
+.nx-access-device-signout { width: 100%; min-height: 36px; margin-top: 14px; border: 1px solid #92979a; border-radius: 2px; background: #f8f8f8; color: #24292d; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background .16s ease, border-color .16s ease; }
+.nx-access-device-signout:hover:not(:disabled) { border-color: #5e6468; background: #f0f1f1; }
+.nx-access-device-signout:disabled { opacity: .65; cursor: wait; }
+@keyframes nx-device-details-in { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+.nx-access-empty { margin: 15px 0 0; color: #626970; font-size: 13px; }
+.nx-access-note { margin-top: 25px; padding-top: 17px; border-top: 1px solid #d8dadd; color: #666d72; font-size: 12px; line-height: 1.5; }
+.nx-access-note a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+@keyframes nx-modal-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes nx-modal-enter { from { opacity: 0; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
 @media (max-width: 720px) {
   .nx-security-topbar { width: calc(100% - 28px); height: 42px; }
   .nx-security-logo-button .nx-account-logo { width: 76px; }
@@ -53,6 +190,72 @@
   .nx-security-subtitle { font-size: 13px; }
   .nx-security-row-copy strong { font-size: 13px; }
   .nx-security-row-copy small { font-size: 10px; }
+  .nx-devices-page .nx-security-header { border-top-width: 0; }
+  .nx-devices-page .nx-security-topbar { height: 48px; }
+  .nx-devices-page .nx-security-logo-button .nx-account-logo { width: 84px; }
+  .nx-devices-shell { gap: 14px; width: calc(100% - 28px); padding-top: 12px; padding-bottom: 32px; }
+  .nx-devices-shell .nx-security-sidebar { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .nx-devices-shell .nx-security-sidebar button { min-height: 48px; }
+  .nx-devices-shell .nx-security-sidebar .nx-security-back { min-height: 30px; margin-bottom: 3px; }
+  .nx-devices-content > h1 { font-size: 29px; line-height: 35px; }
+  .nx-devices-card { min-height: 80px; gap: 14px; padding: 13px 14px; }
+  .nx-devices-card-copy strong { font-size: 14px; }
+  .nx-devices-card-copy small { font-size: 11px; }
+  .nx-devices-footer { min-height: 160px; padding: 26px 18px 22px; }
+  .nx-devices-footer nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+  .nx-access-devices-view { grid-template-columns: 24px minmax(0, 1fr); gap: 8px; }
+  .nx-access-back { margin-top: 16px; }
+  .nx-access-devices-inner > h1 { font-size: 23px; line-height: 29px; }
+  .nx-access-intro { font-size: 12px; }
+  .nx-access-device-list { gap: 9px; margin-top: 18px; }
+  .nx-access-device-head { min-height: 78px; gap: 10px; padding: 12px; }
+  .nx-access-device-title { font-size: 13px; }
+  .nx-access-device-activity { font-size: 10px; }
+  .nx-access-device-details { padding: 11px 12px 13px 42px; }
+  .nx-access-note { margin-top: 20px; font-size: 11px; }
+  .nx-profiles-account-page .nx-security-topbar { width: calc(100% - 28px); height: 48px; }
+  .nx-profiles-account-page .nx-security-logo-button .nx-account-logo { width: 84px; }
+  .nx-profiles-shell { gap: 14px; width: calc(100% - 28px); padding-top: 12px; }
+  .nx-profiles-shell .nx-security-sidebar { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .nx-profiles-shell .nx-security-sidebar button { min-height: 48px; }
+  .nx-profiles-shell .nx-security-sidebar .nx-security-back { min-height: 30px; margin-bottom: 3px; }
+  .nx-profiles-heading { font-size: 30px; }
+  .nx-profiles-subtitle { font-size: 14px; }
+  .nx-profiles-permissions { margin-bottom: 23px; }
+  .nx-profiles-permissions .nx-profile-pref-row { min-height: 72px; padding: 12px; }
+  .nx-profile-pref-copy strong { font-size: 14px; }
+  .nx-profile-pref-copy small { font-size: 11px; }
+  .nx-profiles-list-row { min-height: 61px; gap: 9px; padding: 8px; }
+  .nx-profiles-avatar { width: 35px; height: 35px; flex-basis: 35px; }
+  .nx-profiles-list-row > strong { font-size: 14px; }
+  .nx-profiles-you { padding: 5px 6px; font-size: 10px; }
+  .nx-profile-settings-view { grid-template-columns: 23px minmax(0, 1fr); gap: 8px; }
+  .nx-profile-settings-back { margin-top: 1px; }
+  .nx-profile-settings-body > h1 { margin-bottom: 17px; font-size: 20px; }
+  .nx-profile-detail-page .nx-security-topbar { width: calc(100% - 24px); height: 38px; }
+  .nx-profile-detail-page .nx-security-logo-button .nx-account-logo { width: 70px; }
+  .nx-profile-detail-main { width: calc(100% - 24px); margin-top: 15px; }
+  .nx-profile-detail-main.is-lock-view { width: calc(100% - 24px); margin-top: 16px; }
+  .nx-profile-detail-main .nx-profile-settings-view { grid-template-columns: 22px minmax(0, 1fr); gap: 8px; }
+  .nx-profile-detail-main .nx-profile-settings-body > h1 { margin-bottom: 16px; font-size: 19px; line-height: 25px; }
+  .nx-profile-detail-main .nx-profile-preferences-card .nx-profile-pref-row { min-height: 53px; }
+  .nx-profile-dialog { padding: 32px 20px 20px; }
+  .nx-profile-dialog h2 { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-devices-content { animation: none; }
+  .nx-devices-card { transition: none; }
+  .nx-devices-card:hover { transform: none; }
+  .nx-access-devices-view,
+  .nx-access-device-details { animation: none; }
+  .nx-access-device-head > svg:last-child,
+  .nx-devices-card { transition: none; }
+  .nx-profile-settings-view,
+  .nx-profile-dialog-backdrop,
+  .nx-profile-dialog { animation: none; }
+  .nx-profile-pref-row,
+  .nx-profiles-list-row { transition: none; }
 }
 
 .nx-account-page:not(.nx-security-page) .nx-account-header { width: 100%; box-sizing: border-box; }
@@ -71,6 +274,29 @@
   width: min(calc(100% - 64px), 1180px); height: 46px; box-sizing: border-box;
 }
 .nx-account-page:not(.nx-security-page) .nx-account-subbar h1 { grid-column: 2; justify-self: center; }
+.nx-account-page:not(.nx-security-page) .nx-account-subbar h1 {
+  align-self: center;
+  margin: 0;
+  color: #181818;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+.nx-account-page:not(.nx-security-page) .nx-account-content > h1.nx-account-page-title {
+  margin: 0 0 2px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 19px;
+}
+.nx-account-page:not(.nx-security-page) .nx-account-content > .nx-account-page-subtitle {
+  margin: 0 0 12px;
+  color: #777;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 17px;
+}
 .nx-account-page:not(.nx-security-page) .nx-account-shell {
   grid-template-columns: 220px minmax(0, 1fr); gap: 40px;
   width: min(calc(100% - 64px), 1180px); box-sizing: border-box;
@@ -98,6 +324,36 @@
 
 @media (max-width: 720px) {
   .profiles-settings-header { padding-right: 16px; padding-left: 16px; }
+}
+
+.nx-account-page .nx-account-header {
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e2e2e2;
+}
+.nx-account-page .nx-security-header .nx-security-topbar,
+.nx-account-page:not(.nx-security-page) .nx-account-topbar {
+  width: 100%;
+  height: 68px;
+  padding: 0 22px;
+  box-sizing: border-box;
+}
+.nx-account-page .nx-account-header .nx-account-logo { width: 104px; }
+.nx-account-page .nx-account-header .nx-account-profile {
+  min-width: 0;
+  min-height: 0;
+  gap: 7px;
+  padding: 0;
+}
+.nx-account-page .nx-account-header .nx-account-profile img { width: 32px; height: 32px; }
+.nx-account-page .nx-security-header .nx-account-profile-menu { top: calc(100% + 8px); }
+
+@media (max-width: 720px) {
+  .nx-account-page .nx-security-header .nx-security-topbar,
+  .nx-account-page:not(.nx-security-page) .nx-account-topbar {
+    height: 58px;
+    padding: 0 14px;
+  }
+  .nx-account-page .nx-account-header .nx-account-logo { width: 92px; }
 }
 
 body.js--contrast .ir-quarter .ir-quarter-year,
@@ -128,3 +384,386 @@ body.js--contrast .ir-quarter .ir-quarter-link { color: #000; }
 }
 .ir-nav-list > li:first-child .ir-nav-top { padding-left: 0; }
 .ir-nav-list > li:last-child .ir-nav-top { padding-right: 0; }
+
+.nx-profile-lock-page { display: grid; grid-template-columns: 27px minmax(0, 1fr); gap: 15px; align-items: start; min-height: 72vh; animation: nx-devices-enter .28s ease both; }
+.nx-profile-lock-content { width: min(100%, 770px); color: #25292d; }
+.nx-profile-detail-main.is-lock-view .nx-profile-lock-content { max-width: 1180px; }
+.nx-profile-lock-content > h1,
+.nx-profile-lock-content form > h1,
+.nx-profile-lock-success h1 { margin: 0 0 10px; color: #282d31; font-size: 28px; font-weight: 700; line-height: 1.25; }
+.nx-profile-lock-for { display: flex; align-items: center; gap: 10px; margin: 19px 0; color: #555b60; font-size: 17px; }
+.nx-profile-lock-avatar { display: inline-flex; width: 42px; height: 42px; overflow: hidden; border-radius: 50%; }
+.nx-profile-lock-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.nx-profile-lock-description { margin: 14px 0 0; color: #4f565b; font-size: 17px; line-height: 1.55; }
+.nx-profile-lock-create { width: 100%; min-height: 54px; margin: 68px 0 0; border: 1px solid #161819; border-radius: 5px; background: #050505; color: #fff; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; transition: background .16s ease, transform .16s ease; }
+.nx-profile-lock-create:hover { transform: translateY(-1px); background: #222; }
+.nx-profile-lock-note { margin: 54px 0 0; padding-top: 42px; border-top: 1px solid #e1e2e3; color: #666d72; font-size: 14px; line-height: 1.55; }
+.nx-profile-lock-back-link { margin-top: 20px; padding: 0; border: 0; background: none; color: #52585d; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+.nx-profile-lock-status-card { display: flex; align-items: center; gap: 13px; min-height: 63px; margin-top: 22px; padding: 0 16px; border: 1px solid #dedfe0; border-radius: 6px; background: #fff; }
+.nx-profile-lock-status-card > svg { color: #444b50; }
+.nx-profile-lock-status-card span { display: flex; flex-direction: column; gap: 3px; }
+.nx-profile-lock-status-card strong { color: #24292d; font-size: 14px; }
+.nx-profile-lock-status-card small { color: #55795b; font-size: 12px; }
+.nx-profile-lock-status-message { margin: 12px 0 0; color: #47724c; font-size: 13px; line-height: 1.5; }
+.nx-profile-lock-actions { display: flex; flex-direction: column; gap: 9px; margin-top: 29px; }
+.nx-profile-lock-actions button,
+.nx-profile-lock-success > button { min-height: 49px; border: 0; border-radius: 4px; background: #050505; color: #fff; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; }
+.nx-profile-lock-actions button:hover,
+.nx-profile-lock-success > button:hover { background: #272727; }
+.nx-profile-lock-actions button.is-secondary { border: 1px solid #c8cbcd; background: #e7e8e9; color: #171a1d; }
+.nx-profile-lock-actions button.is-secondary:hover { background: #d9dbdc; }
+.nx-profile-lock-content form > .nx-profile-lock-description { margin: 0 0 49px; }
+.nx-profile-code-fields { display: flex; align-items: center; gap: 10px; margin: 0; }
+.nx-profile-code-fields input { width: 74px; height: 96px; box-sizing: border-box; border: 2px solid #c7c9ca; border-radius: 6px; background: #fff; color: #15191d; font: inherit; font-size: 30px; text-align: center; outline: none; }
+.nx-profile-code-fields input:focus { border-color: #555b60; box-shadow: 0 0 0 2px rgba(40,45,49,.12); }
+.nx-profile-lock-content form > .nx-profile-lock-note { margin-top: 42px; padding: 0; border: 0; }
+.nx-profile-lock-content form .nx-profile-lock-actions { margin-top: 48px; }
+.nx-profile-lock-content form .nx-profile-lock-actions button:disabled { opacity: .55; cursor: not-allowed; }
+
+.nx-account-page .nx-account-shell,
+.nx-account-page .nx-security-shell {
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 40px;
+  width: min(calc(100% - 64px), 1180px);
+  margin: 0 auto;
+  padding: 28px 0 48px;
+  box-sizing: border-box;
+}
+.nx-account-page .nx-account-sidebar,
+.nx-account-page .nx-security-sidebar {
+  gap: 3px;
+  padding-top: 4px;
+}
+.nx-account-page .nx-account-sidebar button,
+.nx-account-page .nx-security-sidebar button {
+  min-height: 39px;
+  box-sizing: border-box;
+  padding: 8px;
+  gap: 11px;
+  font-size: 13px;
+  line-height: 1.2;
+}
+.nx-account-page .nx-security-sidebar .nx-security-back {
+  min-height: 39px;
+  margin: 0 0 12px;
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .nx-account-page .nx-account-shell,
+  .nx-account-page .nx-security-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: calc(100% - 28px);
+    padding: 14px 0 32px;
+  }
+  .nx-account-page .nx-account-sidebar,
+  .nx-account-page .nx-security-sidebar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 2px;
+    margin-bottom: 0;
+    padding-top: 0;
+  }
+  .nx-account-page .nx-account-sidebar button,
+  .nx-account-page .nx-security-sidebar button {
+    min-width: 0;
+    min-height: 48px;
+    padding: 8px 2px;
+    gap: 4px;
+    font-size: 11px;
+    text-align: center;
+  }
+  .nx-account-page .nx-security-sidebar .nx-security-back {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-height: 34px;
+    margin: 0 0 3px;
+    flex-direction: row;
+    font-size: 12px;
+  }
+}
+.nx-profile-lock-confirm-dialog,
+.nx-profile-lock-password-dialog,
+.nx-profile-lock-otp-dialog { position: relative; width: min(740px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; padding: 62px 48px 38px; border: 1px solid #d7d9da; border-radius: 9px; background: #fff; color: #161a1d; box-shadow: 0 16px 48px rgba(0,0,0,.22); animation: nx-modal-enter .2s cubic-bezier(.2,.75,.25,1) both; }
+.nx-profile-lock-confirm-dialog h2,
+.nx-profile-lock-password-dialog h2,
+.nx-profile-lock-otp-dialog h2 { margin: 0 0 10px; color: #15191d; font-size: 29px; line-height: 1.25; }
+.nx-profile-lock-confirm-dialog > p,
+.nx-profile-lock-password-dialog > p,
+.nx-profile-lock-otp-dialog > p { margin: 0 0 25px; color: #555c61; font-size: 15px; line-height: 1.5; }
+.nx-profile-lock-method { display: flex; align-items: center; gap: 19px; width: 100%; min-height: 89px; margin: 0 0 13px; padding: 15px 19px; border: 2px solid #dedfe0; border-radius: 9px; background: #fff; color: #1b2024; text-align: left; cursor: pointer; transition: background .16s ease, border-color .16s ease; }
+.nx-profile-lock-method:hover:not(:disabled) { border-color: #aeb2b5; background: #fafafa; }
+.nx-profile-lock-method > svg { flex: 0 0 auto; color: #444a4f; }
+.nx-profile-lock-method > span { display: flex; flex-direction: column; gap: 5px; }
+.nx-profile-lock-method strong { font-size: 17px; font-weight: 600; }
+.nx-profile-lock-method small { color: #696f74; font-size: 12px; }
+.nx-profile-lock-help { display: block; margin-top: 25px; color: #34393d; font-size: 12px; }
+.nx-profile-lock-help a,
+.nx-profile-lock-password-dialog > a { color: inherit; text-underline-offset: 2px; }
+.nx-profile-lock-password-dialog { width: min(650px, 100%); padding: 58px 52px 43px; }
+.nx-profile-lock-password-dialog label { display: flex; flex-direction: column; gap: 8px; margin-top: 27px; color: #4d5459; font-size: 13px; }
+.nx-profile-lock-password-wrap { position: relative; display: flex; align-items: center; }
+.nx-profile-lock-password-dialog label input { width: 100%; height: 52px; box-sizing: border-box; padding: 12px 45px 12px 14px; border: 1px solid #aeb2b5; border-radius: 4px; color: #171a1d; font: inherit; font-size: 15px; }
+.nx-profile-lock-password-wrap button { position: absolute; right: 7px; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border: 0; background: transparent; color: #42494e; cursor: pointer; }
+.nx-profile-lock-password-dialog > button[type="submit"],
+.nx-profile-lock-otp-dialog > button[type="submit"] { width: 100%; min-height: 47px; margin-top: 22px; border: 0; border-radius: 4px; background: #050505; color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.nx-profile-lock-password-dialog > button[type="submit"]:disabled,
+.nx-profile-lock-otp-dialog > button[type="submit"]:disabled { opacity: .6; cursor: wait; }
+.nx-profile-lock-password-dialog > a { display: inline-block; margin-top: 17px; color: #555b60; font-size: 12px; }
+.nx-profile-lock-email-fallback { display: block; margin-top: 15px; padding: 0; border: 0; background: transparent; color: #555b60; font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; }
+.nx-profile-lock-otp-dialog { width: min(640px, 100%); padding: 58px 38px 32px; }
+.nx-profile-lock-otp-dialog .nx-profile-code-fields { gap: 8px; margin: 27px 0 0; }
+.nx-profile-lock-otp-dialog .nx-profile-code-fields input { width: 53px; height: 61px; border-width: 1px; border-radius: 4px; font-size: 23px; }
+.nx-profile-lock-resend { width: 100%; min-height: 42px; margin-top: 8px; border: 0; border-radius: 3px; background: #e3e4e5; color: #171a1d; font: inherit; font-size: 14px; cursor: pointer; }
+.nx-profile-lock-resend:hover:not(:disabled) { background: #d7d9da; }
+.nx-profile-lock-resend:disabled { opacity: .65; cursor: wait; }
+.profile-lock-entry-backdrop { position: fixed; inset: 0; z-index: 1300; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 20px; background: rgba(0,0,0,.72); animation: nx-modal-backdrop-in .16s ease both; }
+.profile-lock-entry { position: relative; display: flex; width: min(420px, 100%); flex-direction: column; align-items: center; box-sizing: border-box; padding: 38px 32px 30px; border: 1px solid #ddd; border-radius: 7px; background: #fff; color: #15191d; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35); animation: nx-modal-enter .2s ease both; }
+.profile-lock-entry-close { position: absolute; top: 8px; right: 12px; border: 0; background: transparent; color: #222; font-size: 28px; cursor: pointer; }
+.profile-lock-entry > img { width: 60px; height: 60px; border-radius: 5px; object-fit: cover; }
+.profile-lock-entry h2 { margin: 17px 0 7px; font-size: 21px; }
+.profile-lock-entry > p:not(.profile-lock-entry-error) { margin: 0 0 20px; color: #5b6268; font-size: 13px; line-height: 1.5; }
+.profile-lock-entry input { width: 150px; height: 48px; box-sizing: border-box; border: 1px solid #aaa; border-radius: 4px; font: inherit; font-size: 23px; letter-spacing: 10px; text-align: center; }
+.profile-lock-entry > button[type="submit"] { width: 100%; min-height: 43px; margin-top: 20px; border: 0; border-radius: 4px; background: #090909; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.profile-lock-entry > button[type="submit"]:disabled { opacity: .55; cursor: not-allowed; }
+.profile-lock-entry-error { margin: 11px 0 0; color: #b4232c; font-size: 12px; }
+.profile-lock-badge { display: inline-flex; margin-left: 6px; color: #d5d5d5; vertical-align: middle; }
+.nx-change-password-page { background: #fff; }
+.nx-change-password-main { display: grid; grid-template-columns: 27px minmax(0, 1fr); gap: 15px; width: min(calc(100% - 64px), 1200px); margin: 20px auto 50px; animation: nx-devices-enter .28s ease both; }
+.nx-change-password-main > .nx-profile-settings-back { margin-top: 18px; }
+.nx-change-password-content { width: min(100%, 820px); color: #292e32; }
+.nx-change-password-content > h1,
+.nx-change-password-success h1 { margin: 0 0 9px; color: #282d31; font-size: 29px; font-weight: 700; line-height: 1.25; }
+.nx-change-password-subtitle { margin: 0 0 28px; color: #555c61; font-size: 15px; line-height: 1.5; }
+.nx-change-password-content form { display: flex; flex-direction: column; gap: 12px; }
+.nx-change-password-field { display: flex; flex-direction: column; gap: 6px; }
+.nx-change-password-field > input { width: 100%; height: 53px; box-sizing: border-box; padding: 0 16px; border: 1px solid #aeb2b5; border-radius: 4px; background: #fff; color: #171a1d; font: inherit; font-size: 15px; }
+.nx-change-password-field > input::placeholder { color: #656c71; opacity: 1; }
+.nx-change-password-field > input:focus { border-color: #4d5459; outline: 2px solid rgba(30,35,39,.12); outline-offset: 1px; }
+.nx-change-password-forgot { align-self: flex-start; color: #2874b8; font-size: 12px; text-decoration: underline; text-underline-offset: 2px; }
+.nx-change-password-signout { display: flex; align-items: center; gap: 10px; margin: 12px 0 8px; color: #252a2e; font-size: 14px; font-weight: 600; cursor: pointer; }
+.nx-change-password-signout input { width: 18px; height: 18px; margin: 0; accent-color: #080808; }
+.nx-change-password-save-wrap { padding: 9px; }
+.nx-change-password-save-wrap button { width: 100%; min-height: 54px; border: 0; border-radius: 4px; background: #050505; color: #fff; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; transition: background .16s ease; }
+.nx-change-password-save-wrap button:hover:not(:disabled) { background: #262626; }
+.nx-change-password-save-wrap button:disabled { opacity: .65; cursor: wait; }
+.nx-change-password-cancel { align-self: center; padding: 4px 16px; border: 0; background: transparent; color: #24292d; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+.nx-change-password-cancel:disabled { opacity: .55; cursor: wait; }
+.nx-change-password-visibility { margin-top: 12px; padding: 0; border: 0; background: transparent; color: #5d6469; font: inherit; font-size: 12px; text-decoration: underline; cursor: pointer; }
+.nx-change-password-success { padding: 14px 0; }
+.nx-change-password-success p { color: #555c61; font-size: 14px; }
+.nx-change-password-success button { min-height: 45px; margin-top: 14px; padding: 0 20px; border: 0; border-radius: 4px; background: #080808; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+.nx-change-password-reset-link { color: #2874b8; font-size: 14px; text-decoration: underline; text-underline-offset: 2px; }
+
+@media (max-width: 720px) {
+  .nx-change-password-main { grid-template-columns: 22px minmax(0, 1fr); gap: 8px; width: calc(100% - 24px); margin-top: 15px; }
+  .nx-change-password-main > .nx-profile-settings-back { margin-top: 10px; }
+  .nx-change-password-content > h1,
+  .nx-change-password-success h1 { font-size: 23px; }
+  .nx-change-password-subtitle { margin-bottom: 22px; font-size: 13px; }
+  .nx-change-password-field > input { height: 49px; padding: 0 12px; font-size: 14px; }
+  .nx-change-password-signout { font-size: 13px; }
+  .nx-change-password-save-wrap { padding: 6px; }
+  .nx-change-password-save-wrap button { min-height: 49px; }
+  .nx-profile-lock-page { grid-template-columns: 22px minmax(0, 1fr); gap: 8px; min-height: 75vh; }
+  .nx-profile-lock-content > h1,
+  .nx-profile-lock-content form > h1,
+  .nx-profile-lock-success h1 { font-size: 22px; }
+  .nx-profile-lock-description { font-size: 14px; }
+  .nx-profile-lock-create { min-height: 48px; margin-top: 38px; font-size: 15px; }
+  .nx-profile-lock-note { margin-top: 34px; padding-top: 27px; font-size: 12px; }
+  .nx-profile-lock-content form > .nx-profile-lock-description { margin-bottom: 31px; }
+  .nx-profile-code-fields { gap: 7px; }
+  .nx-profile-code-fields input { width: min(17vw, 62px); height: 74px; font-size: 25px; }
+  .nx-profile-lock-content form > .nx-profile-lock-note { margin-top: 30px; }
+  .nx-profile-lock-content form .nx-profile-lock-actions { margin-top: 34px; }
+  .nx-profile-lock-confirm-dialog,
+  .nx-profile-lock-password-dialog,
+  .nx-profile-lock-otp-dialog { padding: 58px 22px 25px; border-radius: 8px; }
+  .nx-profile-lock-confirm-dialog h2,
+  .nx-profile-lock-password-dialog h2,
+  .nx-profile-lock-otp-dialog h2 { font-size: 23px; }
+  .nx-profile-lock-method { min-height: 75px; padding: 12px; }
+  .nx-profile-lock-method strong { font-size: 15px; }
+  .nx-profile-lock-otp-dialog .nx-profile-code-fields { gap: 5px; }
+  .nx-profile-lock-otp-dialog .nx-profile-code-fields input { width: min(13vw, 45px); height: 53px; font-size: 19px; }
+  .profile-lock-entry { padding: 36px 22px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nx-profile-lock-page,
+  .nx-profile-lock-confirm-dialog,
+  .nx-profile-lock-password-dialog,
+  .nx-profile-lock-otp-dialog,
+  .profile-lock-entry-backdrop,
+  .profile-lock-entry { animation: none; }
+  .nx-profile-lock-create,
+  .nx-profile-lock-method { transition: none; }
+}
+
+.nx-devices-page .nx-security-header { border-top-width: 0; }
+.nx-devices-page .nx-security-topbar {
+  width: 100%;
+  height: 48px;
+  padding: 0 38px;
+}
+.nx-devices-page .nx-security-logo-button .nx-account-logo { width: 88px; }
+.nx-devices-page .nx-account-header .nx-account-profile img { width: 22px; height: 22px; }
+.nx-devices-page .nx-devices-shell {
+  grid-template-columns: 228px minmax(0, 1fr);
+  gap: 44px;
+  width: min(calc(100% - 104px), 1090px);
+  padding: 22px 0 40px;
+}
+.nx-devices-page .nx-devices-shell .nx-security-sidebar { gap: 2px; padding-top: 0; }
+.nx-devices-page .nx-devices-shell .nx-security-sidebar button {
+  min-height: 38px;
+  padding: 7px 0;
+  gap: 10px;
+  font-size: 13px;
+}
+.nx-devices-page .nx-devices-shell .nx-security-sidebar .nx-security-back {
+  min-height: 38px;
+  margin: 0 0 12px;
+  font-size: 12px;
+}
+.nx-devices-page .nx-devices-content { width: min(100%, 666px); max-width: 666px; }
+.nx-devices-page .nx-devices-content > h1 { font-size: 32px; line-height: 39px; }
+.nx-devices-page .nx-devices-content .nx-security-subtitle { margin-bottom: 13px; font-size: 15px; }
+.nx-devices-page .nx-devices-card { min-height: 82px; gap: 16px; padding: 14px 16px; }
+.nx-devices-page .nx-devices-section-title { margin: 25px 0 12px; }
+.nx-devices-page .nx-devices-footer {
+  min-height: 160px;
+  padding: 56px 39px 16px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+  .nx-devices-page .nx-security-topbar { height: 58px; padding: 0 14px; }
+  .nx-devices-page .nx-security-logo-button .nx-account-logo { width: 92px; }
+  .nx-devices-page .nx-devices-shell {
+    width: calc(100% - 28px);
+    padding: 14px 0 32px;
+  }
+  .nx-devices-page .nx-devices-shell .nx-security-sidebar button {
+    min-height: 48px;
+    padding: 8px 2px;
+    gap: 4px;
+    font-size: 11px;
+  }
+  .nx-devices-page .nx-devices-shell .nx-security-sidebar .nx-security-back {
+    min-height: 34px;
+    margin: 0 0 3px;
+    padding: 7px 0;
+    flex-direction: row;
+    font-size: 12px;
+  }
+  .nx-devices-page .nx-devices-content { width: 100%; max-width: none; }
+  .nx-devices-page .nx-devices-content > h1 { font-size: 29px; line-height: 35px; }
+  .nx-devices-page .nx-devices-card { min-height: 80px; gap: 14px; padding: 13px 14px; }
+  .nx-devices-page .nx-devices-footer { min-height: 160px; padding: 26px 18px 22px; }
+}
+
+.nx-access-devices-page {
+  width: 100%;
+  color: #171a1d;
+  animation: nx-devices-enter .24s ease both;
+}
+.nx-access-devices-page > .nx-access-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  width: auto;
+  height: auto;
+  min-height: 34px;
+  margin: 0 0 22px;
+  padding: 0 4px;
+  border: 1px solid #d7dadd;
+  border-radius: 4px;
+  background: #fff;
+  color: #30363b;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.nx-access-devices-page > .nx-access-back:hover { border-color: #adb2b6; background: #f8f9f9; }
+.nx-access-devices-page .nx-access-devices-inner { width: 100%; margin: 0; }
+.nx-access-hero { margin: 0 0 26px; text-align: center; }
+.nx-access-manage-icon { display: block; width: 250px; height: auto; margin: -18px auto -2px; }
+.nx-access-hero h1 { margin: 0 0 9px; color: #15191d; font-size: 34px; font-weight: 700; line-height: 1.2; }
+.nx-access-hero p { max-width: 760px; margin: 0 auto; color: #50565b; font-size: 15px; line-height: 1.55; }
+.nx-access-hero p button {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.nx-access-devices-page .nx-access-device-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+.nx-access-devices-page .nx-access-device {
+  min-width: 0;
+  border: 1px solid #dfe1e2;
+  border-radius: 7px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.nx-access-devices-page .nx-access-device-head {
+  min-height: 66px;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: default;
+}
+.nx-access-devices-page .nx-access-device-head:hover { background: #fff; }
+.nx-access-devices-page .nx-access-device-symbol { flex-basis: 21px; }
+.nx-access-devices-page .nx-access-device-symbol svg { width: 21px; height: 21px; }
+.nx-access-devices-page .nx-access-device-symbol img { width: 21px; height: 21px; }
+.nx-access-devices-page .nx-access-device-title { overflow-wrap: anywhere; font-size: 15px; font-weight: 600; line-height: 1.35; }
+.nx-access-devices-page .nx-access-current-badge { flex: 0 0 auto; padding: 5px 7px; font-size: 9px; }
+.nx-access-devices-page .nx-access-current-badge.is-selected { background: #eef0f2; color: #596168; }
+.nx-access-devices-page .nx-access-device-details {
+  display: grid;
+  gap: 8px;
+  min-height: 62px;
+  padding: 12px 16px;
+  border-top-color: #eceeef;
+  animation: none;
+}
+.nx-access-device-detail-row { display: flex; align-items: center; gap: 8px; min-width: 0; color: #656b70; font-size: 13px; line-height: 18px; }
+.nx-access-device-detail-row svg { flex: 0 0 auto; color: #747a7f; }
+.nx-access-device-detail-row span { overflow-wrap: anywhere; }
+.nx-access-devices-page .nx-access-note {
+  margin-top: 24px;
+  padding-top: 0;
+  border-top: 0;
+  color: #656b70;
+  font-size: 13px;
+  text-align: left;
+}
+
+@media (max-width: 720px) {
+  .nx-access-devices-page > .nx-access-back { margin-bottom: 16px; }
+  .nx-access-manage-icon { width: 220px; }
+  .nx-access-hero { margin-bottom: 20px; }
+  .nx-access-hero h1 { font-size: 29px; }
+  .nx-access-hero p { font-size: 14px; }
+  .nx-access-devices-page .nx-access-device-list { grid-template-columns: 1fr; gap: 10px; }
+  .nx-access-devices-page .nx-access-device-head { min-height: 70px; }
+  .nx-access-devices-page .nx-access-device-title { font-size: 14px; }
+}
+@media (max-width: 360px) {
+  .nx-access-hero h1 { font-size: 25px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-access-devices-page { animation: none; }
+}

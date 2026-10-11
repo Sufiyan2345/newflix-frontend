@@ -10,16 +10,16 @@
   margin-top: calc(-1 * var(--sf-row-overlap));
   transform: translateY(-24px);
 }
-.rows { position: relative; z-index: 10; margin-top: 0; display: flex; flex-direction: column; gap: 28px; padding-bottom: 60px; background: var(--sf-black, #000); }
+.rows { position: relative; z-index: 10; margin-top: 0; display: flex; flex-direction: column; gap: 40px; padding-bottom: 60px; background: var(--sf-black, #000); }
 .new-popular-rows { margin-top: 26px; }
 .row { position: relative; }
-.row-header { display: flex; align-items: baseline; justify-content: space-between; padding: 0 var(--sf-gutter, 48px); margin-bottom: 10px; }
+.row-header { display: flex; align-items: center; justify-content: space-between; padding: 0 var(--sf-gutter, 48px); margin-bottom: 14px; min-height: 30px; }
 .row-header-actions { display: flex; align-items: center; gap: 14px; }
 .row-page-indicators { display: flex; align-items: center; gap: 4px; }
 .row-page-indicator { width: 24px; height: 2px; padding: 0; border: 0; background: #555; cursor: pointer; transition: background-color .18s; }
 .row-page-indicator.active { background: #fff; }
 .row-page-indicator:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
-.row-title { font-size: 20px; font-weight: 700; letter-spacing: -.2px; text-shadow: 0 2px 10px rgba(0,0,0,.75); }
+.row-title { font-size: clamp(20px, 1.55vw, 23px); font-weight: 700; line-height: 1.25; letter-spacing: -.2px; text-shadow: 0 2px 10px rgba(0,0,0,.75); }
 /* The rail is a horizontal scroll box, so `overflow-x:auto` also clips vertically
    (overflow-y computes to auto). --sf-scale-pad reserves symmetric headroom so the
    hovered tile can grow to --sf-card-scale without its top/bottom being cut off, and
@@ -370,6 +370,56 @@
 .browse-page { min-height: 100vh; background: #000; padding: calc(var(--nav-h, 68px) + 26px) 0 80px; }
 .browse-page-with-hero { padding-top: 12px; }
 .browse-heading { padding: 0 56px; font-size: 26px; font-weight: 700; margin: 0 0 22px; }
+.browse-catalog-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 56px 22px; }
+.browse-catalog-heading { display: flex; align-items: center; gap: 18px; min-width: 0; }
+.browse-catalog-toolbar .browse-heading { padding: 0; margin: 0; line-height: 1.2; white-space: nowrap; }
+.browse-genre-select { position: relative; display: inline-flex; align-items: center; min-width: 112px; }
+.browse-genre-select select { appearance: none; width: 100%; min-height: 36px; padding: 7px 32px 7px 12px; border: 1px solid rgba(255,255,255,.62); border-radius: 2px; background: rgba(15,15,15,.92); color: #fff; font: inherit; font-size: 14px; cursor: pointer; }
+.browse-genre-select select:hover, .browse-genre-select select:focus-visible { border-color: #fff; outline: none; }
+.browse-genre-select option { background: #111; color: #fff; }
+.browse-genre-select svg { position: absolute; right: 11px; width: 12px; height: 8px; fill: none; stroke: currentColor; stroke-width: 1.5; pointer-events: none; }
+.browse-view-toggle { display: inline-flex; flex: 0 0 auto; border: 1px solid rgba(255,255,255,.55); border-radius: 2px; overflow: hidden; }
+.browse-view-toggle button { display: grid; place-items: center; width: 40px; height: 36px; border: 0; background: rgba(15,15,15,.9); color: #c5c5c5; cursor: pointer; }
+.browse-view-toggle button + button { border-left: 1px solid rgba(255,255,255,.35); }
+.browse-view-toggle button.active { background: rgba(255,255,255,.18); color: #fff; }
+.browse-view-toggle button:hover { color: #fff; }
+.browse-view-toggle button:focus-visible { outline: 2px solid var(--sf-red); outline-offset: -2px; }
+.browse-view-toggle svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.browse-view-toggle button:nth-child(2) svg { fill: currentColor; stroke: none; }
+.browse-results-grid { padding: 0 56px; }
+.browse-results-list { display: flex; flex-direction: column; gap: 10px; padding: 0 56px; }
+.browse-results-list-item { display: flex; align-items: center; gap: 18px; width: 100%; min-height: 94px; padding: 10px 14px; border: 1px solid rgba(255,255,255,.12); border-radius: 4px; background: #101010; color: #fff; text-align: left; cursor: pointer; }
+.browse-results-list-item:hover, .browse-results-list-item:focus-visible { border-color: rgba(255,255,255,.48); background: #181818; outline: none; }
+.browse-results-list-item .browse-results-list-art,
+.browse-results-list-item .card-art-placeholder { flex: 0 0 132px; width: 132px; height: auto; aspect-ratio: 16 / 9; border-radius: 3px; background: #222; object-fit: cover; }
+.browse-results-list-copy { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.browse-results-list-copy b { font-size: 16px; }
+.browse-results-list-copy > span { color: #aaa; font-size: 13px; }
+.browse-results-list-copy .browse-results-list-description { display: -webkit-box; overflow: hidden; color: #d3d3d3; line-height: 1.45; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.browse-page .browse-skeleton-grid { margin: 0 56px; }
+@media (max-width: 768px) {
+  .browse-catalog-toolbar { margin-right: 16px; margin-left: 16px; gap: 10px; }
+  .browse-catalog-heading { gap: 10px; }
+  .browse-catalog-toolbar .browse-heading { font-size: clamp(19px, 5vw, 24px); }
+  .browse-genre-select { min-width: 92px; }
+  .browse-genre-select select { min-height: 34px; padding-left: 8px; font-size: 12px; }
+  .browse-view-toggle button { width: 34px; height: 34px; }
+  .browse-results-grid, .browse-results-list { padding-right: 16px; padding-left: 16px; }
+  .browse-results-list-item { gap: 12px; padding: 8px; }
+  .browse-results-list-item .browse-results-list-art,
+  .browse-results-list-item .card-art-placeholder { flex-basis: 108px; width: 108px; }
+  .browse-results-list-copy b { font-size: 14px; }
+  .browse-results-list-copy .browse-results-list-description { font-size: 12px; }
+  .browse-page .browse-skeleton-grid { margin-right: 16px; margin-left: 16px; }
+}
+@media (max-width: 390px) {
+  .browse-catalog-toolbar { margin-right: 12px; margin-left: 12px; gap: 7px; }
+  .browse-catalog-heading { gap: 7px; }
+  .browse-catalog-toolbar .browse-heading { font-size: 18px; }
+  .browse-genre-select { min-width: 82px; }
+  .browse-genre-select select { padding-right: 24px; font-size: 11px; }
+  .browse-view-toggle button { width: 30px; }
+}
 
 .card-chip { position: absolute; top: 8px; right: 8px; z-index: 3; background: rgba(0,0,0,.72); color: #fff; font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 3px; letter-spacing: .2px; }
 
@@ -504,12 +554,12 @@
 /* The scrim. The whole overlay scrolls (Netflix scrolls the modal, not the page
    behind it) and `overscroll-behavior` stops the chained scroll from dragging the
    page underneath once the modal hits its own end. */
-.tmdb-modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.7); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; animation: tmdb-overlay-in .2s ease-out; }
+.tmdb-modal-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,.62); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; animation: tmdb-overlay-in .2s ease-out; }
 @keyframes tmdb-overlay-in { from { opacity: 0; } to { opacity: 1; } }
 /* Soft-edged frame: 8px corners all round, a 1px rim so the panel reads as a
    card against the black scrim, and Netflix's own #181818 surface. `overflow:
    hidden` clips the hero's top corners to the same radius. */
-.tmdb-modal { position: relative; width: min(850px, 94vw); margin: 40px auto 60px; background: #181818; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,.8); animation: tmdb-in .3s cubic-bezier(.2,.8,.3,1); }
+.tmdb-modal { position: relative; width: min(850px, 94vw); margin: 40px auto 60px; background: rgba(10,10,10,.76); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-radius: 8px; border: 1px solid rgba(255,255,255,.12); overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,.8); animation: tmdb-in .3s cubic-bezier(.2,.8,.3,1); }
 /* ZOOM-OUT: the panel scales down from 0.92 and settles at full size, the way
    Netflix grows a title out of the card that was clicked. */
 @keyframes tmdb-in { from { opacity: 0; transform: scale(.92) translateY(12px); } to { opacity: 1; transform: scale(1) translateY(0); } }
@@ -539,10 +589,8 @@
 .tmdb-hero-audio { position: absolute; z-index: 5; right: 20px; bottom: 20px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.52); border-radius: 50%; background: rgba(20,20,20,.58); color: #fff; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 3px 12px rgba(0,0,0,.35); transition: background .18s ease, border-color .18s ease, transform .18s ease; }
 .tmdb-hero-audio:hover { background: rgba(20,20,20,.88); border-color: #fff; transform: scale(1.06); }
 .tmdb-hero-audio:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-/* Bottom scrim so the logo and controls always read against the art, plus a
-   faint top vignette behind the close button. Solid #181818 at the very floor
-   hands straight off to the modal body with no seam. */
-.tmdb-hero-shade { position: absolute; z-index: 1; inset: 0; background: linear-gradient(to top, #181818 0%, rgba(24,24,24,.92) 8%, rgba(24,24,24,.4) 28%, rgba(24,24,24,0) 58%), linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,0) 22%); pointer-events: none; }
+/* Fade to black behind the hero controls and blend the bottom edge into the modal body. */
+.tmdb-hero-shade { position: absolute; z-index: 1; inset: 0; background: linear-gradient(to top, #000 0%, rgba(0,0,0,.92) 8%, rgba(0,0,0,.4) 28%, rgba(0,0,0,0) 58%), linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,0) 22%); pointer-events: none; }
 .tmdb-hero-body { position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; padding: 0 48px 30px; }
 /* The transparent title logo Netflix paints on the backdrop, with a text
    fallback when TMDB ships no logo. */
@@ -564,11 +612,15 @@
 .tmdb-like-btn.on { background: #fff; color: #111; }
 .tmdb-list-btn.pulse { animation: tmdb-action-pulse .3s ease; }
 @keyframes tmdb-action-pulse { 0% { transform: scale(1); } 45% { transform: scale(1.18); } 100% { transform: scale(1); } }
-.tmdb-toast { position: fixed; left: 50%; top: 86px; z-index: 500; transform: translateX(-50%); max-width: min(320px, calc(100vw - 32px)); padding: 9px 15px; border-radius: 4px; background: rgba(24,24,24,.96); border: 1px solid rgba(255,255,255,.2); box-shadow: 0 8px 24px rgba(0,0,0,.55); color: #fff; font-size: 13px; font-weight: 600; text-align: center; animation: tmdb-toast-in .2s ease-out; }
-@keyframes tmdb-toast-in { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.tmdb-toast { position: fixed; top: 102px; right: 0; bottom: auto; left: auto; z-index: 2147483647; transform: none; width: max-content; min-width: min(260px, calc(100vw - 24px)); max-width: min(360px, calc(100vw - 24px)); box-sizing: border-box; padding: 10px 24px 10px 26px; border: 0; border-left: 8px solid #e50914; border-radius: 0; background: rgba(24,24,24,.98); box-shadow: 0 8px 24px rgba(0,0,0,.6); color: #fff; font-size: 20px; font-weight: 700; line-height: 1.35; text-align: left; pointer-events: none; animation: tmdb-toast-in .2s ease-out; }
+@keyframes tmdb-toast-in { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
 
 .tmdb-info { display: flex; align-items: flex-start; gap: 28px; padding: 14px 16px 10px; }
 .tmdb-col-main { flex: 1.7; min-width: 0; }
+.tmdb-top10-line { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; color: #f5f5f5; font-size: 14px; line-height: 1.2; }
+.tmdb-top10-sticker { display: flex; flex: 0 0 24px; flex-direction: column; align-items: center; justify-content: center; width: 24px; height: 24px; background: #e50914; color: #fff; font-size: 8px; font-weight: 900; line-height: .92; box-shadow: 0 1px 3px rgba(0,0,0,.45); }
+.tmdb-top10-sticker b { display: block; }
+.tmdb-top10-line strong { font-weight: 700; }
 .tmdb-info-meta { margin-bottom: 28px; }
 .tmdb-col-side { flex: 1; min-width: 0; font-size: 14px; color: #fff; }
 .tmdb-col-side p { margin: 0 0 10px; line-height: 1.45; }
@@ -581,6 +633,10 @@
 .tmdb-content-tags .age { border: 1px solid rgba(255,255,255,.45); padding: 1px 6px; border-radius: 2px; font-size: 12px; }
 .tmdb-content-tags > span:not(.age) { color: #ddd; }
 .tmdb-desc { font-size: 15.5px; line-height: 1.55; color: #fff; margin: 0; }
+.tmdb-featured-episode { margin-top: 28px; color: #fff; }
+.tmdb-featured-episode h3 { margin: 0 0 16px; font-size: 20px; line-height: 1.3; font-weight: 700; }
+.tmdb-featured-episode-title { margin: 0 0 16px; font-size: 16px; line-height: 1.4; font-weight: 700; }
+.tmdb-featured-episode-description { margin: 0; font-size: 14px; line-height: 1.5; color: #d0d0d0; }
 .tmdb-languages { display: flex; gap: 24px; align-items: flex-end; overflow-x: auto; padding: 0 40px 12px; border-bottom: 1px solid #2c2c2c; scrollbar-width: none; }
 .tmdb-languages::-webkit-scrollbar { display: none; }
 .tmdb-languages button { position: relative; flex: 0 0 auto; padding: 10px 0 11px; border: 0; background: transparent; color: #999; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -622,7 +678,7 @@
 .tmdb-ep { display: flex; align-items: center; gap: 16px; padding: 12px 0; border: 0; border-bottom: 1px solid #2c2c2c; background: transparent; color: #fff; text-align: left; width: 100%; cursor: pointer; font: inherit; transition: background .15s, padding .15s; }
 .tmdb-ep:hover, .tmdb-ep:focus-visible { background: #1c1c1c; padding-left: 8px; padding-right: 8px; outline: none; }
 .tmdb-ep:focus-visible { box-shadow: inset 0 0 0 2px #fff; }
-.tmdb-ep-num { width: 30px; font-size: 20px; color: #ccc; text-align: center; flex-shrink: 0; }
+.tmdb-ep-num { width: 30px; font-size: 20px; font-weight: 800; color: #ccc; text-align: center; flex-shrink: 0; }
 .tmdb-ep-thumb { position: relative; width: 140px; height: 79px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: #222; display: block; }
 .tmdb-ep-thumb img, .tmdb-ep-art-fallback { width: 100%; height: 100%; object-fit: cover; display: block; }
 .tmdb-ep-art-fallback { display: flex; align-items: center; justify-content: center; padding: 8px; text-align: center; font-size: 11px; color: #aaa; background: linear-gradient(135deg, #2b2b2b, #141414); }
@@ -640,14 +696,16 @@
 .tmdb-mlt { padding: 24px 40px 34px; }
 .tmdb-mlt h3 { font-size: 21px; font-weight: 700; margin: 0 0 16px; }
 .tmdb-mlt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.tmdb-mlt-card { position: relative; background: #2f2f2f; border-radius: 6px; overflow: hidden; cursor: pointer; transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
-.tmdb-mlt-card:hover { transform: translateY(-3px); background: #3a3a3a; box-shadow: 0 12px 26px rgba(0,0,0,.6); }
+.tmdb-mlt-card { position: relative; background: rgba(15,15,15,.64); border: 1px solid rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+.tmdb-mlt-card:hover { transform: translateY(-3px); background: rgba(22,22,22,.82); box-shadow: 0 12px 26px rgba(0,0,0,.6); }
 .tmdb-mlt-art { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px 6px 0 0; background: #222; }
 .tmdb-mlt-art > img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.tmdb-mlt-chip { position: absolute; top: 10px; right: 10px; padding: 3px 8px; border-radius: 3px; background: rgba(0,0,0,.78); color: #fff; font-size: 12px; }
-.tmdb-mlt-body { padding: 12px 14px 16px; }
+.tmdb-mlt-art > .tmdb-mlt-brand-mark { position: absolute; z-index: 3; top: 8px; left: 12px; width: auto; height: 22px; object-fit: contain; filter: drop-shadow(0 1px 4px rgba(0,0,0,.7)); }
+.tmdb-mlt-ribbon { position: absolute; z-index: 4; left: 0; bottom: 0; padding: 4px 8px; background: #e50914; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: .04em; line-height: 1.2; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0,0,0,.45); }
+.tmdb-mlt-ribbon.episode { padding: 4px 9px; }
+.tmdb-mlt-body { padding: 12px 14px 16px; background: rgba(10,10,10,.34); }
 .tmdb-mlt-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tmdb-mlt-meta { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #ddd; margin-bottom: 8px; }
+.tmdb-mlt-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; font-size: 12.5px; color: #ddd; margin-bottom: 8px; }
 .tmdb-mlt-meta .match { color: #46d369; font-weight: 700; }
 .tmdb-mlt-meta .age { border: 1px solid rgba(255,255,255,.4); padding: 0 6px; border-radius: 2px; font-size: 11.5px; }
 .tmdb-mlt-add { margin-left: auto; width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%; background: rgba(42,42,42,.6); border: 2px solid rgba(255,255,255,.55); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -683,6 +741,9 @@
   .tmdb-info { flex-direction: column; gap: 10px; }
   .tmdb-info-meta { margin-bottom: 20px; }
   .tmdb-content-tags { margin-bottom: 20px; }
+  .tmdb-featured-episode { margin-top: 22px; }
+  .tmdb-featured-episode h3 { margin-bottom: 12px; font-size: 18px; }
+  .tmdb-featured-episode-title { margin-bottom: 12px; font-size: 15px; }
   .tmdb-bottom-details { padding-left: 18px; padding-right: 18px; }
   .tmdb-bottom-detail-row { grid-template-columns: 82px minmax(0, 1fr); gap: 8px; }
   .tmdb-bottom-details-content h2 { margin-bottom: 22px; font-size: 20px; }

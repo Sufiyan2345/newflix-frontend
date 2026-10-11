@@ -124,13 +124,13 @@
   .hero-seg::before { content: ''; position: absolute; left: 0; right: 0; bottom: 7px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.48); }
   .hero-seg.active::after { inset: auto 0 7px; height: 3px; border-radius: 2px; }
   .rows { margin-top: -40px; }
-  .row-header { padding-left: 16px; padding-right: 16px; margin-bottom: 9px; }
-  .row-title { font-size: 17px; line-height: 1.25; }
+  .row-header { padding-left: 16px; padding-right: 16px; margin-bottom: 12px; min-height: 26px; }
+  .row-title { font-size: clamp(17px, 4.6vw, 19px); line-height: 1.3; }
   .row-explore { opacity: 1; }
   .row-slider { gap: 10px; margin-left: 16px; margin-right: 16px; padding-bottom: 14px; scroll-snap-type: x proximity; overscroll-behavior-inline: contain; }
   .row-slider > .card, .row-slider > .card-top10 { scroll-snap-align: start; }
   .row-arrow { display: none; }
-  .rows { gap: 22px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .rows { gap: 30px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
   .genre-showcase { padding: 20px 16px 10px; }
   .genre-showcase-head h2 { font-size: 18px; }
   .genre-showcase-grid { gap: 10px; }
@@ -215,7 +215,7 @@
   .tmdb-ep-info p { font-size: 11px; -webkit-line-clamp: 2; }
   .tmdb-languages { padding-left: 18px; padding-right: 18px; gap: 18px; }
   .tmdb-languages button { font-size: 13px; }
-  .tmdb-toast { top: 70px; font-size: 12px; }
+  .tmdb-toast { top: calc(70px + env(safe-area-inset-top)); right: 0; left: auto; min-width: min(220px, calc(100vw - 16px)); max-width: calc(100vw - 16px); padding: 10px 16px 10px 18px; font-size: 17px; }
 }
 @media (max-width: 600px) {
   .search-result-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
