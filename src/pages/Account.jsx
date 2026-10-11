@@ -1082,7 +1082,8 @@ export default function Account() {
 
         <main className="nx-account-content">
           {section === 'membership' ? <MembershipView user={user} latestPayment={latestPayment} payments={payments} nav={nav} formatDate={formatDate} formatAmount={formatAmount} /> : <>
-          <h1 className="nx-account-page-title">Membership Details</h1>
+          <h1 className="nx-account-page-title">Account</h1>
+          <p className="nx-account-page-subtitle">Membership Details</p>
 
           <section className="nx-account-card nx-membership-card" id="membership">
             <div className="nx-membership-ribbon">Member since {formatDate(user?.createdAt).replace(/\d{4}$/, (year) => year)}</div>
