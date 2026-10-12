@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { API } from '../api';
 import { useAuth } from '../context/AuthContext';
-import { IconAudio, IconCaret, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCreditCardLine, IconDevicesLine, IconDownloadLine, IconFlaskLine, IconHomeLine, IconInfo, IconLockLine, IconMailLine, IconPersonAccessLine, IconPhoneLine, IconSettings, IconShieldCheckLine, IconTransferLine, IconTvLine, IconUsers, IconWarningTriangleLine } from '../components/Icons';
+import { IconAudio, IconBell, IconCaret, IconCheck, IconChevronLeft, IconChevronRight, IconClock, IconCreditCardLine, IconDevicesLine, IconDownloadLine, IconFilmLine, IconFlaskLine, IconHomeLine, IconInfo, IconLockLine, IconMailLine, IconPersonAccessLine, IconPhoneLine, IconSettings, IconShieldCheckLine, IconSparklesLine, IconTransferLine, IconTvLine, IconUsers, IconWarningTriangleLine } from '../components/Icons';
+import { showActionToast } from '../utils/actionToast';
 
 const formatDate = (value) => value
   ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(value))
@@ -11,6 +12,141 @@ const formatDate = (value) => value
 const formatAmount = (payment) => payment
   ? `${payment.currency || 'PKR'} ${Number(payment.amount || 0).toLocaleString()}`
   : 'No payment recorded';
+
+function AccountProfileMenu({ nav, closeMenu, logout }) {
+  const navigateTo = (path) => {
+    closeMenu();
+    nav(path);
+  };
+
+  return (
+    <div className="nx-account-profile-menu" role="menu" aria-label="Profile menu">
+      <button type="button" className="nx-account-profile-menu-back" role="menuitem" onClick={() => navigateTo('/browse')}>
+        <IconChevronLeft size={19} />
+        <span>Back to Netflix</span>
+      </button>
+      <button type="button" className="nx-account-profile-menu-item" role="menuitem" onClick={() => navigateTo('/account')}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M5 20v-1a7 7 0 0 1 14 0v1" /></svg>
+        <span>Account</span>
+      </button>
+      <button type="button" className="nx-account-profile-menu-item" role="menuitem" onClick={() => navigateTo('/account?section=profiles')}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5-.8 4.3 4.3-.8L20 7.5 16.5 4 4 16.5Zm11.1-11.1 3.5 3.5" /></svg>
+        <span>Manage Profiles</span>
+      </button>
+      <button type="button" className="nx-account-profile-menu-item" role="menuitem" onClick={() => navigateTo('/p/help-center')}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.6 9a2.5 2.5 0 1 1 4.6 1.4c-.8 1-2.2 1.2-2.2 2.8M12 16.7h.01" /></svg>
+        <span>Help Center</span>
+        <svg className="nx-account-profile-external" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 5h6v6M19 5l-9 9M18 13v5H6V6h5" /></svg>
+      </button>
+      <div className="nx-account-profile-menu-divider" />
+      <button type="button" className="nx-account-profile-menu-item" role="menuitem" onClick={() => navigateTo('/profiles')}>
+        <IconUsers size={20} />
+        <span>Switch Profile</span>
+        <IconChevronRight size={19} className="nx-account-profile-menu-chevron" />
+      </button>
+      <div className="nx-account-profile-menu-divider" />
+      <button type="button" className="nx-account-profile-menu-item nx-account-profile-menu-signout" role="menuitem" onClick={async () => {
+        closeMenu();
+        await logout();
+        nav('/logout');
+      }}>
+        <span>Sign out</span>
+      </button>
+    </div>
+  );
+}
+
+function AccountHeader({ avatar, nav, logout }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const handlePointerDown = (event) => {
+      if (!menuRef.current?.contains(event.target)) setMenuOpen(false);
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen]);
+
+  return (
+    <header className="nx-account-header nx-security-header nx-shared-account-header">
+      <div className="nx-security-topbar">
+        <button type="button" className="nx-security-logo-button" onClick={() => nav('/browse')} aria-label="Newflix home">
+          <img src="/newflix.png" alt="Newflix" className="nx-account-logo" />
+        </button>
+        <div className="nx-account-profile-wrap" ref={menuRef}>
+          <button
+            type="button"
+            className="nx-account-profile"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+            aria-label="Open profile menu"
+          >
+            <img src={avatar} alt="Current profile" /><IconCaret size={11} />
+          </button>
+          {menuOpen && <AccountProfileMenu nav={nav} closeMenu={() => setMenuOpen(false)} logout={logout} />}
+        </div>
+      </div>
+    </header>
+  );
+}
+
+const DEFAULT_SUBTITLE_APPEARANCE = {
+  font: 'casual',
+  size: 'medium',
+  shadow: 'drop',
+  textColor: '#ffffff',
+  backgroundColor: '#000000',
+  backgroundTransparent: false,
+  windowColor: '#000000',
+  windowTransparent: true,
+};
+
+const DEFAULT_NOTIFICATION_PREFERENCES = {
+  email: true,
+  text: true,
+  push: true,
+  watch: true,
+  recommendations: true,
+  surveys: true,
+  games: false,
+  shop: false,
+  usingApp: false,
+  membershipOffers: true,
+  accountUpdates: true,
+};
+
+const readSubtitleAppearance = (profileId) => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(`sf_subtitle_appearance_${profileId}`) || 'null');
+    const legacyScale = localStorage.getItem(`sf_subtitle_scale_${profileId}`);
+    const legacySize = legacyScale === '75' ? 'small' : legacyScale === '125' ? 'large' : 'medium';
+    if (!saved || typeof saved !== 'object') return { ...DEFAULT_SUBTITLE_APPEARANCE, size: legacySize };
+    return {
+      ...DEFAULT_SUBTITLE_APPEARANCE,
+      ...saved,
+      size: ['small', 'medium', 'large'].includes(saved.size) ? saved.size : legacySize,
+      font: ['casual', 'serif', 'monospace'].includes(saved.font) ? saved.font : 'casual',
+      shadow: ['none', 'drop', 'raised', 'uniform'].includes(saved.shadow) ? saved.shadow : 'drop',
+      textColor: /^#[\da-f]{6}$/i.test(saved.textColor || '') ? saved.textColor : '#ffffff',
+      backgroundColor: /^#[\da-f]{6}$/i.test(saved.backgroundColor || '') ? saved.backgroundColor : '#000000',
+      windowColor: /^#[\da-f]{6}$/i.test(saved.windowColor || '') ? saved.windowColor : '#000000',
+      backgroundTransparent: Boolean(saved.backgroundTransparent),
+      windowTransparent: saved.windowTransparent !== false,
+    };
+  } catch {
+    return { ...DEFAULT_SUBTITLE_APPEARANCE };
+  }
+};
 
 function AccountRow({ icon, title, description, badge, onClick }) {
   return (
@@ -150,34 +286,14 @@ function SecurityRow({ icon, title, detail, status, badge, onClick }) {
   );
 }
 
-function SecurityView({ user, avatar, nav, logout, profileMenuOpen, setProfileMenuOpen }) {
+function SecurityView({ user, avatar, nav, logout }) {
   const [featureTesting, setFeatureTesting] = useState(true);
   const phoneVerified = Boolean(user?.isPhoneVerified || user?.phoneVerified);
   const emailVerified = Boolean(user?.isEmailVerified);
 
   return (
     <div className="nx-account-page nx-security-page">
-      <header className="nx-account-header nx-security-header">
-        <div className="nx-security-topbar">
-          <button type="button" className="nx-security-logo-button" onClick={() => nav('/browse')} aria-label="Netflix home">
-            <img src="/newflix.png" alt="Netflix" className="nx-account-logo" />
-          </button>
-          <div className="nx-account-profile-wrap">
-            <button type="button" className="nx-account-profile" onClick={() => setProfileMenuOpen((open) => !open)} aria-expanded={profileMenuOpen} aria-label="Open profile menu">
-              <img src={avatar} alt="Current profile" /><IconCaret size={11} />
-            </button>
-            {profileMenuOpen && (
-              <div className="nx-account-profile-menu">
-                <div className="nx-account-profile-menu-user"><img src={avatar} alt="" /><span>{user?.name || 'Profile'}<small>{user?.email}</small></span></div>
-                <button type="button" onClick={() => nav('/account')}>Account</button>
-                <button type="button" onClick={() => nav('/account?section=profiles')}>Manage profiles</button>
-                <button type="button" onClick={() => nav('/profiles')}>Switch profile</button>
-                <button type="button" className="is-danger" onClick={async () => { await logout(); nav('/logout'); }}>Sign out</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      <AccountHeader avatar={avatar} nav={nav} logout={logout} />
 
       <div className="nx-security-shell">
         <aside className="nx-account-sidebar nx-security-sidebar" aria-label="Account sections">
@@ -285,16 +401,7 @@ function ChangePasswordView({ user, avatar, nav, logout }) {
 
   return (
     <div className="nx-account-page nx-security-page nx-profile-detail-page nx-change-password-page">
-      <header className="nx-account-header nx-security-header">
-        <div className="nx-security-topbar">
-          <button type="button" className="nx-security-logo-button" onClick={() => nav('/browse')} aria-label="Newflix home">
-            <img src="/newflix.png" alt="Newflix" className="nx-account-logo" />
-          </button>
-          <button type="button" className="nx-account-profile" onClick={() => nav('/account?section=security')} aria-label="Back to Security">
-            <img src={avatar} alt="Current profile" /><IconCaret size={11} />
-          </button>
-        </div>
-      </header>
+      <AccountHeader avatar={avatar} nav={nav} logout={logout} />
       <main className="nx-change-password-main">
         <button type="button" className="nx-profile-settings-back" onClick={() => nav('/account?section=security')} aria-label="Back to Security"><IconChevronLeft size={21} /></button>
         <section className="nx-change-password-content">
@@ -334,7 +441,7 @@ function ChangePasswordView({ user, avatar, nav, logout }) {
   );
 }
 
-function DevicesView({ user, avatar, profileName, nav, logout, profileMenuOpen, setProfileMenuOpen }) {
+function DevicesView({ user, avatar, profileName, nav, logout }) {
   const downloadLimit = ({ mobile: 1, basic: 1, standard: 2, premium: 6 })[user?.signupPlan] || 1;
   const [accessOpen, setAccessOpen] = useState(false);
   const selectedDevices = Array.isArray(user?.onboarding?.devices) ? user.onboarding.devices : [];
@@ -374,27 +481,7 @@ function DevicesView({ user, avatar, profileName, nav, logout, profileMenuOpen, 
 
   return (
     <div className="nx-account-page nx-security-page nx-devices-page">
-          <header className="nx-account-header nx-security-header">
-            <div className="nx-security-topbar">
-              <button type="button" className="nx-security-logo-button" onClick={() => nav('/browse')} aria-label="Newflix home">
-                <img src="/newflix.png" alt="Newflix" className="nx-account-logo" />
-              </button>
-              <div className="nx-account-profile-wrap">
-                <button type="button" className="nx-account-profile" onClick={() => setProfileMenuOpen((open) => !open)} aria-expanded={profileMenuOpen} aria-label="Open profile menu">
-                  <img src={avatar} alt="Current profile" /><IconCaret size={11} />
-                </button>
-                {profileMenuOpen && (
-                  <div className="nx-account-profile-menu">
-                    <div className="nx-account-profile-menu-user"><img src={avatar} alt="" /><span>{user?.name || 'Profile'}<small>{user?.email}</small></span></div>
-                    <button type="button" onClick={() => nav('/account')}>Account</button>
-                    <button type="button" onClick={() => nav('/account?section=profiles')}>Manage profiles</button>
-                    <button type="button" onClick={() => nav('/profiles')}>Switch profile</button>
-                    <button type="button" className="is-danger" onClick={async () => { await logout(); nav('/logout'); }}>Sign out</button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </header>
+          <AccountHeader avatar={avatar} nav={nav} logout={logout} />
 
           <div className="nx-security-shell nx-devices-shell">
             <aside className="nx-account-sidebar nx-security-sidebar" aria-label="Account sections">
@@ -504,37 +591,59 @@ function DevicesView({ user, avatar, profileName, nav, logout, profileMenuOpen, 
 }
 
 const PROFILE_MATURITY_OPTIONS = [
-  { value: 'ALL', label: 'All maturity ratings' },
+  { value: 'ALL', label: 'All' },
   { value: '7+', label: '7+' },
+  { value: '10+', label: '10+' },
   { value: '13+', label: '13+' },
   { value: '16+', label: '16+' },
   { value: '18+', label: '18+' },
 ];
 
 const PROFILE_LANGUAGES = [
+  { value: 'da', label: 'Dansk' },
+  { value: 'de', label: 'Deutsch' },
   { value: 'en', label: 'English' },
-  { value: 'ur', label: 'Urdu' },
+  { value: 'en-GB', label: 'English (United Kingdom)' },
   { value: 'es', label: 'Español' },
+  { value: 'es-ES', label: 'Español (España)' },
+  { value: 'fil', label: 'Filipino' },
+  { value: 'fi', label: 'Suomi' },
   { value: 'fr', label: 'Français' },
+  { value: 'he', label: 'עברית' },
+  { value: 'hi', label: 'हिन्दी' },
+  { value: 'id', label: 'Bahasa Indonesia' },
   { value: 'it', label: 'Italiano' },
   { value: 'ja', label: '日本語' },
+  { value: 'ko', label: '한국어' },
+  { value: 'ms', label: 'Bahasa Melayu' },
+  { value: 'nl', label: 'Nederlands' },
+  { value: 'no', label: 'Norsk' },
+  { value: 'pl', label: 'Polski' },
+  { value: 'pt', label: 'Português' },
+  { value: 'pt-BR', label: 'Português (Brasil)' },
+  { value: 'ro', label: 'Română' },
+  { value: 'ru', label: 'Русский' },
+  { value: 'sv', label: 'Svenska' },
+  { value: 'th', label: 'ไทย' },
+  { value: 'tr', label: 'Türkçe' },
+  { value: 'uk', label: 'Українська' },
+  { value: 'ur', label: 'اردو' },
+  { value: 'vi', label: 'Tiếng Việt' },
+  { value: 'zh', label: '中文' },
 ];
+const normalizeProfileLanguage = (value) => {
+  const normalized = String(value || '').toLocaleLowerCase();
+  const legacyLanguage = PROFILE_LANGUAGES.find((item) => item.label.toLocaleLowerCase() === normalized);
+  return PROFILE_LANGUAGES.some((item) => item.value.toLocaleLowerCase() === normalized)
+    ? PROFILE_LANGUAGES.find((item) => item.value.toLocaleLowerCase() === normalized).value
+    : legacyLanguage?.value || 'en';
+};
 
 function ProfileAccountShell({ avatar, nav, section, children }) {
+  const { logout } = useAuth();
   return (
     <div className="nx-account-page nx-security-page nx-devices-page nx-profiles-account-page">
-      <header className="nx-account-header nx-security-header">
-        <div className="nx-security-topbar">
-          <button type="button" className="nx-security-logo-button" onClick={() => nav('/browse')} aria-label="Newflix home">
-            <img src="/newflix.png" alt="Newflix" className="nx-account-logo" />
-          </button>
-          <div className="nx-account-profile-wrap">
-            <button type="button" className="nx-account-profile" aria-label="Current profile">
-              <img src={avatar} alt="Current profile" /><IconCaret size={11} />
-            </button>
-          </div>
-        </div>
-      </header>
+      <AccountHeader avatar={avatar} nav={nav} logout={logout} />
       <div className="nx-security-shell nx-devices-shell nx-profiles-shell">
         <aside className="nx-account-sidebar nx-security-sidebar" aria-label="Account sections">
           <button className="nx-security-back" type="button" onClick={() => nav('/browse')}><IconChevronLeft size={16} /> Back to Netflix</button>
@@ -605,19 +714,38 @@ function ProfileCodeFields({ count, value, onChange, label }) {
 function AccountProfilesView({ profiles, activeProfile, avatar, nav, loadMe, selectProfile, profileId, initialDialog }) {
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState('');
+  const [newKidsProfile, setNewKidsProfile] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const selected = profiles.find((profile) => profile._id === profileId);
   const goBack = () => nav('/account?section=profiles');
 
+  const closeAddProfile = () => {
+    if (busy) return;
+    setAdding(false);
+    setNewName('');
+    setNewKidsProfile(false);
+    setError('');
+  };
+
   const createProfile = async (event) => {
     event.preventDefault();
+    const cleanName = newName.trim();
+    if (!cleanName) {
+      setError('Profile name is required.');
+      return;
+    }
     setBusy(true);
     setError('');
     try {
-      await API.post('/user/profiles', { name: newName.trim(), isKidsProfile: false });
+      await API.post('/user/profiles', {
+        name: cleanName,
+        isKidsProfile: newKidsProfile,
+        avatarUrl: '/Netflix-avatar-1.png',
+      });
       await loadMe();
       setNewName('');
+      setNewKidsProfile(false);
       setAdding(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Could not add this profile. Please try again.');
@@ -635,8 +763,8 @@ function AccountProfilesView({ profiles, activeProfile, avatar, nav, loadMe, sel
       <h1 className="nx-profiles-heading">Profiles</h1>
       <p className="nx-profiles-subtitle">Parental Controls and Permissions</p>
       <section className="nx-security-card nx-profiles-permissions" aria-label="Parental controls and profile transfer">
-        <ProfileSettingsRow icon={<img className="nx-profile-pref-image" src="/secure-svg.svg" alt="" aria-hidden="true" />} title="Adjust parental controls" detail="Set age ratings, block titles" onClick={() => { if (profiles.length) nav(`/account?section=profile-settings&profileId=${profiles[0]._id}&dialog=parental`); }} />
-        <ProfileSettingsRow icon={<img className="nx-profile-pref-image" src="/account-svg.svg" alt="" aria-hidden="true" />} title="Transfer a profile" detail="Copy a profile to another account" onClick={() => nav('/profiles?settings=1')} />
+        <ProfileSettingsRow icon={<IconShieldCheckLine size={20} />} title="Adjust parental controls" detail="Set age ratings, block titles" onClick={() => { if (profiles.length) nav(`/account?section=profile-settings&profileId=${profiles[0]._id}&dialog=parental`); }} />
+        <ProfileSettingsRow icon={<IconTransferLine size={20} />} title="Transfer a profile" detail="Copy a profile to another account" onClick={() => nav('/profiles?settings=1')} />
       </section>
 
       <h2 className="nx-profiles-list-title">Profile Settings</h2>
@@ -661,24 +789,67 @@ function AccountProfilesView({ profiles, activeProfile, avatar, nav, loadMe, sel
           </div>
         ))}
         {profiles.length < 5 && !adding && <button type="button" className="nx-profiles-add" onClick={() => { setError(''); setAdding(true); }}>Add Profile</button>}
-        {adding && (
-          <form className="nx-profiles-add-form" onSubmit={createProfile}>
-            <label htmlFor="nx-account-new-profile">Profile name</label>
-            <input id="nx-account-new-profile" value={newName} onChange={(event) => setNewName(event.target.value)} required maxLength={40} autoFocus />
-            {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
-            <div><button type="button" onClick={() => setAdding(false)}>Cancel</button><button type="submit" disabled={busy}>{busy ? 'Adding…' : 'Add Profile'}</button></div>
-          </form>
-        )}
-        {error && !adding && <p className="nx-profile-form-error" role="alert">{error}</p>}
       </section>
       <p className="nx-profiles-list-note">Add up to 5 profiles for anyone who lives with you.</p>
+      {adding && (
+        <div
+          className="nx-add-profile-backdrop"
+          onMouseDown={(event) => { if (event.target === event.currentTarget) closeAddProfile(); }}
+        >
+          <form
+            className="nx-add-profile-dialog"
+            onSubmit={createProfile}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="nx-add-profile-title"
+            aria-describedby="nx-add-profile-description"
+          >
+            <h2 id="nx-add-profile-title">Add a profile</h2>
+            <p id="nx-add-profile-description">Add a profile for another person watching Netflix.</p>
+            <div className="nx-add-profile-identity">
+              <img src="/Netflix-avatar-1.png" alt="" />
+              <label className="nx-add-profile-name">
+                <span className="nx-visually-hidden">Profile name</span>
+                <input
+                  value={newName}
+                  onChange={(event) => setNewName(event.target.value)}
+                  placeholder="Name"
+                  required
+                  maxLength={40}
+                  autoFocus
+                  disabled={busy}
+                />
+              </label>
+            </div>
+            <label className="nx-add-profile-kids">
+              <span>
+                <strong>Children&apos;s profile</strong>
+                <small>Only see child-friendly TV programmes and films</small>
+              </span>
+              <input
+                type="checkbox"
+                role="switch"
+                aria-label="Children's profile"
+                checked={newKidsProfile}
+                onChange={(event) => setNewKidsProfile(event.target.checked)}
+                disabled={busy}
+              />
+            </label>
+            {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
+            <div className="nx-add-profile-actions">
+              <button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
+              <button type="button" onClick={closeAddProfile} disabled={busy}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
     </ProfileAccountShell>
   );
 }
 
 function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, selectProfile, goBack, initialDialog }) {
-  const { user } = useAuth();
-  const [dialog, setDialog] = useState(initialDialog || null);
+  const { user, logout } = useAuth();
+  const [dialog, setDialog] = useState(initialDialog === 'parental' ? 'parental-confirm' : initialDialog || null);
   const [name, setName] = useState(profile.name);
   const [profileAvatar, setProfileAvatar] = useState(profile.avatarUrl || '/Netflix-avatar-1.png');
   const [profileEmail, setProfileEmail] = useState(profile.profileEmail || '');
@@ -687,7 +858,10 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   const [profileEmailCode, setProfileEmailCode] = useState('');
   const [profileEmailStep, setProfileEmailStep] = useState('edit');
   const [profileEmailNotice, setProfileEmailNotice] = useState('');
-  const [language, setLanguage] = useState(profile.language || 'en');
+  const [language, setLanguage] = useState(() => normalizeProfileLanguage(profile.language));
+  const [preferredAudioLanguages, setPreferredAudioLanguages] = useState(profile.preferredAudioLanguages || ['en']);
+  const [displayLanguageOpen, setDisplayLanguageOpen] = useState(false);
+  const displayLanguageRef = useRef(null);
   const [maturity, setMaturity] = useState(profile.maturityLimit || '18+');
   const [kidsProfile, setKidsProfile] = useState(Boolean(profile.isKidsProfile));
   const [restrictedTitles, setRestrictedTitles] = useState(profile.restrictedTitles || []);
@@ -695,19 +869,23 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   const [titleSearchResults, setTitleSearchResults] = useState([]);
   const [titleSearchError, setTitleSearchError] = useState('');
   const [autoplayNext, setAutoplayNext] = useState(profile.autoplayNext !== false);
+  const [autoplayPreviews, setAutoplayPreviews] = useState(profile.autoplayPreviews !== false);
+  const [dataUsage, setDataUsage] = useState(profile.dataUsage || 'high');
   const [notificationPreferences, setNotificationPreferences] = useState(() => ({
-    email: profile.notificationPreferences?.email !== false,
-    text: profile.notificationPreferences?.text !== false,
-    push: profile.notificationPreferences?.push !== false,
+    ...DEFAULT_NOTIFICATION_PREFERENCES,
+    ...profile.notificationPreferences,
   }));
+  const [dataSharingOptOut, setDataSharingOptOut] = useState(Boolean(profile.dataSharingOptOut));
   const [subtitleScale, setSubtitleScale] = useState(() => localStorage.getItem(`sf_subtitle_scale_${profile._id}`) || '100');
+  const [subtitleAppearance, setSubtitleAppearance] = useState(() => readSubtitleAppearance(profile._id));
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const avatarInputRef = useRef(null);
-  const [lockStep, setLockStep] = useState('overview');
-  const [lockAction, setLockAction] = useState('set');
+  const [lockStep, setLockStep] = useState(initialDialog === 'parental' ? 'confirm' : 'overview');
+  const [lockAction, setLockAction] = useState(initialDialog === 'parental' ? 'parental' : 'set');
+  const [lockDelivery, setLockDelivery] = useState('email');
   const [lockPassword, setLockPassword] = useState('');
   const [lockPasswordVisible, setLockPasswordVisible] = useState(false);
   const [lockCode, setLockCode] = useState('');
@@ -717,6 +895,22 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   const [lockNotice, setLockNotice] = useState('');
   const isYourProfile = profile._id === activeProfile?._id;
   const maskedEmail = user?.email?.replace(/^(.)([^@]*)(@.*)$/, (_match, first, rest, domain) => `${first}${'•'.repeat(Math.max(3, rest.length))}${domain}`) || 'your verified account email';
+
+  useEffect(() => {
+    if (dialog !== 'language' || !displayLanguageOpen) return undefined;
+    const closeOnOutsideClick = (event) => {
+      if (!displayLanguageRef.current?.contains(event.target)) setDisplayLanguageOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setDisplayLanguageOpen(false);
+    };
+    document.addEventListener('mousedown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('mousedown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [dialog, displayLanguageOpen]);
 
   useEffect(() => {
     const query = restrictedTitleQuery.trim();
@@ -755,20 +949,36 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     setLockNotice('');
   };
 
-  const requestLockEmailCode = async () => {
+  const currentLockAction = (actionOverride) => {
+    if (actionOverride) return actionOverride;
+    if (dialog === 'parental-confirm' || dialog === 'parental') return 'parental';
+    return lockAction;
+  };
+
+  const requestLockCode = async (delivery, actionOverride) => {
+    const action = currentLockAction(actionOverride);
     setBusy(true);
     setLockError('');
     setLockNotice('');
     try {
-      await API.post(`/user/profiles/${profile._id}/lock/send-email`, { action: lockAction });
-      setLockNotice(`Verification code sent to ${maskedEmail}.`);
+      const { data } = await API.post(`/user/profiles/${profile._id}/lock/send-${delivery}`, { action });
+      setLockDelivery(delivery);
+      setLockNotice(data.message || `Verification code sent to ${delivery === 'sms' ? 'your mobile phone' : maskedEmail}.`);
       setLockCode('');
       setLockStep('otp');
     } catch (err) {
-      setLockError(err.response?.data?.message || 'Could not send the verification code. Please try again.');
+      setLockError(err.response?.data?.message || `Could not send the ${delivery === 'sms' ? 'text' : 'email'} verification code. Please try again.`);
     } finally {
       setBusy(false);
     }
+  };
+  const requestLockEmailCode = (actionOverride) => requestLockCode('email', actionOverride);
+  const requestLockSMSCode = (actionOverride) => requestLockCode('sms', actionOverride);
+
+  const beginParentalConfirmation = () => {
+    beginLockAction('parental');
+    setError('');
+    setDialog('parental-confirm');
   };
 
   const finishProfileLockDelete = async (ticket) => {
@@ -788,14 +998,22 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     }
   };
 
-  const verifyLockEmailCode = async (event) => {
+  const verifyLockEmailCode = async (event, actionOverride) => {
     event.preventDefault();
+    const action = currentLockAction(actionOverride);
     setBusy(true);
     setLockError('');
     try {
-      const { data } = await API.post(`/user/profiles/${profile._id}/lock/verify-email`, { action: lockAction, otp: lockCode });
+      const { data } = await API.post(`/user/profiles/${profile._id}/lock/verify-email`, {
+        action,
+        delivery: lockDelivery,
+        otp: lockCode,
+      });
       setLockTicket(data.ticket);
-      if (lockAction === 'delete') await finishProfileLockDelete(data.ticket);
+      if (action === 'parental') {
+        setDialog('parental');
+        setError('');
+      } else if (action === 'delete') await finishProfileLockDelete(data.ticket);
       else {
         setLockPin('');
         setLockStep('pin');
@@ -807,15 +1025,19 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     }
   };
 
-  const confirmLockPassword = async (event) => {
+  const confirmLockPassword = async (event, actionOverride) => {
     event.preventDefault();
+    const action = currentLockAction(actionOverride);
     setBusy(true);
     setLockError('');
     try {
-      const { data } = await API.post(`/user/profiles/${profile._id}/lock/confirm-password`, { action: lockAction, password: lockPassword });
+      const { data } = await API.post(`/user/profiles/${profile._id}/lock/confirm-password`, { action, password: lockPassword });
       setLockTicket(data.ticket);
       setLockPassword('');
-      if (lockAction === 'delete') await finishProfileLockDelete(data.ticket);
+      if (action === 'parental') {
+        setDialog('parental');
+        setError('');
+      } else if (action === 'delete') await finishProfileLockDelete(data.ticket);
       else {
         setLockPin('');
         setLockStep('pin');
@@ -852,6 +1074,10 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
   };
 
   const openDialog = (key) => {
+    if (key === 'parental') {
+      beginParentalConfirmation();
+      return;
+    }
     setError('');
     setName(profile.name);
     setProfileAvatar(profile.avatarUrl || '/Netflix-avatar-1.png');
@@ -860,7 +1086,9 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     setProfileEmailCode('');
     setProfileEmailStep('edit');
     setProfileEmailNotice('');
-    setLanguage(profile.language || 'en');
+    setLanguage(normalizeProfileLanguage(profile.language));
+    setPreferredAudioLanguages(profile.preferredAudioLanguages || ['en']);
+    setDisplayLanguageOpen(false);
     setMaturity(profile.maturityLimit || '18+');
     setKidsProfile(Boolean(profile.isKidsProfile));
     setRestrictedTitles(profile.restrictedTitles || []);
@@ -868,11 +1096,13 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     setTitleSearchResults([]);
     setTitleSearchError('');
     setAutoplayNext(profile.autoplayNext !== false);
+    setAutoplayPreviews(profile.autoplayPreviews !== false);
+    setDataUsage(profile.dataUsage || 'high');
     setNotificationPreferences({
-      email: profile.notificationPreferences?.email !== false,
-      text: profile.notificationPreferences?.text !== false,
-      push: profile.notificationPreferences?.push !== false,
+      ...DEFAULT_NOTIFICATION_PREFERENCES,
+      ...profile.notificationPreferences,
     });
+    setDataSharingOptOut(Boolean(profile.dataSharingOptOut));
     setDialog(key);
   };
 
@@ -961,11 +1191,18 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
       if (dialog === 'personal') {
         await API.put(`/user/profiles/${profile._id}`, { name: name.trim(), avatarUrl: profileAvatar });
       }
-      if (dialog === 'language') await API.put(`/user/profiles/${profile._id}`, { language });
+      if (dialog === 'language') {
+        const selectedLanguages = [...new Set([...preferredAudioLanguages, language])];
+        await API.put(`/user/profiles/${profile._id}`, { language, preferredAudioLanguages: selectedLanguages });
+      }
       if (dialog === 'parental') await API.put(`/user/profiles/${profile._id}`, { maturityLimit: maturity });
-      if (dialog === 'playback') await API.put(`/user/profiles/${profile._id}`, { autoplayNext });
+      if (dialog === 'playback') await API.put(`/user/profiles/${profile._id}`, { autoplayNext, autoplayPreviews, dataUsage });
       if (dialog === 'notifications') await API.put(`/user/profiles/${profile._id}`, { notificationPreferences });
-      if (dialog === 'subtitles') localStorage.setItem(`sf_subtitle_scale_${profile._id}`, subtitleScale);
+      if (dialog === 'subtitles') {
+        localStorage.setItem(`sf_subtitle_appearance_${profile._id}`, JSON.stringify(subtitleAppearance));
+        const scale = { small: '75', medium: '100', large: '125' }[subtitleAppearance.size] || subtitleScale;
+        localStorage.setItem(`sf_subtitle_scale_${profile._id}`, scale);
+      }
       if (dialog !== 'subtitles') await loadMe();
       if (dialog === 'personal' && isYourProfile) {
         selectProfile({ ...profile, name: name.trim(), avatarUrl: profileAvatar });
@@ -977,6 +1214,164 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
       setBusy(false);
     }
   };
+
+  const cancelSubtitleAppearance = () => {
+    setSubtitleAppearance(readSubtitleAppearance(profile._id));
+    setSubtitleScale(localStorage.getItem(`sf_subtitle_scale_${profile._id}`) || '100');
+    setError('');
+    setDialog(null);
+  };
+
+  const updateNotificationPreferences = async (changes) => {
+    if (busy) return;
+    const previous = notificationPreferences;
+    const next = { ...previous, ...changes };
+    setNotificationPreferences(next);
+    setBusy(true);
+    setError('');
+    try {
+      await API.put(`/user/profiles/${profile._id}`, { notificationPreferences: changes });
+    } catch (err) {
+      setNotificationPreferences(previous);
+      const serverMessage = err.response?.data?.message;
+      const outdatedNotificationApi = /notification preferences must contain/i.test(serverMessage || '');
+      setError(
+        outdatedNotificationApi
+          ? 'The backend is using an older notification settings API. Restart it locally or redeploy the latest backend, then try again.'
+          : serverMessage || 'Could not update notification preferences. Please try again.',
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const updateDataSharingPreference = async () => {
+    if (busy) return;
+    const nextValue = !dataSharingOptOut;
+    setDataSharingOptOut(nextValue);
+    setBusy(true);
+    setError('');
+    try {
+      await API.put(`/user/profiles/${profile._id}`, { dataSharingOptOut: nextValue });
+      await loadMe();
+    } catch (err) {
+      setDataSharingOptOut(!nextValue);
+      setError(err.response?.data?.message || 'Could not update this privacy setting. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (dialog === 'language') {
+    return (
+      <div className="nx-language-preferences-page">
+        <header className="nx-language-preferences-header">
+          <button type="button" onClick={() => nav('/browse')} aria-label="Newflix home">
+            <img src="/newflix.png" alt="Newflix" />
+          </button>
+        </header>
+        <main className="nx-language-preferences-main">
+          <button type="button" className="nx-language-back" onClick={() => setDialog(null)} aria-label="Back to profile preferences">
+            <IconChevronLeft size={22} />
+          </button>
+          <form className="nx-language-preferences-form" onSubmit={savePreference}>
+            <h1>Set language preferences</h1>
+            <p className="nx-language-profile">
+              For <strong>{profile.name}</strong>
+              <img src={profile.avatarUrl || avatar} alt="" />
+            </p>
+
+            <label className="nx-language-display-label" id="nx-profile-display-language-label" htmlFor="nx-profile-display-language">Display Language</label>
+            <div className="nx-language-display-control" ref={displayLanguageRef}>
+              <button
+                id="nx-profile-display-language"
+                type="button"
+                className="nx-language-display-select"
+                aria-label={`Display Language: ${PROFILE_LANGUAGES.find((item) => item.value === language)?.label || 'English'}`}
+                aria-haspopup="listbox"
+                aria-expanded={displayLanguageOpen}
+                onClick={() => setDisplayLanguageOpen((open) => !open)}
+              >
+                <span>{PROFILE_LANGUAGES.find((item) => item.value === language)?.label || 'English'}</span>
+                <span className={`nx-language-display-caret${displayLanguageOpen ? ' is-open' : ''}`} aria-hidden="true" />
+              </button>
+              {displayLanguageOpen && (
+                <div className="nx-language-display-menu" role="listbox" aria-labelledby="nx-profile-display-language-label">
+                  {[...PROFILE_LANGUAGES.filter((item) => item.value === language), ...PROFILE_LANGUAGES.filter((item) => item.value !== language)
+                    .sort((first, second) => first.label.localeCompare(second.label))].map((item) => (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={item.value === language}
+                      className={`nx-language-display-option${item.value === language ? ' is-selected' : ''}`}
+                      key={item.value}
+                      onClick={() => {
+                        setLanguage(item.value);
+                        setPreferredAudioLanguages((current) => (
+                          current.includes(item.value) ? current : [...current, item.value]
+                        ));
+                        setDisplayLanguageOpen(false);
+                      }}
+                    >
+                      <span>{item.label}</span>
+                      {item.value === language && <span className="nx-language-display-check" aria-hidden="true">✓</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <p className="nx-language-display-help">
+              This controls the text you see on Newflix. Any change will also apply to the default language for audio and subtitles.
+            </p>
+
+            <section className="nx-language-audio-section" aria-labelledby="nx-audio-language-heading">
+              <h2 id="nx-audio-language-heading">Audio and subtitle languages</h2>
+              <p>Choosing the languages you watch TV shows and movies in helps us set up your audio and subtitles for a better viewing experience.</p>
+              <div className="nx-language-options">
+                {PROFILE_LANGUAGES.map((item) => (
+                  <label className="nx-language-option" key={item.value}>
+                    <input
+                      type="checkbox"
+                      checked={preferredAudioLanguages.includes(item.value)}
+                      onChange={(event) => setPreferredAudioLanguages((current) => (
+                        event.target.checked
+                          ? [...new Set([...current, item.value])]
+                          : current.filter((value) => value !== item.value)
+                      ))}
+                    />
+                    <span>{item.label}</span>
+                  </label>
+                ))}
+              </div>
+            </section>
+
+            {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
+            <div className="nx-language-actions">
+              <button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
+              <button type="button" onClick={() => setDialog(null)} disabled={busy}>Cancel</button>
+            </div>
+          </form>
+        </main>
+        <footer className="nx-language-footer">
+          <div className="nx-language-footer-inner">
+            <p>Questions? <a href="/p/contact">Contact Us</a></p>
+            <nav aria-label="Footer links">
+              <a href="/p/investor-relations">Investor Relations</a>
+              <a href="/p/media-center">Media Center</a>
+              <a href="/p/jobs">Jobs</a>
+              <a href="/p/cookie-preferences">Cookie Preferences</a>
+              <a href="/p/terms">Terms of Use</a>
+              <a href="/p/privacy">Privacy Statement</a>
+              <a href="/p/audio-subtitles">Audio and Subtitles</a>
+              <a href="/p/help-center">Help Center</a>
+              <a href="/p/gift-cards">Gift Cards</a>
+              <a href="/p/ad-choices">Ad Choices</a>
+            </nav>
+          </div>
+        </footer>
+      </div>
+    );
+  }
 
   const addRestrictedTitle = (value) => {
     const title = String(value || '').trim();
@@ -997,11 +1392,28 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
         maturityLimit: kidsProfile ? '7+' : maturity,
         isKidsProfile: kidsProfile,
         restrictedTitles,
+        ticket: lockTicket,
       });
+      await loadMe();
+      setLockTicket('');
+      setDialog(null);
+      showActionToast('Viewing Restrictions saved.', 'success');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not save parental controls. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const savePlaybackSettings = async () => {
+    setBusy(true);
+    setError('');
+    try {
+      await API.put(`/user/profiles/${profile._id}`, { autoplayNext, autoplayPreviews, dataUsage });
       await loadMe();
       setDialog(null);
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not save parental controls. Please try again.');
+      setError(err.response?.data?.message || 'Could not save playback settings. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -1024,13 +1436,13 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     }
   };
 
-  const openHistory = () => {
+  const openHistory = (source = 'preferences') => {
     if (profile.profileLockEnabled && !isYourProfile) {
       nav('/profiles');
       return;
     }
     selectProfile(profile);
-    nav('/history');
+    nav(`/history?from=${source}`);
   };
 
   const dialogTitle = {
@@ -1043,18 +1455,515 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
     notifications: 'Notification settings',
   }[dialog];
 
+  if (dialog === 'privacy') {
+    return (
+      <div className="nx-account-page nx-security-page nx-profile-detail-page nx-privacy-detail-page">
+        <AccountHeader avatar={avatar} nav={nav} logout={logout} />
+        <main className="nx-profile-detail-main nx-privacy-detail-main">
+          <div className="nx-profile-settings-view nx-privacy-settings-view">
+            <button type="button" className="nx-profile-settings-back" onClick={() => setDialog(null)} aria-label="Back to profile preferences"><IconChevronLeft size={19} /></button>
+            <div className="nx-profile-settings-body nx-privacy-settings-body">
+              <h1>Manage privacy and data settings</h1>
+              <p className="nx-privacy-for">For <strong>{profile.name}</strong><img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" /></p>
+
+              <h2 className="nx-privacy-section-title">Viewing Privacy</h2>
+              <section className="nx-security-card nx-privacy-viewing-card" aria-label="Viewing privacy">
+                <ProfileSettingsRow
+                  icon={<IconLockLine size={20} />}
+                  title="Profile Lock"
+                  detail={profile.profileLockEnabled ? 'Require a PIN to access this profile' : 'Add a PIN to make this profile private'}
+                  onClick={() => { setLockStep('overview'); setDialog('lock'); setLockError(''); }}
+                />
+                <ProfileSettingsRow
+                  icon={<IconClock size={20} />}
+                  title="Viewing activity"
+                  detail="Manage your watch history and ratings"
+                  onClick={() => openHistory('privacy')}
+                />
+              </section>
+
+              <h2 className="nx-privacy-section-title nx-privacy-data-heading">Data Privacy</h2>
+              <section className="nx-security-card nx-privacy-data-card" aria-label="Data privacy">
+                <p>You have the ability to opt out of sharing certain information you provide to Newflix with third parties. You are not providing any such information to Newflix, but can exercise your choice below.</p>
+                {error && <p className="nx-privacy-error" role="alert">{error}</p>}
+                <button
+                  type="button"
+                  className={`nx-privacy-optout${dataSharingOptOut ? ' is-opted-out' : ''}`}
+                  onClick={updateDataSharingPreference}
+                  disabled={busy}
+                >
+                  {busy ? 'Saving…' : dataSharingOptOut ? 'Opted Out of Data Sharing' : 'Opt Out of Data Sharing'}
+                </button>
+                {dataSharingOptOut && !busy && <p className="nx-privacy-saved" role="status">Your choice is saved for this profile.</p>}
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (dialog === 'playback') {
+    return (
+      <div className="nx-account-page nx-security-page nx-profile-detail-page nx-playback-detail-page">
+        <AccountHeader avatar={avatar} nav={nav} logout={logout} />
+        <main className="nx-profile-detail-main nx-playback-detail-main">
+          <div className="nx-profile-settings-view nx-playback-settings-view">
+            <button type="button" className="nx-profile-settings-back" onClick={() => setDialog(null)} aria-label="Back to profile preferences"><IconChevronLeft size={19} /></button>
+            <div className="nx-profile-settings-body nx-playback-settings-body">
+              <h1>Playback Settings</h1>
+              <div className="nx-playback-profile">
+                <img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" />
+                <span>For <strong>{profile.name}</strong></span>
+              </div>
+              <section className="nx-playback-section" aria-label="Autoplay settings">
+                <label className="nx-playback-toggle">
+                  <span><strong>Autoplay next episode</strong><small>Automatically play the next episode in a series on all devices.</small></span>
+                  <input type="checkbox" role="switch" checked={autoplayNext} onChange={(event) => setAutoplayNext(event.target.checked)} />
+                </label>
+                <label className="nx-playback-toggle">
+                  <span><strong>Autoplay previews</strong><small>Play previews while browsing on all devices.</small></span>
+                  <input type="checkbox" role="switch" checked={autoplayPreviews} onChange={(event) => setAutoplayPreviews(event.target.checked)} />
+                </label>
+              </section>
+              <section className="nx-playback-section nx-playback-data-section" aria-labelledby="nx-playback-data-title">
+                <h2 id="nx-playback-data-title">Data usage per screen</h2>
+                <p>Adjust video quality to manage how much data playback uses.</p>
+                <div className="nx-playback-data-options">
+                  {[
+                    ['auto', 'Auto', 'Adjusts automatically to deliver the best experience for your connection.'],
+                    ['low', 'Low', 'Uses the least data.'],
+                    ['medium', 'Medium', 'Uses less data than High.'],
+                    ['high', 'High', 'Best video quality. Uses the most data.'],
+                  ].map(([value, label, description]) => (
+                    <label className="nx-playback-radio" key={value}>
+                      <input type="radio" name="playback-data-usage" value={value} checked={dataUsage === value} onChange={() => setDataUsage(value)} />
+                      <span><strong>{label}</strong><small>{description}</small></span>
+                    </label>
+                  ))}
+                </div>
+                <p className="nx-playback-data-note">Quality limits apply to HLS streams controlled by the player. Native browser and external providers may choose their own quality.</p>
+              </section>
+              {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
+              <div className="nx-parental-actions nx-playback-actions">
+                <button type="button" onClick={() => setDialog(null)} disabled={busy}>Cancel</button>
+                <button type="button" onClick={savePlaybackSettings} disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
+              </div>
+            </div>
+          </div>
+        </main>
+        <footer className="nx-devices-footer">
+          <p>Questions? <a href="/p/contact">Contact Us</a></p>
+          <nav aria-label="Footer links">
+            <a href="/p/investor-relations">Investor Relations</a><a href="/p/terms">Terms of Use</a>
+            <a href="/p/gift-cards">Gift Cards</a><a href="/p/media-center">Media Center</a>
+            <a href="/p/privacy">Privacy Statement</a><a href="/p/audio-subtitles">Audio and Subtitles</a>
+            <a href="/p/jobs">Jobs</a><a href="/p/help-center">Help Center</a>
+            <a href="/p/cookie-preferences">Cookie Preferences</a>
+          </nav>
+        </footer>
+      </div>
+    );
+  }
+
+  if (dialog === 'subtitles') {
+    const previewFont = {
+      casual: 'Arial, Helvetica, sans-serif',
+      serif: 'Georgia, "Times New Roman", serif',
+      monospace: '"Courier New", monospace',
+    }[subtitleAppearance.font];
+    const previewSize = { small: '14px', medium: '18px', large: '23px' }[subtitleAppearance.size];
+    const previewShadow = {
+      none: 'none',
+      drop: '0 2px 3px rgba(0,0,0,.95)',
+      raised: '0 -2px 2px rgba(0,0,0,.9)',
+      uniform: '0 0 3px #000, 0 0 6px #000',
+    }[subtitleAppearance.shadow];
+    const previewTextStyle = {
+      color: subtitleAppearance.textColor,
+      fontFamily: previewFont,
+      fontSize: previewSize,
+      textShadow: previewShadow,
+      backgroundColor: subtitleAppearance.backgroundTransparent ? 'transparent' : subtitleAppearance.backgroundColor,
+    };
+
+    return (
+      <div className="nx-account-page nx-security-page nx-profile-detail-page nx-subtitle-detail-page">
+        <AccountHeader avatar={avatar} nav={nav} logout={logout} />
+        <main className="nx-profile-detail-main nx-subtitle-detail-main">
+          <div className="nx-profile-settings-view nx-subtitle-settings-view">
+            <button type="button" className="nx-profile-settings-back" onClick={cancelSubtitleAppearance} aria-label="Back to profile preferences"><IconChevronLeft size={19} /></button>
+            <form
+              className="nx-profile-settings-body nx-subtitle-settings-body"
+              onSubmit={savePreference}
+              onChange={() => setError('')}
+            >
+              <h1>Subtitle Appearance</h1>
+              <p className="nx-subtitle-intro">Change the way subtitles appear for <strong>{profile.name}</strong> on supported devices.</p>
+              <p className="nx-subtitle-device-note">Your choices are saved for this profile on this device.</p>
+
+              <section className="nx-subtitle-preview" aria-label="Subtitle preview">
+                <div className="nx-subtitle-preview-screen">
+                  <span style={{
+                    ...previewTextStyle,
+                    outline: subtitleAppearance.windowTransparent ? 'none' : `8px solid ${subtitleAppearance.windowColor}`,
+                  }}>These settings affect subtitles on supported devices.</span>
+                </div>
+                <p>Preview</p>
+              </section>
+
+              <div className="nx-subtitle-controls">
+                <label className="nx-subtitle-control">
+                  <span>Font</span>
+                  <select value={subtitleAppearance.font} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, font: event.target.value }))}>
+                    <option value="casual">Casual</option>
+                    <option value="serif">Serif</option>
+                    <option value="monospace">Monospace</option>
+                  </select>
+                </label>
+
+                <fieldset className="nx-subtitle-size-control">
+                  <legend>Text size</legend>
+                  <div role="group" aria-label="Subtitle text size">
+                    {[
+                      ['small', 'A', 'Small'],
+                      ['medium', 'A', 'Medium'],
+                      ['large', 'A', 'Large'],
+                    ].map(([value, label, accessibleLabel]) => (
+                      <button
+                        type="button"
+                        key={value}
+                        className={subtitleAppearance.size === value ? 'is-selected' : ''}
+                        aria-label={accessibleLabel}
+                        aria-pressed={subtitleAppearance.size === value}
+                        onClick={() => {
+                          setSubtitleAppearance((current) => ({ ...current, size: value }));
+                          setSubtitleScale({ small: '75', medium: '100', large: '125' }[value]);
+                        }}
+                      >{label}</button>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <label className="nx-subtitle-control">
+                  <span>Shadow</span>
+                  <select value={subtitleAppearance.shadow} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, shadow: event.target.value }))}>
+                    <option value="drop">Drop shadow</option>
+                    <option value="raised">Raised</option>
+                    <option value="uniform">Uniform</option>
+                    <option value="none">None</option>
+                  </select>
+                </label>
+
+                <label className="nx-subtitle-color-control">
+                  <span>Text color</span>
+                  <input type="color" value={subtitleAppearance.textColor} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, textColor: event.target.value }))} aria-label="Subtitle text color" />
+                </label>
+                <label className="nx-subtitle-color-control">
+                  <span>Background</span>
+                  <input type="color" value={subtitleAppearance.backgroundColor} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, backgroundColor: event.target.value }))} disabled={subtitleAppearance.backgroundTransparent} aria-label="Subtitle background color" />
+                  <span className="nx-subtitle-transparent"><input type="checkbox" checked={subtitleAppearance.backgroundTransparent} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, backgroundTransparent: event.target.checked }))} /> Transparent</span>
+                </label>
+                <label className="nx-subtitle-color-control">
+                  <span>Window</span>
+                  <input type="color" value={subtitleAppearance.windowColor} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, windowColor: event.target.value }))} disabled={subtitleAppearance.windowTransparent} aria-label="Subtitle window color" />
+                  <span className="nx-subtitle-transparent"><input type="checkbox" checked={subtitleAppearance.windowTransparent} onChange={(event) => setSubtitleAppearance((current) => ({ ...current, windowTransparent: event.target.checked }))} /> Transparent</span>
+                </label>
+              </div>
+
+              {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
+              <div className="nx-parental-actions nx-subtitle-actions">
+                <button type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
+                <button type="button" className="nx-subtitle-reset" disabled={busy} onClick={() => {
+                  setSubtitleAppearance({ ...DEFAULT_SUBTITLE_APPEARANCE });
+                  setSubtitleScale('100');
+                }}>Reset to default</button>
+                <button type="button" className="nx-subtitle-cancel" disabled={busy} onClick={cancelSubtitleAppearance}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </main>
+        <footer className="nx-devices-footer">
+          <p>Questions? <a href="/p/contact">Contact Us</a></p>
+          <nav aria-label="Footer links">
+            <a href="/p/investor-relations">Investor Relations</a><a href="/p/terms">Terms of Use</a>
+            <a href="/p/gift-cards">Gift Cards</a><a href="/p/media-center">Media Center</a>
+            <a href="/p/privacy">Privacy Statement</a><a href="/p/audio-subtitles">Audio and Subtitles</a>
+            <a href="/p/jobs">Jobs</a><a href="/p/help-center">Help Center</a>
+            <a href="/p/cookie-preferences">Cookie Preferences</a>
+          </nav>
+        </footer>
+      </div>
+    );
+  }
+
+  if (dialog === 'notifications') {
+    const notificationGroups = [
+      {
+        title: 'Just For You',
+        options: [
+          { key: 'watch', title: 'What you watch', description: 'New seasons & episodes, leaving soon, your collections', icon: <IconFilmLine size={17} /> },
+          { key: 'recommendations', title: 'Watch recommendations & more', description: 'Top 10, new titles, picks for you', icon: <IconSparklesLine size={17} /> },
+          { key: 'surveys', title: 'Surveys & research invites', description: 'Participate in studies, surveys', icon: <IconMailLine size={17} /> },
+        ],
+      },
+      {
+        title: 'Discover More',
+        options: [
+          { key: 'games', title: 'Newflix Games', description: 'Releases, recommendations, gameplay activity', icon: <IconFlaskLine size={17} /> },
+          { key: 'shop', title: 'Newflix Shop & experiences', description: 'Newflix Shop products, Newflix live experiences', icon: <IconCreditCardLine size={17} /> },
+          { key: 'usingApp', title: 'Using the Newflix app', description: 'Suggested features, tips & tricks, parental controls', icon: <IconDevicesLine size={17} /> },
+        ],
+      },
+      {
+        title: 'Your Account',
+        options: [
+          { key: 'membershipOffers', title: 'Membership offers', description: 'Plan upgrades, subscription promotions', icon: <IconCreditCardLine size={17} /> },
+          { key: 'accountUpdates', title: 'Account updates', description: 'Security alerts, billing, time-sensitive notifications', icon: <IconPersonAccessLine size={17} /> },
+        ],
+      },
+    ];
+    const allNotificationKeys = notificationGroups.flatMap((group) => group.options.map((option) => option.key));
+    const unsubscribeFromAll = () => updateNotificationPreferences(
+      Object.fromEntries(allNotificationKeys.map((key) => [key, false])),
+    );
+
+    return (
+      <div className="nx-account-page nx-security-page nx-profile-detail-page nx-notification-detail-page">
+        <AccountHeader avatar={avatar} nav={nav} logout={logout} />
+        <main className="nx-notification-main">
+          <h1>Push Notifications</h1>
+          <p className="nx-notification-subtitle">Alerts sent to mobile devices using Newflix</p>
+          <section className="nx-notification-device-card" aria-label="Notification device">
+            <img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" />
+            <strong>{profile.name}</strong>
+            <button type="button" onClick={() => nav('/account?section=devices')}>View Devices</button>
+          </section>
+          <p className="nx-notification-device-note"><IconInfo size={14} /> You may also need to enable push notifications in your device&apos;s settings.</p>
+
+          {notificationGroups.map((group) => (
+            <section className="nx-notification-group" key={group.title} aria-label={group.title}>
+              <h2>{group.title}</h2>
+              <div className="nx-notification-options">
+                {group.options.map((option) => (
+                  <div className="nx-notification-row" key={option.key}>
+                    <span className="nx-notification-icon" aria-hidden="true">{option.icon}</span>
+                    <span className="nx-notification-copy">
+                      <strong>{option.title}</strong>
+                      <small>{option.description}</small>
+                    </span>
+                    <button
+                      type="button"
+                      role="switch"
+                      className="nx-notification-switch"
+                      aria-checked={notificationPreferences[option.key] !== false}
+                      aria-label={`${option.title} notifications`}
+                      disabled={busy}
+                      onClick={() => updateNotificationPreferences({
+                        [option.key]: notificationPreferences[option.key] === false,
+                      })}
+                    >
+                      <span />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+
+          {error && <p className="nx-notification-error" role="alert">{error}</p>}
+          {busy && <p className="nx-notification-saving" role="status">Saving your notification settings…</p>}
+          <div className="nx-notification-unsubscribe">
+            <button type="button" onClick={unsubscribeFromAll} disabled={busy}>
+              {allNotificationKeys.every((key) => notificationPreferences[key] === false) ? 'All Notifications Off' : 'Unsubscribe From All'}
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (dialog === 'parental' || dialog === 'parental-confirm') {
+    if (dialog === 'parental-confirm') {
+      const backToMethods = () => {
+        setLockError('');
+        setLockNotice('');
+        setLockPassword('');
+        setLockCode('');
+        setLockStep('confirm');
+      };
+      const closeConfirmation = () => {
+        setLockTicket('');
+        closeLockPage();
+      };
+
+      return (
+        <div className="nx-account-page nx-security-page nx-profile-detail-page nx-parental-verification-page">
+          <AccountHeader avatar={avatar} nav={nav} logout={logout} />
+          <main className="nx-parental-verification-main">
+            <button type="button" className="nx-profile-settings-back" onClick={lockStep === 'confirm' ? closeConfirmation : backToMethods} aria-label={lockStep === 'confirm' ? 'Back to profile preferences' : 'Back to verification methods'}>
+              <IconChevronLeft size={19} />
+            </button>
+            <section className="nx-parental-verification-content">
+              {lockStep === 'confirm' && (
+                <>
+                  <h1>First, let&apos;s make sure it&apos;s you</h1>
+                  <p>Before we make any changes, we&apos;ll just need a quick confirmation.</p>
+                  <button type="button" className="nx-parental-verification-method" onClick={() => requestLockEmailCode('parental')} disabled={busy}>
+                    <IconMailLine size={20} />
+                    <span><strong>Email a code</strong><small>{maskedEmail}</small></span>
+                    <IconChevronRight size={18} />
+                  </button>
+                  <button type="button" className="nx-parental-verification-method" onClick={() => requestLockSMSCode('parental')} disabled={busy}>
+                    <IconPhoneLine size={20} />
+                    <span><strong>Text a code</strong><small>Send to your verified mobile number</small></span>
+                    <IconChevronRight size={18} />
+                  </button>
+                  <button type="button" className="nx-parental-verification-method" onClick={() => { setLockError(''); setLockStep('password'); }} disabled={busy}>
+                    <IconLockLine size={20} />
+                    <span><strong>Confirm password</strong></span>
+                    <IconChevronRight size={18} />
+                  </button>
+                  {lockError && <p className="nx-profile-form-error" role="alert">{lockError}</p>}
+                  <small className="nx-profile-lock-help">Need help? <a href="/p/help-center">Visit the Help Center</a></small>
+                </>
+              )}
+              {lockStep === 'password' && (
+                <form className="nx-parental-verification-form" onSubmit={(event) => confirmLockPassword(event, 'parental')}>
+                  <h1>Confirm your password</h1>
+                  <p>Please enter your account password to continue.</p>
+                  <label>Current Password<span className="nx-profile-lock-password-wrap"><input type={lockPasswordVisible ? 'text' : 'password'} value={lockPassword} onChange={(event) => setLockPassword(event.target.value)} autoComplete="current-password" required autoFocus /><button type="button" onClick={() => setLockPasswordVisible((visible) => !visible)} aria-label={lockPasswordVisible ? 'Hide password' : 'Show password'} aria-pressed={lockPasswordVisible}><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg></button></span></label>
+                  {lockError && <p className="nx-profile-form-error" role="alert">{lockError}</p>}
+                  <button type="submit" disabled={busy || !lockPassword}>{busy ? 'Checking…' : 'Continue'}</button>
+                  <button type="button" className="nx-parental-verification-secondary" onClick={backToMethods} disabled={busy}>Choose another method</button>
+                </form>
+              )}
+              {lockStep === 'otp' && (
+                <form className="nx-parental-verification-form" onSubmit={(event) => verifyLockEmailCode(event, 'parental')}>
+                  <h1>Enter the code we just sent</h1>
+                  <p>{lockNotice || `Enter the 6-digit code sent to ${lockDelivery === 'sms' ? 'your verified mobile number' : maskedEmail}. The code expires in 10 minutes.`}</p>
+                  <ProfileCodeFields count={6} value={lockCode} onChange={setLockCode} label={`${lockDelivery === 'sms' ? 'Text message' : 'Email'} verification code`} />
+                  {lockError && <p className="nx-profile-form-error" role="alert">{lockError}</p>}
+                  <button type="submit" disabled={busy || lockCode.length !== 6}>{busy ? 'Verifying…' : 'Continue'}</button>
+                  <button type="button" className="nx-parental-verification-secondary" onClick={() => (lockDelivery === 'sms' ? requestLockSMSCode('parental') : requestLockEmailCode('parental'))} disabled={busy}>{busy ? 'Sending…' : 'Resend code'}</button>
+                  <button type="button" className="nx-parental-verification-secondary" onClick={backToMethods} disabled={busy}>Choose another method</button>
+                </form>
+              )}
+            </section>
+          </main>
+        </div>
+      );
+    }
+
+    return (
+      <div className="nx-account-page nx-security-page nx-profile-detail-page nx-parental-controls-page">
+        <AccountHeader avatar={avatar} nav={nav} logout={logout} />
+        <main className="nx-parental-controls-main">
+          <div className="nx-parental-control-body">
+              <div className="nx-parental-heading">
+                <h1>Adjust Parental Controls</h1>
+                <img src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt={`${profile.name} profile`} />
+              </div>
+              <section className="nx-parental-section nx-parental-rating">
+                <h2>Profile Maturity Rating for {profile.name}</h2>
+                <p>{maturity === 'ALL' ? 'Show titles of all maturity ratings for this profile.' : `Show titles rated ${maturity} and below for this profile.`} <a href="/p/help-center">Learn more about maturity ratings</a> for games.</p>
+                <div className="nx-parental-rating-slider">
+                  <input
+                    type="range"
+                    min="0"
+                    max={PROFILE_MATURITY_OPTIONS.length - 1}
+                    step="1"
+                    value={PROFILE_MATURITY_OPTIONS.findIndex((item) => item.value === maturity)}
+                    aria-label="Maximum profile age rating"
+                    disabled={kidsProfile}
+                    style={{ '--rating-progress': `${(PROFILE_MATURITY_OPTIONS.findIndex((item) => item.value === maturity) / (PROFILE_MATURITY_OPTIONS.length - 1)) * 100}%` }}
+                    onChange={(event) => setMaturity(PROFILE_MATURITY_OPTIONS[Number(event.target.value)].value)}
+                  />
+                  <div className="nx-parental-rating-ticks">
+                    {PROFILE_MATURITY_OPTIONS.map((item) => (
+                      <button
+                        type="button"
+                        key={item.value}
+                        className={item.value === maturity ? 'is-selected' : ''}
+                        aria-pressed={item.value === maturity}
+                        disabled={kidsProfile}
+                        onClick={() => setMaturity(item.value)}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </section>
+              <section className="nx-parental-section nx-parental-kids">
+                <h2>Kids Profile</h2>
+                <label><input type="checkbox" checked={kidsProfile} onChange={(event) => setKidsProfile(event.target.checked)} /> <span>Display the Netflix Kids experience with titles just for kids.</span></label>
+              </section>
+              <section className="nx-parental-section nx-parental-title-restrictions">
+                <h2>Title Restrictions for {profile.name}</h2>
+                <p>Don&apos;t show specific titles for this profile regardless of Maturity Rating</p>
+                <div className="nx-parental-title-search">
+                  <input
+                    type="search"
+                    value={restrictedTitleQuery}
+                    onChange={(event) => setRestrictedTitleQuery(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addRestrictedTitle(restrictedTitleQuery);
+                      }
+                    }}
+                    placeholder="Enter show or movie name"
+                    aria-label="Search for a title to restrict"
+                  />
+                  {titleSearchResults.length > 0 && (
+                    <div className="nx-parental-title-results" role="listbox" aria-label="Title search results">
+                      {titleSearchResults.map((item) => (
+                        <button type="button" role="option" aria-selected="false" key={item._id} onClick={() => addRestrictedTitle(item.title || item.name)}>
+                          {item.title || item.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {titleSearchError && <p className="nx-parental-search-error" role="status">{titleSearchError}</p>}
+                <ul className="nx-parental-restricted-list">
+                  {restrictedTitles.map((title) => (
+                    <li key={title}>
+                      <span>{title}</span>
+                      <button type="button" aria-label={`Remove ${title} from title restrictions`} onClick={() => setRestrictedTitles((current) => current.filter((item) => item !== title))}>×</button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
+              <div className="nx-parental-actions">
+                <button type="button" onClick={saveParentalControls} disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
+                <button type="button" onClick={() => setDialog(null)} disabled={busy}>Cancel</button>
+              </div>
+          </div>
+        </main>
+        <footer className="nx-devices-footer nx-parental-controls-footer">
+          <p>Questions? <a href="/p/contact">Contact us.</a></p>
+          <nav aria-label="Footer links">
+            <a href="/p/audio-subtitles">Audio and Subtitles</a>
+            <a href="/p/help-center">Help Center</a>
+            <a href="/p/gift-cards">Gift Cards</a>
+            <a href="/p/investor-relations">Investor Relations</a>
+            <a href="/p/media-center">Media Center</a>
+            <a href="/p/jobs">Jobs</a>
+            <a href="/p/cookie-preferences">Cookie Preferences</a>
+            <a href="/p/terms">Terms of Use</a>
+            <a href="/p/privacy">Privacy Statement</a>
+          </nav>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="nx-account-page nx-security-page nx-profile-detail-page">
-      <header className="nx-account-header nx-security-header">
-        <div className="nx-security-topbar">
-          <button type="button" className="nx-security-logo-button" onClick={() => nav('/browse')} aria-label="Newflix home">
-            <img src="/newflix.png" alt="Newflix" className="nx-account-logo" />
-          </button>
-          <button type="button" className="nx-account-profile" onClick={() => nav('/account?section=profiles')} aria-label="Back to profiles">
-            <img src={avatar} alt="Current profile" /><IconCaret size={11} />
-          </button>
-        </div>
-      </header>
+      <AccountHeader avatar={avatar} nav={nav} logout={logout} />
       <main className={`nx-profile-detail-main${dialog === 'lock' ? ' is-lock-view' : ''}`}>
         {dialog === 'lock' ? (
           <div className="nx-profile-lock-page">
@@ -1072,78 +1981,6 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
                     <button type="button" onClick={() => { setLockStep('overview'); setLockError(''); }} disabled={busy}>Cancel</button>
                   </div>
                 </form>
-              ) : dialog === 'parental' ? (
-                <div className="nx-profile-settings-view nx-parental-control-view">
-                  <button type="button" className="nx-profile-settings-back" onClick={() => setDialog(null)} aria-label="Back to profile preferences"><IconChevronLeft size={19} /></button>
-                  <div className="nx-profile-settings-body nx-parental-control-body">
-                    <h1>Adjust parental controls</h1>
-                    <section className="nx-parental-section nx-parental-rating">
-                      <h2>Profile Age Rating</h2>
-                      <p>Only show titles rated {kidsProfile ? '7+ and below' : `${maturity} and below`} for {profile.name}. <a href="/p/help-center">Learn more about ratings</a></p>
-                      <div className="nx-parental-rating-slider">
-                        <input
-                          type="range"
-                          min="0"
-                          max={PROFILE_MATURITY_OPTIONS.length - 1}
-                          step="1"
-                          value={PROFILE_MATURITY_OPTIONS.findIndex((item) => item.value === maturity)}
-                          aria-label="Maximum profile age rating"
-                          disabled={kidsProfile}
-                          onChange={(event) => setMaturity(PROFILE_MATURITY_OPTIONS[Number(event.target.value)].value)}
-                        />
-                        <div className="nx-parental-rating-ticks" aria-hidden="true">
-                          {PROFILE_MATURITY_OPTIONS.map((item) => <span key={item.value} className={item.value === maturity ? 'is-selected' : ''}>{item.value === 'ALL' ? 'All' : item.value}</span>)}
-                        </div>
-                      </div>
-                    </section>
-                    <section className="nx-parental-section nx-parental-kids">
-                      <h2>Kids Profile</h2>
-                      <label><input type="checkbox" checked={kidsProfile} onChange={(event) => setKidsProfile(event.target.checked)} /> <span>Display the Kids experience with titles just for children.</span></label>
-                    </section>
-                    <section className="nx-parental-section nx-parental-title-restrictions">
-                      <h2>Title Restrictions</h2>
-                      <p>Don&apos;t show specific titles for this profile regardless of age rating.</p>
-                      <div className="nx-parental-title-search">
-                        <input
-                          type="search"
-                          value={restrictedTitleQuery}
-                          onChange={(event) => setRestrictedTitleQuery(event.target.value)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter') {
-                              event.preventDefault();
-                              addRestrictedTitle(restrictedTitleQuery);
-                            }
-                          }}
-                          placeholder="Enter series or film name"
-                          aria-label="Search for a title to restrict"
-                        />
-                        {titleSearchResults.length > 0 && (
-                          <div className="nx-parental-title-results" role="listbox" aria-label="Title search results">
-                            {titleSearchResults.map((item) => (
-                              <button type="button" role="option" aria-selected="false" key={item._id} onClick={() => addRestrictedTitle(item.title || item.name)}>
-                                {item.title || item.name}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {titleSearchError && <p className="nx-parental-search-error" role="status">{titleSearchError}</p>}
-                      <ul className="nx-parental-restricted-list">
-                        {restrictedTitles.map((title) => (
-                          <li key={title}>
-                            <span>{title}</span>
-                            <button type="button" aria-label={`Remove ${title} from title restrictions`} onClick={() => setRestrictedTitles((current) => current.filter((item) => item !== title))}>×</button>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                    {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
-                    <div className="nx-parental-actions">
-                      <button type="button" onClick={() => setDialog(null)} disabled={busy}>Cancel</button>
-                      <button type="button" onClick={saveParentalControls} disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
-                    </div>
-                  </div>
-                </div>
               ) : (
                 <>
                   <h1>{profile.profileLockEnabled ? 'Manage Profile Lock' : 'Create a Profile Lock'}</h1>
@@ -1198,13 +2035,13 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
               </section>
               <h2 className="nx-profile-preferences-title">Preferences</h2>
               <section className="nx-security-card nx-profile-preferences-card" aria-label="Preferences">
-                <ProfileSettingsRow icon={<IconAudio size={18} />} title="Languages" detail={`Set languages for display and audio · ${PROFILE_LANGUAGES.find((item) => item.value === (profile.language || 'en'))?.label || 'English'}`} onClick={() => openDialog('language')} />
-                <ProfileSettingsRow icon={<IconWarningTriangleLine size={18} />} title="Adjust Parental Controls" detail="Edit maturity rating and title restrictions" onClick={() => openDialog('parental')} />
+                <ProfileSettingsRow icon={<IconAudio size={18} />} title="Languages" detail={`Set languages for display and audio · ${PROFILE_LANGUAGES.find((item) => item.value === normalizeProfileLanguage(profile.language))?.label || 'English'}`} onClick={() => openDialog('language')} />
+                <ProfileSettingsRow icon={<IconWarningTriangleLine size={18} />} title="Adjust Parental Controls" detail="Edit maturity rating and title restrictions" onClick={beginParentalConfirmation} />
                 <ProfileSettingsRow icon={<IconSettings size={18} />} title="Subtitle appearance" detail="Customize the way subtitles appear" onClick={() => openDialog('subtitles')} />
                 <ProfileSettingsRow icon={<IconCheck size={18} />} title="Playback settings" detail="Set autoplay and video quality" onClick={() => openDialog('playback')} />
                 <ProfileSettingsRow icon={<IconInfo size={18} />} title="Viewing activity" detail="Manage viewing history and ratings" onClick={openHistory} />
                 <ProfileSettingsRow icon={<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" /><path d="M10 21h4" /></svg>} title="Notification settings" detail="Manage notifications for email, text, push" onClick={() => openDialog('notifications')} />
-                <ProfileSettingsRow icon={<IconShieldCheckLine size={18} />} title="Privacy and data settings" detail="Manage use of personal info" onClick={() => nav('/p/privacy')} />
+                <ProfileSettingsRow icon={<IconShieldCheckLine size={18} />} title="Privacy and data settings" detail="Manage use of personal info" onClick={() => openDialog('privacy')} />
                 <ProfileSettingsRow icon={<IconTransferLine size={18} />} title="Profile transfer" detail="Copy this profile to another account" onClick={() => nav('/profiles?settings=1')} />
               </section>
               <button type="button" className="nx-profile-delete" onClick={() => { setError(''); setDeleteConfirm(true); }}><IconWarningTriangleLine size={16} /> Delete Profile</button>
@@ -1333,7 +2170,6 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
             )}
             {dialog === 'language' && <label>Display and audio language<select value={language} onChange={(event) => setLanguage(event.target.value)}>{PROFILE_LANGUAGES.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>}
             {dialog === 'parental' && <label>Allowed maturity rating<select value={maturity} onChange={(event) => setMaturity(event.target.value)}>{PROFILE_MATURITY_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}</select><small>Titles above this rating will be restricted for this profile.</small></label>}
-            {dialog === 'playback' && <label className="nx-profile-dialog-check"><input type="checkbox" checked={autoplayNext} onChange={(event) => setAutoplayNext(event.target.checked)} /> Autoplay next episode in a series on all devices</label>}
             {dialog === 'notifications' && (
               <div className="nx-profile-notification-options">
                 <p>Choose how you&apos;d like to receive profile notifications.</p>
@@ -1353,7 +2189,6 @@ function ProfilePreferencesView({ profile, activeProfile, avatar, nav, loadMe, s
                 ))}
               </div>
             )}
-            {dialog === 'subtitles' && <label>Subtitle text size<select value={subtitleScale} onChange={(event) => setSubtitleScale(event.target.value)}><option value="75">Small</option><option value="100">Medium</option><option value="125">Large</option></select><small>This display preference is saved for this profile on this device.</small></label>}
             {profileEmailNotice && dialog === 'profile-email' && <p className="nx-profile-email-notice" role="status">{profileEmailNotice}</p>}
             {error && <p className="nx-profile-form-error" role="alert">{error}</p>}
             {dialog !== 'lock' && <div className={`nx-profile-dialog-actions${dialog === 'personal' ? ' is-profile-edit-actions' : ''}${dialog === 'profile-email' ? ' is-profile-email-actions' : ''}`}><button type="button" onClick={() => { setError(''); if (dialog === 'profile-email' && profileEmailStep === 'verify') setProfileEmailStep('edit'); else setDialog(dialog === 'profile-email' ? 'personal' : null); }} disabled={busy || avatarUploading}>Cancel</button><button type="submit" disabled={busy || avatarUploading || (dialog === 'profile-email' && profileEmailStep === 'verify' && profileEmailCode.length !== 6)}>{busy ? (profileEmailStep === 'verify' && dialog === 'profile-email' ? 'Verifying…' : 'Sending…') : dialog === 'profile-email' ? (profileEmailStep === 'edit' ? 'Add email' : 'Verify email') : 'Save'}</button></div>}
@@ -1385,7 +2220,6 @@ export default function Account() {
   const extraStep = params.get('step') || '1';
   const [payments, setPayments] = useState([]);
   const [paymentError, setPaymentError] = useState('');
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   useEffect(() => {
     API.get('/user/payments')
@@ -1402,35 +2236,18 @@ export default function Account() {
     return date;
   }, [latestPayment]);
   const avatar = activeProfile?.avatarUrl || profiles?.[0]?.avatarUrl || '/Netflix-avatar-1.png';
+  const settingsProfileId = activeProfile?._id || profiles?.[0]?._id;
 
   if (section === 'extra-member') return <ExtraMemberView step={extraStep} user={user} nav={nav} logout={logout} />;
   if (section === 'manage-membership') return <ManageMembershipView user={user} nav={nav} logout={logout} />;
-  if (section === 'security') return <SecurityView user={user} avatar={avatar} nav={nav} logout={logout} profileMenuOpen={profileMenuOpen} setProfileMenuOpen={setProfileMenuOpen} />;
+  if (section === 'security') return <SecurityView user={user} avatar={avatar} nav={nav} logout={logout} />;
   if (section === 'change-password') return <ChangePasswordView user={user} avatar={avatar} nav={nav} logout={logout} />;
-  if (section === 'devices') return <DevicesView user={user} avatar={avatar} profileName={activeProfile?.name || profiles?.[0]?.name} nav={nav} logout={logout} profileMenuOpen={profileMenuOpen} setProfileMenuOpen={setProfileMenuOpen} />;
+  if (section === 'devices') return <DevicesView user={user} avatar={avatar} profileName={activeProfile?.name || profiles?.[0]?.name} nav={nav} logout={logout} />;
   if (section === 'profiles' || section === 'profile-settings') return <AccountProfilesView profiles={profiles || []} activeProfile={activeProfile} avatar={avatar} nav={nav} loadMe={loadMe} selectProfile={selectProfile} profileId={profileId} initialDialog={params.get('dialog')} />;
 
   return (
     <div className="nx-account-page">
-      <header className="nx-account-header">
-        <div className="nx-account-topbar">
-          <img src="/newflix.png" alt="Netflix" className="nx-account-logo" />
-          <div className="nx-account-profile-wrap">
-            <button type="button" className="nx-account-profile" onClick={() => setProfileMenuOpen((open) => !open)} aria-expanded={profileMenuOpen} aria-label="Open profile menu">
-              <img src={avatar} alt="Current profile" /><IconCaret size={11} />
-            </button>
-            {profileMenuOpen && (
-              <div className="nx-account-profile-menu">
-                <div className="nx-account-profile-menu-user"><img src={avatar} alt="" /><span>{user?.name || 'Profile'}<small>{user?.email}</small></span></div>
-                <button type="button" onClick={() => nav('/account')}>Account</button>
-                <button type="button" onClick={() => nav('/account?section=profiles')}>Manage profiles</button>
-                <button type="button" onClick={() => nav('/profiles')}>Switch profile</button>
-                <button type="button" className="is-danger" onClick={async () => { await logout(); nav('/logout'); }}>Sign out</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
+      <AccountHeader avatar={avatar} nav={nav} logout={logout} />
 
       <div className="nx-account-shell">
         <aside className="nx-account-sidebar" aria-label="Account sections">
@@ -1468,15 +2285,15 @@ export default function Account() {
             <AccountRow icon={<IconDevicesLine size={17} />} title="Manage access and devices" description="Review your profiles and viewing access" onClick={() => nav('/account?section=devices')} />
             <AccountRow icon={<IconSettings size={17} />} title="Update password" description={user?.email} onClick={() => nav('/login/help')} />
             <AccountRow icon={<IconUsers size={17} />} title="Transfer a profile" description="Move a profile to a new membership" onClick={() => nav('/profiles')} />
-            <AccountRow icon={<IconCheck size={17} />} title="Adjust parental controls" description="Manage kids profiles and content limits" onClick={() => nav('/profiles')} />
-            <AccountRow icon={<IconSettings size={17} />} title="Edit settings" description="Language, subtitles, autoplay, notifications, privacy and more" onClick={() => nav('/account')} />
+            <AccountRow icon={<IconCheck size={17} />} title="Adjust parental controls" description="Manage kids profiles and content limits" onClick={() => settingsProfileId && nav(`/account?section=profile-settings&profileId=${settingsProfileId}&dialog=parental`)} />
+            <AccountRow icon={<IconSettings size={17} />} title="Edit settings" description="Language, subtitles, autoplay, notifications, privacy and more" onClick={() => settingsProfileId && nav(`/account?section=profile-settings&profileId=${settingsProfileId}`)} />
           </section>
 
-          <section className="nx-account-card nx-account-profile-card" onClick={() => nav('/profiles?settings=1')}>
+          <button type="button" className="nx-account-card nx-account-profile-card" onClick={() => nav('/account?section=profiles')}>
             <span><strong>Manage profiles</strong><small>{profiles?.length || 0} profiles</small></span>
             <span className="nx-account-avatar-stack">{(profiles || []).slice(0, 5).map((profile) => <img key={profile._id} src={profile.avatarUrl || '/Netflix-avatar-1.png'} alt="" />)}</span>
             <IconChevronRight size={17} />
-          </section>
+          </button>
 
           <section className="nx-account-card nx-account-payments" id="payments">
             <div className="nx-account-card-heading"><div><h2>Payment history</h2><p>Only your masked payment details are shown.</p></div><span>{payments.length} record{payments.length === 1 ? '' : 's'}</span></div>
